@@ -1,0 +1,22 @@
+2020-04-06T05:37:15+00:00 CRITICAL Uncaught Error: Call to a member function get_id() on boolean in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php:1288
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_single_product(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-inclu in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php on line 1288
+
+2020-04-06T05:37:59+00:00 CRITICAL Uncaught Error: Call to a member function get_id() on boolean in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php:1288
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_single_product(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-inclu in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php on line 1288
+
