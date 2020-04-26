@@ -13,3 +13,6 @@ RewriteRule . /index.php [L]
 </IfModule>
 
 # END WordPress
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
