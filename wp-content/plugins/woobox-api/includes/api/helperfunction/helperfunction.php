@@ -4,6 +4,8 @@ function woobox_get_product_helper($id,$num_pages = '',$i='')
 {
 		global $product;
 		$product = wc_get_product($id);
+        //$product = wc_get_product('3345');
+       // print_r($product);exit;
         $array['num_pages'] = $num_pages;
         $array['srno'] = $i;
         

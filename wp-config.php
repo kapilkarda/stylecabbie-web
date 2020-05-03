@@ -20,6 +20,7 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
+define( 'WPCACHEHOME', '/home/stylecabbie/public_html/wp-content/plugins/wp-super-cache/' );
 define( 'DB_NAME', 'staging' );
 
 /** MySQL database username */
@@ -78,7 +79,7 @@ $table_prefix = 'wp_';
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
 define( 'FS_METHOD', 'direct' );
-define( 'WP_DEBUG', flase);
+define( 'WP_DEBUG', true);
 define( 'WP_DEBUG_LOG', '/tmp/wp-errors.log' );
 
 //define('WP_MEMORY_LIMIT', '64M');

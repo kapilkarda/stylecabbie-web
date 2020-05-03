@@ -5,7 +5,7 @@
         while ($xs_query->have_posts()) :
         $xs_query->the_post();
         $xs_product = wc_get_product(get_the_id());
-        $img_link = xs_resize( get_post_thumbnail_id(), 300, 300,true );
+        $img_link = xs_resize( get_post_thumbnail_id(), 247, 300,true );
     ?>
         <div class="col-md-3">
             <div class="xs-product-category">

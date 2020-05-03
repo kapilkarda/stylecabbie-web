@@ -44,9 +44,16 @@
             } else {
                 $thisbutton.removeClass( 'loading' );
                 $thisbutton.addClass( 'not-added' );
-                $( '.xs-sidebar-group' ).addClass( 'isActive' );
+                var isMobile = localStorage.getItem('isMobile');
+                var mobile_user_id = localStorage.getItem('user_id');
+                var token = localStorage.getItem('token');
+                if(isMobile=="1"){
+                    
+                    window.location.href = "https://www.stylecabbie.com/cart/?id="+mobile_user_id+"&token="+token;
+                }else{
+                    $( '.xs-sidebar-group' ).addClass( 'isActive' );
+                }
                 $( '.modal' ).modal( 'hide' );
-
             }
 
             // Trigger event so themes can refresh other areas.

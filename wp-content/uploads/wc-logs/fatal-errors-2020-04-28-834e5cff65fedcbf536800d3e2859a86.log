@@ -1,0 +1,198 @@
+2020-04-28T06:58:46+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php:84
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_wishlist(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp. in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php on line 84
+
+2020-04-28T10:26:44+00:00 CRITICAL Uncaught Error: Call to a member function get_id() on boolean in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php:12
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php(840): woobox_get_product_helper(6116, 60, 1)
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_product(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#3 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#5 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#6 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#7  in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php on line 12
+
+2020-04-28T10:26:54+00:00 CRITICAL Uncaught Error: Call to a member function get_id() on boolean in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php:12
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php(840): woobox_get_product_helper(6116, 60, 1)
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_product(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#3 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#5 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#6 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#7  in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php on line 12
+
+2020-04-28T10:29:28+00:00 CRITICAL Uncaught Error: Call to a member function get_id() on boolean in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php:12
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.woocommerce.route.php(840): woobox_get_product_helper(6116, 60, 1)
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_product(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#3 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#5 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#6 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#7  in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/helperfunction/helperfunction.php on line 12
+
+2020-04-28T11:04:51+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T11:21:22+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T11:35:49+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T11:35:49+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T12:35:49+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T13:16:12+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php:84
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_wishlist(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp. in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php on line 84
+
+2020-04-28T13:16:12+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php:84
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_wishlist(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp. in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php on line 84
+
+2020-04-28T14:56:11+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T15:11:43+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T15:11:44+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T15:11:45+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T15:16:45+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php:84
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_wishlist(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp. in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php on line 84
+
+2020-04-28T16:30:01+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php:57
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_cart(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp.php(729) in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.cart.route.php on line 57
+
+2020-04-28T16:30:49+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php:84
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(946): woobox_get_wishlist(Object(WP_REST_Request))
+#1 /home/stylecabbie/public_html/wp-includes/rest-api/class-wp-rest-server.php(329): WP_REST_Server->dispatch(Object(WP_REST_Request))
+#2 /home/stylecabbie/public_html/wp-includes/rest-api.php(305): WP_REST_Server->serve_request('/woobox-api/api...')
+#3 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): rest_api_loaded(Object(WP))
+#4 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#5 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#6 /home/stylecabbie/public_html/wp-includes/class-wp.php(387): do_action_ref_array('parse_request', Array)
+#7 /home/stylecabbie/public_html/wp-includes/class-wp. in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/api/v1/class.woobox.api.wishlist.route.php on line 84
+

@@ -1,0 +1,16 @@
+PROCESSED on Tue, 28 Apr 2020 09:08:20 +0000
+/wp-content/plugins/woocommerce/assets/css/woocommerce.css
+/wp-content/plugins/wp-rest-user/public/css/wp-rest-user-public.css
+/wp-content/plugins/wptouch/themes/bauhaus/default/style.css
+/wp-content/plugins/woocommerce/assets/css/prettyPhoto.css
+/wp-content/plugins/elementskit-lite/libs/framework/assets/css/frontend-style.css
+/wp-content/uploads/sass/a3_lazy_load.min.css
+/wp-content/plugins/woo-wallet/assets/css/frontend.css
+/wp-content/plugins/woo-variation-gallery/assets/css/slick.min.css
+/wp-includes/css/dashicons.min.css
+/wp-content/plugins/woo-variation-gallery/assets/css/frontend.min.css
+/wp-content/plugins/woo-variation-gallery/assets/css/theme-support.min.css
+/wp-content/plugins/elementskit-lite/widgets/init/assets/css/vendors.css
+/wp-content/plugins/elementskit-lite/widgets/init/assets/css/style.css
+/wp-content/plugins/elementskit-lite/widgets/init/assets/css/responsive.css
+PROCESSED from https://www.stylecabbie.com/product/1st-rule-of-programming/

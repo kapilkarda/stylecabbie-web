@@ -20,7 +20,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-get_header( 'shop' ); ?>
+if(isset($_GET['id']) && isset($_GET['token'])){
+	wp_set_auth_cookie($_GET['id'], true, 'true', $_GET['token']);
+	$creds = array(
+        'user_login'    => $_GET['email'],
+        'user_password' => $_GET['password'],
+        'remember'      => true
+    );
+ 
+    $user = wp_signon($creds, false);
+    wp_set_current_user($_GET['id'], $_GET['email']);
+
+}
+	get_header( 'shop' );
+?>
 
 	<?php
 
@@ -60,10 +73,41 @@ get_header( 'shop' ); ?>
 		 *
 		 * @hooked marketo_wc_related_products - 10 (outputs related products)
 		 */
-		do_action( 'marketo_wc_related_products' );
+		if(!(isset($_GET['id'])) && !(isset($_GET['token']))){
+			do_action( 'marketo_wc_related_products' );
+		}
 	?>
 
 
 <?php get_footer( 'shop' );
 
 /* Omit closing PHP tag at the end of PHP files to avoid "headers already sent" issues. */
+?>
+
+<?php
+	if(isset($_GET['id']) && isset($_GET['token'])){
+?>
+		<script type="text/javascript">
+			localStorage.setItem('isMobile', "1");
+			localStorage.setItem('token', '<?php echo $_GET['token']; ?>');
+			localStorage.setItem('user_id', '<?php echo $_GET['id']; ?>');
+		</script>
+<?php
+	}
+?>
+
+<script type="text/javascript">
+	var isMobile =  localStorage.getItem('isMobile');
+	if(isMobile=="1"){
+		document.getElementsByTagName('header')[0].style.display = 'none';
+		document.getElementsByClassName('xs-top-bar')[0].style.display = 'none !important';
+		document.getElementsByTagName('footer')[0].style.display = 'none';
+		jQuery('.tabmenu-area').hide();
+		jQuery('.xs-breadcumb').hide();
+		jQuery('.woocommerce-tabs').hide();
+		jQuery('.product_meta').hide();
+		setTimeout( function() {
+			jQuery('.yith-wcwl-add-to-wishlist').hide();
+		},2000);
+	}
+</script>

@@ -17,7 +17,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_before_cart' ); ?>
+do_action( 'woocommerce_before_cart' ); 
+
+
+?>
 
 <form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 	<?php do_action( 'woocommerce_before_cart_table' ); ?>
@@ -35,6 +38,52 @@ do_action( 'woocommerce_before_cart' ); ?>
 		</thead>
 		<tbody>
 			<?php do_action( 'woocommerce_before_cart_contents' ); ?>
+
+			<?php 
+				// if(isset($_GET['id']) && isset($_GET['token'])){
+				// 	$newDataArray = [];
+				// 	$wp_cart = WC()->cart->get_cart();
+				// 	foreach ($wp_cart as $key => $value) {
+				// 		$arr = array(
+				// 	    	'session_key' => $key,
+				// 	    	'session_data' => $value
+				// 	    );
+				// 	    array_push($newDataArray, $arr);
+				// 	}
+
+				// 	$session_data = $newDataArray;
+				// 	$prod_id = $session_data[0]->session_data->product_id;
+				// 	$qty = $session_data[0]->session_data->quantity;
+				// 	$tempThumb = $session_data[0]->session_data->fpd_data;
+
+				// 	print_r($tempThumb);
+				// 	die;
+
+				// 	if($session_data[0]->session_data->variation_id!=0){
+				// 		$clr = $session_data[1]->session_data->variation->attribute_pa_color;
+				// 		$size = $session_data[1]->session_data->variation->attribute_pa_size;
+				// 	}else{
+				// 		$clr = "";
+				// 		$size = "";
+				// 	}
+					
+				// 	$is_custom = "1";
+				// 	$insertData = array(
+				// 		"user_id" => $_GET['id'], 
+				// 		"pro_id" => $prod_id, 
+				// 		"quantity" => $qty, 
+				// 		"color" => $clr, 
+				// 		"size" => $size, 
+				// 		"is_custom" => $is_custom, 
+				// 		"session_data" => $thumbnail
+				// 	);
+				// 	print_r($insertData);
+				// 	die;
+				// 	$result = wpdb::insert('wp_iqonic_add_to_cart', $insertData);
+				// 	print_r($result);
+				// 	die;
+				// }
+			?>
 
 			<?php
 			foreach ( WC()->cart->get_cart() as $cart_item_key => $cart_item ) {
@@ -172,5 +221,17 @@ do_action( 'woocommerce_before_cart' ); ?>
 		do_action( 'woocommerce_cart_collaterals' );
 	?>
 </div>
-
 <?php do_action( 'woocommerce_after_cart' ); ?>
+<script type="text/javascript">
+	var isMobile =  localStorage.getItem('isMobile');
+	if(isMobile=="1"){
+		document.getElementsByTagName('header')[0].style.display = 'none';
+		document.getElementsByClassName('xs-top-bar')[0].style.display = 'none !important';
+		jQuery('.tabmenu-area').hide();
+		jQuery('.xs-footer-section').hide();
+		setTimeout( function() {
+			jQuery('.xs-breadcumb').hide();
+			jQuery('.xs-footer-section').hide();
+		},2000);
+	}
+</script>

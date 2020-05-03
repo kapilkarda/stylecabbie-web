@@ -43,30 +43,32 @@ function woobox_get_cart($request)
 
     $header = $request->get_headers();
 
-    if (empty($header['token'][0]))
-    {
-        return new WP_Error('token_missing', 'Token Required', array(
-            'status' => 404
-        ));
-    }
+    // if (empty($header['token'][0]))
+    // {
+    //     return new WP_Error('token_missing', 'Token Required', array(
+    //         'status' => 404
+    //     ));
+    // }
 
-    $validate = new Woobox_Api_Authentication();
-    $response = $validate->woobox_validate_token($header['token'][0]);
-    $userid = $header['id'][0];
 
-    $res = (array)  json_decode($response['body'], true);
+    // $validate = new Woobox_Api_Authentication();
+    // $response = $validate->woobox_validate_token($header['token'][0]);
+    $userid = '8'; //$header['id'][0];
+    
 
-    if ($res['data']['status'] != 200)
-    {
-        return $res;
-    }
+    // $res = (array)  json_decode($response['body'], true);
+
+
+    // if ($res['data']['status'] != 200)
+    // {
+    //     return $res;
+    // }
     global $wpdb;
     global $product;
     $masterarray = array();
     $datarray = array();
 
-    $cart_items = $wpdb->get_results("SELECT * FROM 
-                                                {$wpdb->prefix}iqonic_add_to_cart 
+    $cart_items = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}iqonic_add_to_cart 
                                                     where 
                                                         user_id=" . $userid . "", OBJECT);
 
@@ -99,8 +101,19 @@ function woobox_get_cart($request)
             $datarray['stock_quantity'] = $products->get_stock_quantity();            
             $datarray['stock_status'] = $products->get_stock_status();
 
-            $thumb = wp_get_attachment_image_src($products->get_image_id() , "thumbnail");
-            $full = wp_get_attachment_image_src($products->get_image_id() , "full");
+            if($items['session_data']!=''){
+                // $thumb = wp_get_attachment_image_src($products->get_image_id() , "thumbnail");
+                // $full = wp_get_attachment_image_src($products->get_image_id() , "full");
+                
+                $encodeData = $items['session_data'];
+                $session_item = json_decode($encodeData);
+                echo $items['session_data'];
+                die;
+            }else{
+                $thumb = wp_get_attachment_image_src($products->get_image_id() , "thumbnail");
+                $full = wp_get_attachment_image_src($products->get_image_id() , "full");
+            }
+
             $datarray['thumbnail'] = $thumb[0];
             $datarray['full'] = $full[0];
 
@@ -124,7 +137,6 @@ function woobox_get_cart($request)
     }
 
     $response = new WP_REST_Response($masterarray);
-    //$response->set_status(200);
     return $response;
 
 }
