@@ -25,3 +25,30 @@ $footer_style = marketo_option( 'footer_style',marketo_defaults('footer_style') 
 <?php wp_footer(); ?>
 </body>
 </html>
+<style type="text/css">
+    .loadingDiv {
+   position: fixed;   
+   background-color: #eeeeee !important;
+   z-index:1000000;
+   opacity: 0.9;
+   width:100%; 
+   height:100%; 
+   background:url("https://stylecabbie.com/wp-content/uploads/loading1.gif") center center no-repeat;
+   top: 0px;
+}
+</style>
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+    $('a').click(function(){
+         //alert($(this).attr('href'));
+        var str = $(this).attr('href');
+        var spl = str.split("/");
+        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' ){
+            
+           
+        }else{
+             $('<div class=loadingDiv></div>').prependTo(document.body); 
+        }
+    });
+});
+</script>>

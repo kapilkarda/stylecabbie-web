@@ -1798,9 +1798,34 @@ function wp_insert_user( $userdata ) {
 		}
 		$wpdb->update( $wpdb->users, $data, compact( 'ID' ) );
 		$user_id = (int) $ID;
+
+		if ( ! session_id() ) {
+			    session_start();
+			}
+
+		if(isset($_SESSION['device_tokan'])){
+
+			$device = array('user_id' => $user_id,'device_token' => $_SESSION['device_tokan'],'device_type' =>$_SESSION['device_type'] );
+			$wpdb->update( push_notification_register, $device , compact( 'ID' ));
+		}
+
 	} else {
 		$wpdb->insert( $wpdb->users, $data );
 		$user_id = (int) $wpdb->insert_id;
+
+		if ( ! session_id() ) {
+			    session_start();
+			}
+
+		if(isset($_SESSION['device_tokan'])){
+
+
+
+			$device = array('user_id' => $user_id,'device_token' => $_SESSION['device_tokan'],'device_type' =>$_SESSION['device_type'] );
+			$wpdb->insert( push_notification_register, $device );
+		}
+
+		
 	}
 
 	$user = new WP_User( $user_id );
