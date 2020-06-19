@@ -82,6 +82,15 @@ define( 'FS_METHOD', 'direct' );
 define( 'WP_DEBUG', true);
 define( 'WP_DEBUG_LOG', '/tmp/wp-errors.log' );
 
+if (strpos($_SERVER['HTTP_X_FORWARDED_PROTO'], 'https') !== false)
+   $_SERVER['HTTPS']='on';
+
+define('FORCE_SSL_ADMIN', true);
+define('RELOCATE', TRUE);
+$_SERVER['HTTPS'] = 'on';
+define('WP_HOME', 'https://www.stylecabbie.com');
+define('WP_SITEURL', 'https://www.stylecabbie.com');
+
 //define('WP_MEMORY_LIMIT', '64M');
 
 /* That's all, stop editing! Happy publishing. */

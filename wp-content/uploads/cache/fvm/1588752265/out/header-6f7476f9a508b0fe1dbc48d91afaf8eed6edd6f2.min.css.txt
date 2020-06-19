@@ -1,3 +1,0 @@
-PROCESSED on Wed, 06 May 2020 08:12:37 +0000
-/wp-content/plugins/woocommerce/assets/css/woocommerce-smallscreen.css
-PROCESSED from https://www.stylecabbie.com/product/1st-rule-of-programming/

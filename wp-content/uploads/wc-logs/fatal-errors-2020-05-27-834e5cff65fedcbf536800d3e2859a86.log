@@ -1,0 +1,10 @@
+2020-05-27T09:11:11+00:00 CRITICAL Uncaught Exception: FPDF error: Can't open image file: https://www.stylecabbie.com/wp-content/plugins/gift-voucher/assets/img/demo.png in /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/vendor/setasign/fpdf/fpdf.php:271
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/vendor/setasign/fpdf/fpdf.php(1261): FPDF->Error('Can't open imag...')
+#1 /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/vendor/setasign/fpdf/fpdf.php(885): FPDF->_parsepng('https://www.sty...')
+#2 /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/templates/pdfstyles/style1.php(11): FPDF->Image('https://www.sty...', 0, 0, 595, 453)
+#3 /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/templates/wpgv_item_pdf.php(60): require_once('/home/stylecabb...')
+#4 /home/stylecabbie/public_html/wp-includes/template-loader.php(98): include('/home/stylecabb...')
+#5 /home/stylecabbie/public_html/wp-blog-header.php(19): require_once('/home/stylecabb...')
+#6 /home/stylecabbie/publi in /home/stylecabbie/public_html/wp-content/plugins/gift-voucher/vendor/setasign/fpdf/fpdf.php on line 271
+

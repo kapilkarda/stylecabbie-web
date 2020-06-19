@@ -1,9 +1,0 @@
-2020-05-04T06:21:14+00:00 CRITICAL Uncaught Error: Cannot use object of type WP_Error as array in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/ajax/class.woobox.request_ajax.php:31
-Stack trace:
-#0 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): woobox_token_request_ajax('')
-#1 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters('', Array)
-#2 /home/stylecabbie/public_html/wp-includes/plugin.php(478): WP_Hook->do_action(Array)
-#3 /home/stylecabbie/public_html/wp-admin/admin-ajax.php(175): do_action('wp_ajax_woobox_...')
-#4 {main}
-  thrown in /home/stylecabbie/public_html/wp-content/plugins/woobox-api/includes/ajax/class.woobox.request_ajax.php on line 31
-

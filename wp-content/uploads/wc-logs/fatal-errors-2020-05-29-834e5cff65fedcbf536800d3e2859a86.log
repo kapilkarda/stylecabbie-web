@@ -1,0 +1,24 @@
+2020-05-29T12:12:07+00:00 CRITICAL Uncaught Error: Call to undefined function wcfm_is_vendor() in /home/stylecabbie/public_html/wp-content/plugins/wc-multivendor-membership/core/class-wcfmvm.php:187
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): WCFMvm->wcfmvm_init_after_wp(Object(WP))
+#1 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#2 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#3 /home/stylecabbie/public_html/wp-includes/class-wp.php(742): do_action_ref_array('wp', Array)
+#4 /home/stylecabbie/public_html/wp-includes/functions.php(1255): WP->main('')
+#5 /home/stylecabbie/public_html/wp-blog-header.php(16): wp()
+#6 /home/stylecabbie/public_html/index.php(34): require('/home/stylecabb...')
+#7 {main}
+  thrown in /home/stylecabbie/public_html/wp-content/plugins/wc-multivendor-membership/core/class-wcfmvm.php on line 187
+
+2020-05-29T12:14:54+00:00 CRITICAL Uncaught Error: Call to undefined function wcfm_is_vendor() in /home/stylecabbie/public_html/wp-content/plugins/wc-multivendor-membership/core/class-wcfmvm.php:187
+Stack trace:
+#0 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(288): WCFMvm->wcfmvm_init_after_wp(Object(WP))
+#1 /home/stylecabbie/public_html/wp-includes/class-wp-hook.php(312): WP_Hook->apply_filters(NULL, Array)
+#2 /home/stylecabbie/public_html/wp-includes/plugin.php(544): WP_Hook->do_action(Array)
+#3 /home/stylecabbie/public_html/wp-includes/class-wp.php(742): do_action_ref_array('wp', Array)
+#4 /home/stylecabbie/public_html/wp-includes/functions.php(1255): WP->main('')
+#5 /home/stylecabbie/public_html/wp-blog-header.php(16): wp()
+#6 /home/stylecabbie/public_html/index.php(34): require('/home/stylecabb...')
+#7 {main}
+  thrown in /home/stylecabbie/public_html/wp-content/plugins/wc-multivendor-membership/core/class-wcfmvm.php on line 187
+

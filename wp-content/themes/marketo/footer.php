@@ -39,11 +39,19 @@ $footer_style = marketo_option( 'footer_style',marketo_defaults('footer_style') 
 </style>
 <script type="text/javascript">
     jQuery(document).ready(function ($) {
+    	$("button").click(function() {
+		    //alert(this.name); // or alert($(this).attr('id'));Reset password
+		    if(this.name=='register' || this.name=='login' || this.value=='Reset password'){
+		    	$('<div class=loadingDiv></div>').prependTo(document.body);
+		    }
+		});
     $('a').click(function(){
-         //alert($(this).attr('href'));
+        // alert($(this).attr('href'));
+
+
         var str = $(this).attr('href');
         var spl = str.split("/");
-        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' ){
+        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' ){
             
            
         }else{

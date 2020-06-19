@@ -205,3 +205,8 @@ function marketo_theme_enqueue_styles()
 
 add_action('wp_enqueue_scripts', 'marketo_theme_enqueue_styles', 99);
 
+add_filter( 'woocommerce_min_password_strength', 'reduce_min_strength_password_requirement' );
+function reduce_min_strength_password_requirement( $strength ) {
+    // 3 => Strong (default) | 2 => Medium | 1 => Weak | 0 => Very Weak (anything).
+    return 0; 
+}
