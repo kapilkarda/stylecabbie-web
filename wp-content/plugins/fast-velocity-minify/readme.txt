@@ -3,7 +3,7 @@ Contributors: Alignak
 Tags: PHP Minify, Lighthouse, GTmetrix, Pingdom, Pagespeed, CSS Merging, JS Merging, CSS Minification, JS Minification, Speed Optimization, HTML Minification, Performance, Optimization, FVM
 Requires at least: 4.7
 Requires PHP: 5.6
-Stable tag: 2.8.4
+Stable tag: 2.8.8
 Tested up to: 5.4
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -197,6 +197,18 @@ Please backup your site before updating. Version 3.0 will have a major code rewr
 
 
 == Changelog ==
+
+= 2.8.8 [2020.05.01] =
+* bug fixes for woocommerce, which could result in 403 errors when adding to cart under certain cases
+
+= 2.8.7 [2020.04.30] =
+* fixed the sourceMappingURL removal regex introduced on 2.8.3 for js files and css files
+
+= 2.8.6 [2020.04.30] =
+* fixed an error notice on php
+
+= 2.8.5 [2020.04.30] =
+* bug fixes and some more minification default exclusions
 
 = 2.8.4 [2020.04.24] =
 * added frontend-builder-global-functions.js to the list of minification exclusions, but allowing merging (Divi Compatibility)

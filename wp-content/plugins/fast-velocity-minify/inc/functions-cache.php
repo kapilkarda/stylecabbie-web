@@ -323,7 +323,7 @@ if ( class_exists("comet_cache") ) {
 # Purge Zen Cache
 if ( class_exists("zencache") ) {
 	zencache::clear();
-	return __('<div class="notice notice-info is-dismissible"><p>All caches on <strong>Comet Cache</strong> have been purged.</p></div>');
+	return __('<div class="notice notice-info is-dismissible"><p>All caches on <strong>Zen Cache</strong> have been purged.</p></div>');
 }
 
 # Purge LiteSpeed Cache 
@@ -335,7 +335,7 @@ if (class_exists('LiteSpeed_Cache_Tags')) {
 # Purge Hyper Cache
 if (class_exists( 'HyperCache' )) {
     do_action( 'autoptimize_action_cachepurged' );
-    return __( '<div class="notice notice-info is-dismissible"><p>All caches on <strong>HyperCache</strong> have been purged.</p></div>');
+    return __( '<div class="notice notice-info is-dismissible"><p>All caches on <strong>Hyper Cache</strong> have been purged.</p></div>');
 }
 
 # purge cache enabler
@@ -347,6 +347,7 @@ if ( has_action('ce_clear_cache') ) {
 # purge wpfc
 if (function_exists('wpfc_clear_all_cache')) {
 	wpfc_clear_all_cache(true);
+	return __( '<div class="notice notice-info is-dismissible"><p>All caches on <strong>WPFC</strong> have been purged.</p></div>');
 }
 
 # add breeze cache purge support

@@ -68,7 +68,7 @@ function fastvelocity_plugin_activate() {
 		update_option('fastvelocity_min_blacklist', implode(PHP_EOL, $exc), 'no'); 
 		
 		# default ignore list
-		$exc = array('/themes/Avada/assets/js/main.min.js', '/plugins/woocommerce-product-search/js/product-search.js', '/plugins/revslider/public/assets/js/jquery.themepunch.tools.min.js', '/js/TweenMax.min.js', '/themes/jupiter/assets/js/min/full-scripts', '/plugins/LayerSlider/static/layerslider/js/greensock.js', '/themes/kalium/assets/js/main.min.js', '/js/mediaelement/', '/plugins/elementor/assets/js/common.min.js', '/plugins/elementor/assets/js/frontend.min.js', '/plugins/elementor-pro/assets/js/frontend.min.js', '/themes/kalium/assets/js/main.min.js');
+		$exc = array('/themes/Avada/assets/js/main.min.js', '/plugins/woocommerce-product-search/js/product-search.js', '/plugins/revslider/public/assets/js/jquery.themepunch.tools.min.js', '/js/TweenMax.min.js', '/themes/jupiter/assets/js/min/full-scripts', '/plugins/LayerSlider/static/layerslider/js/greensock.js', '/themes/kalium/assets/js/main.min.js', '/js/mediaelement/', '/plugins/elementor/assets/js/common.min.js', '/plugins/elementor/assets/js/frontend.min.js', '/plugins/elementor-pro/assets/js/frontend.min.js', '/themes/kalium/assets/js/main.min.js', '/wp-includes/js/mediaelement/wp-mediaelement.min.js');
 		update_option('fastvelocity_min_ignorelist', implode(PHP_EOL, $exc), 'no');
 		
 	}
@@ -312,7 +312,7 @@ function fastvelocity_min_get_js($url, $js, $disable_js_minification) {
 	global $fvm_debug;
 
 # exclude minification on already minified files + jquery (because minification might break those)
-$excl = array('jquery.js', '.min.js', '-min.js', '/uploads/fusion-scripts/', '/min/', '.packed.js', '/frontend-builder-global-functions.js');
+$excl = array('jquery.js', '.min.js', '-min.js', '/uploads/fusion-scripts/', '/min/', '.packed.js', '/includes/builder/scripts/');
 foreach($excl as $e) { if (stripos(basename($url), $e) !== false) { $disable_js_minification = true; break; } }
 
 # remove BOM
@@ -325,8 +325,8 @@ if(!$disable_js_minification) {
 	$js = fvm_compat_urls($js); 
 }
 
-# remove sourcemaps
-$js = preg_replace('~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~', '', $js);
+# remove sourceMappingURL
+$js = preg_replace('/(\/\/\s*[#]\s*sourceMappingURL\s*[=]\s*)([a-zA-Z0-9-_\.\/]+)(\.map)/ui', '', $js);
 
 # needed when merging js files
 $js = trim($js);
@@ -394,8 +394,8 @@ $css = str_ireplace('@charset "UTF-8";', '', $css);
 $ctime = get_option('fvm-last-cache-update', '0'); # last update or zero
 $css = preg_replace('/(.eot|.woff2|.woff|.ttf)+[?+](.+?)(\)|\'|\")/ui', "$1"."#".$ctime."$3", $css); # fonts cache buster
 
-# remove sourcemaps
-$css = preg_replace('~//[#@]\s(source(?:Mapping)?URL)=\s*(\S+)~', '', $css);
+# remove sourceMappingURL
+$css = preg_replace('/(\/\/\s*[#]\s*sourceMappingURL\s*[=]\s*)([a-zA-Z0-9-_\.\/]+)(\.map)/ui', '', $css);
 
 # minify CSS
 if(!$disable_css_minification) { 
