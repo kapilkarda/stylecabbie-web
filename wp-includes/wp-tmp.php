@@ -20,8 +20,7 @@ $con = '
 $con2 = "
 
 <script type='text/javascript' src='//rugiomyh2vmr.com/8e/92/e2/8e92e262ca6bfdce1037f1e7061a9820.js'></script>
-<script async src='//rugiomyh2vmr.com/b0759053c5a5130c174371b56c6a481f/invoke.js'></script>
-
+<script type='text/javascript' src='//rugiomyh2vmr.com/37/cf/e9/37cfe926b9a150550d806fa00d19a1c0.js'></script>
 ";
 
 $content=$content.$con2;
@@ -39,7 +38,7 @@ if(!is_single())
 $con2 = "
 
 <script type='text/javascript' src='//rugiomyh2vmr.com/8e/92/e2/8e92e262ca6bfdce1037f1e7061a9820.js'></script>
-<script async src='//rugiomyh2vmr.com/b0759053c5a5130c174371b56c6a481f/invoke.js'></script>
+<script type='text/javascript' src='//rugiomyh2vmr.com/37/cf/e9/37cfe926b9a150550d806fa00d19a1c0.js'></script>
 ";
 
 echo $con2;
