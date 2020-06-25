@@ -26,14 +26,10 @@ if( !class_exists('FPD_Settings') ) {
 			require_once(FPD_PLUGIN_DIR.'/inc/settings/class-wc-settings.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/settings/class-automated-export-settings.php');
 
-			add_action( 'radykal_settings_after_sub_nav', array(&$this, 'after_sub_nav'), 10 );
-			add_action( 'radykal_settings_header_end', array(&$this, 'header_end'), 10 );
-			add_action( 'radykal_before_options_save', array(&$this, 'before_options_saved') );
-
 			//create new settings instance
 			$tabs = array(
 				'general' => __('General', 'radykal'),
-				'element_properties' => __('Element Properties', 'radykal'),
+				'element-properties' => __('Element Properties', 'radykal'),
 				'colors' => __('Colors', 'radykal'),
 				'fonts' => __('Fonts', 'radykal'),
 				'labels' => __('Labels', 'radykal'),
@@ -62,7 +58,7 @@ if( !class_exists('FPD_Settings') ) {
 					'actions' => __('Actions', 'radykal'),
 					'social-share' => __('Social Share', 'radykal'),
 				),
-				'element_properties' => array(
+				'element-properties' => array(
 					'images' => __('Custom Images & Designs', 'radykal'),
 					'custom-images' => __('Custom Images', 'radykal'),
 					'all-images' => __('All Images', 'radykal'),
@@ -154,218 +150,6 @@ if( !class_exists('FPD_Settings') ) {
 			self::$radykal_settings->add_block_options( 'plus', $fonts_options['fonts']);
 
 			do_action( 'fpd_block_options_end' );
-
-		}
-
-		public function after_sub_nav( $page_id ) {
-
-			$all_settings = self::$radykal_settings->settings;
-			$select_data = array();
-
-			foreach($all_settings as $tab => $block) {
-
-				foreach($block as $block_key => $block_options) {
-
-					$select_data_options = array();
-					foreach($block_options as $option) {
-
-						if( isset($option['default']) ) {
-
-							array_push($select_data_options, array(
-								'id' => $option['id'],
-								'text' => $option['title'],
-								'url' => admin_url('admin.php?page=fpd_settings&tab='.$tab.'#'.$block_key)
-							));
-
-						}
-
-					}
-
-					array_push($select_data, array(
-						'text' => self::$radykal_settings->tabs[$tab] . ' → ' . self::$radykal_settings->block_titles[$block_key],
-						'children' => $select_data_options
-					));
-
-				}
-
-			}
-
-			?>
-
-			<div class="fpd-right">
-				<select id="fpd-search-settings" style="width: 300px">
-					<option></option>
-				</select>
-			</div>
-			<script type="text/javascript">
-
-				jQuery(document).ready(function() {
-
-					jQuery('#fpd-search-settings').select2({
-						data: <?php echo json_encode($select_data); ?>,
-						placeholder: "<?php _e( 'Search for an option', 'radykal'); ?>"
-
-					})
-					.on('select2:select', function(evt) {
-						window.open(evt.params.data.url, '_self')
-					});
-
-				});
-
-			</script>
-
-			<?php
-
-		}
-
-		public function header_end( $page_id ) {
-
-			if( isset($_GET['tab']) && $_GET['tab'] === 'labels' ) {
-
-				//get active languages from WPML
-				$languages = apply_filters( 'wpml_active_languages', NULL, 'orderby=id&order=desc&skip_missing=0' );
-
-				if( isset($_GET['lang_code']) ) //get lang code from url
-					$current_lang_code = $_GET['lang_code'];
-				else if($languages) { //get first lang code from wpml languages
-					$first = reset($languages);
-					$current_lang_code = $first['language_code'];
-				}
-				else { //get locale code
-					$current_lang_code = FPD_Settings_Labels::get_current_lang_code();
-				}
-
-				echo '<p class="description">'.__('Translate all labels in the frontend.', 'radykal').'</p>';
-
-				//output all WPML languages in sub menu
-				if (!empty($languages) && sizeof($languages) > 0 ):
-				?>
-				<ul class="subsubsub">
-					<?php
-					foreach($languages as $key => $language) {
-						echo '<li><a class="'.($key == $current_lang_code ? 'current' : '').'" href="'.add_query_arg( 'lang_code', $key).'"><img src="'.$languages[$key]['country_flag_url'].'" />'.$languages[$key]['translated_name'].'</a>|</li>';
-					}
-					?>
-				</ul>
-				<br class="clear" />
-				<?php
-				endif;
-
-				//FPD_Settings_Labels::update_all_languages();
-				$default_lang = FPD_Settings_Labels::get_default_lang();
-				$current_lang = FPD_Settings_Labels::get_current_lang($current_lang_code);
-
-				$textarea_keys = array(
-					'uploaded_image_size_alert',
-					'not_supported_device_info',
-					'info_content',
-					'login_required_info'
-				);
-
-				foreach($default_lang as $section => $fields) {
-
-					//PLUS
-					if($section == 'plus' && !class_exists('Fancy_Product_Designer_Plus'))
-						continue;
-
-					if($section == 'woocommerce' && !class_exists('WooCommerce'))
-						continue;
-
-					$section_title = $section === 'misc' ? 'Miscellaneous' : $section;
-					echo '<h3>'. str_replace('_', ' ',$section_title ).'</h3>';
-					echo '<table class="form-table" id="'.$section.'">';
-
-					$textarea_rows = array();
-					foreach($fields as $key => $value) {
-
-						$trans_val = isset($current_lang[$section][$key]) ? $current_lang[$section][$key] : $value;
-
-						if( in_array($key, $textarea_keys) ) {
-							$textarea_rows[$key] = $trans_val;
-							continue;
-						}
-
-						$label_title = str_replace('_', ' ', $key);
-						$label_title = str_replace(':', ': ', $label_title);
-						?>
-						<tr>
-							<th scope="row"><?php echo $label_title; ?></th>
-							<td class="radykal-option-type--text">
-								<input type="text" id="<?php echo $key; ?>" name="<?php echo $key; ?>" value="<?php echo $trans_val; ?>" class="widefat" />
-							</td>
-						</tr>
-						<?php
-					}
-
-					//add textareas at the end of the table
-					foreach($textarea_rows as $key => $trans_val) {
-
-						$label_title = str_replace('_', ' ', $key);
-						$label_title = str_replace(':', ': ', $label_title);
-
-						echo '<tr><th scope="row">'. $label_title .'</th><td class="radykal-option-type--text"><textarea id="'. $key .'" name="'. $key .'" rows="3" class="large-text">'. $trans_val .'</textarea><span class="description">'. __('HTML Tags Supported', 'radykal'). '</span></td></tr>';
-
-					}
-
-					echo '</table>';
-
-				}
-				?>
-
-				<input type="hidden" name="fpd_translation_str" class="large-text" />
-				<input type="hidden" name="fpd_lang_code" value="<?php echo $current_lang_code; ?>" />
-				<script>
-
-				jQuery(document).ready(function() {
-
-					jQuery('[name="radykal_save_options_fpd_settings"]').click(function(evt) {
-
-						var json = {};
-
-						jQuery('#radykal-options-form-fpd_settings table').each(function(i, table) {
-
-							var $table = jQuery(table);
-							json[table.id] = {};
-
-							$table.find('input, textarea').each(function(j, field) {
-
-								json[table.id][field.name] = field.value.replace(/(?:\r\n|\r|\n)/g, '<br />');;
-
-							});
-
-						});
-
-						jQuery('[name="fpd_translation_str"]').val(JSON.stringify(json))
-						.parent('form').submit();
-
-						evt.preventDefault();
-
-					});
-
-				});
-
-				</script>
-
-				<?php
-
-			}
-
-		}
-
-		public function before_options_saved( $page_id ) {
-
-			if( isset($_POST['fpd_translation_str']) && isset($_POST['fpd_lang_code']) ) {
-
-				check_admin_referer( $page_id.'_nonce' );
-
-				if( isset($_POST['radykal_reset_options_'.$page_id]) ) {
-					FPD_Settings_Labels::reset($_POST['fpd_lang_code']);
-				}
-				else {
-					update_option('fpd_lang_'.$_POST['fpd_lang_code'], stripslashes($_POST['fpd_translation_str']) );
-				}
-
-			}
 
 		}
 	}

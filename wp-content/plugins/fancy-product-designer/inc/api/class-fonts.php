@@ -47,15 +47,50 @@ if( !class_exists('FPD_Fonts') ) {
 
 		public static function to_json( $fonts ) {
 
+			$custom_fonts_vars = array(
+				'n7' => 'bold',
+				'i4' => 'italic',
+				'i7' => 'bolditalic'
+			);
+
+			$custom_fonts_dir = FPD_WP_CONTENT_DIR.'/uploads/fpd_fonts';
+
 			$json_fonts = array();
-			foreach($fonts as $key => $value) {
+			foreach($fonts as $key => $font_name) {
 
 				$font_obj = new stdClass();
-				$font_obj->name = $value;
+				$font_obj->name = $font_name;
 
 				if( gettype($key) === 'string' ) {
-					$font_url = strpos($key, 'fonts.googleapis.com') == false ? $key : 'google';
+
+					//custom fonts
+					if(strpos($key, 'fonts.googleapis.com') == false) {
+						$font_url = $key;
+
+						$variants = array();
+						foreach($custom_fonts_vars as $fv_key => $fv_value) {
+
+							$font_filename = str_replace('.ttf', '', basename($font_url));
+							$font_filename_var = $font_filename.'__'.$fv_value.'.ttf';
+
+							if( file_exists($custom_fonts_dir.'/'.$font_filename_var) ) {
+								$variants[$fv_key] = content_url('/uploads/fpd_fonts/'.$font_filename_var);
+							}
+
+						}
+
+						$font_obj->variants = $variants;
+
+					}
+					//google fonts
+					else {
+						$font_url = 'google';
+					}
+
 					$font_obj->url = $font_url;
+
+
+
 				}
 
 				array_push($json_fonts, $font_obj);

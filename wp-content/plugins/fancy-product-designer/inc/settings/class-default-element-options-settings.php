@@ -271,7 +271,6 @@ if( !class_exists('FPD_Settings_Default_Element_Options') ) {
 						'id' 		=> 'fpd_designs_parameter_patterns',
 						'css' 		=> 	'width: 100%;',
 						'default'	=> '',
-						'class'		=> 'radykal-select2',
 						'type' 		=> 'multiselect',
 						'options'	=> self::get_pattern_urls('svg')
 
@@ -412,7 +411,6 @@ if( !class_exists('FPD_Settings_Default_Element_Options') ) {
 						'id' 		=> 'fpd_uploaded_designs_parameter_filter',
 						'css' 		=> 	'width: 200px;',
 						'default'	=> '',
-						'class'		=> 'radykal-select2',
 						'type' 		=> 'select',
 						'options'	=> self::get_image_filters()
 
@@ -821,7 +819,7 @@ if( !class_exists('FPD_Settings_Default_Element_Options') ) {
 						'id' 		=> 'fpd_all_text_strokeColors',
 						'default'	=> '',
 						'class'		=> 'widefat',
-						'type' 		=> 'text'
+						'type' 		=> 'multi-color-input'
 					),
 
 					array(
@@ -830,7 +828,6 @@ if( !class_exists('FPD_Settings_Default_Element_Options') ) {
 						'id' 		=> 'fpd_font',
 						'default'	=> '',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => self::get_fonts_options()
 					),
@@ -841,7 +838,6 @@ if( !class_exists('FPD_Settings_Default_Element_Options') ) {
 						'id' 		=> 'fpd_custom_texts_parameter_patterns',
 						'css' 		=> 	'width: 100%;',
 						'default'	=> '',
-						'class'		=> 'radykal-select2',
 						'type' 		=> 'multiselect',
 						'options'	=> self::get_pattern_urls()
 

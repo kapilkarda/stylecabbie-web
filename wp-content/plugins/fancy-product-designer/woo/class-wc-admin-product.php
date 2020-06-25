@@ -33,7 +33,7 @@ if(!class_exists('FPD_WC_Admin_Product')) {
 						var events = 'woocommerce_variations_loaded woocommerce_variations_added';
 						jQuery('#woocommerce-product-data' ).on(events, function() {
 
-							jQuery('.woocommerce_variations .radykal-select2').each(function(i, select) {
+							jQuery('.woocommerce_variations .fpd-variation-product-select').each(function(i, select) {
 
 								var $select = jQuery(select);
 								//check if select is converted with select2
@@ -67,7 +67,7 @@ if(!class_exists('FPD_WC_Admin_Product')) {
 				'id'          => 'fpd_variation_product_[' . $variation->ID . ']',
 				'label'       => __( 'Fancy Product Designer - Product', 'radykal' ),
 				'description' => __( 'Changes the product in the Product Designer when a variation is selected.', 'radykal' ),
-				'class' 	  => 'fpd-variation-product-select radykal-select2',
+				'class' 	  => 'fpd-variation-product-select',
 				'style'       => 'width: 100%',
 				'value'       => get_post_meta( $variation->ID, 'fpd_variation_product', true ),
 				'options' =>  $this->get_product_options()

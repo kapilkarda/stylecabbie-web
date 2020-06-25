@@ -9,14 +9,9 @@ if(!class_exists('FPD_WC_Dokan')) {
 		public function __construct() {
 
 			add_action( 'admin_init', array( &$this, 'init_admin' ) );
+			add_filter( 'admin_body_class', array(&$this, 'add_body_classes') );
 			add_action( 'admin_menu', array( &$this, 'remove_menu_pages' ), 100 );
 			add_action( 'admin_notices',  array( &$this, 'display_admin_notices' ) );
-
-			//Manage Products
-			add_action( 'fpd_admin_manage_products_filter_nav', array( &$this, 'vendor_manage_products_filter_nav' ) );
-			add_filter( 'fpd_admin_manage_products_create_buttons', array( &$this, 'vendor_create_buttons' ) );
-			add_filter( 'fpd_admin_manage_products_product_actions', array( &$this, 'vendor_product_actions' ), 20, 3 );
-			add_filter( 'fpd_admin_manage_products_view_actions', array( &$this, 'vendor_view_actions' ), 20, 3 );
 
 			//Dokan Dashboard
 			add_filter( 'woocommerce_admin_order_actions', array( &$this, 'dashboard_orders_actions' ), 20, 2 );
@@ -70,84 +65,6 @@ if(!class_exists('FPD_WC_Dokan')) {
 				'dokan_admin_access',
 				true
 			);
-
-		}
-
-		public function vendor_manage_products_filter_nav( $create_buttons ) {
-
-			if( self::user_is_vendor() )
-				return;
-
-			$current_selected = isset( $_POST['fpd_filter_users_select'] ) ? $_POST['fpd_filter_users_select'] : "-1";
-			?>
-			<form method="POST" name="fpd_filter_users">
-				<select name="fpd_filter_users_select" class="radykal-select2" style="width: 130px;">
-					<option value="-1" <?php selected($current_selected, '-1'); ?>><?php _e( 'All Users', 'radykal'); ?></option>
-					<?php
-						$users = get_users( array('fields' => array('ID', 'user_nicename')) );
-
-						foreach( $users as $user ) {
-							echo '<option value="'. $user->ID .'" '.selected($current_selected, $user->ID, false).'>'. $user->user_nicename .'</option>';
-						}
-
-					?>
-				</select>
-			</form>
-			<?php
-
-		}
-
-		public function vendor_create_buttons( $create_buttons ) {
-
-			if( self::user_is_vendor() ) {
-
-				unset( $create_buttons['fpd-load-template'] );
-				unset( $create_buttons['fpd-load-demo'] );
-
-			}
-
-			return $create_buttons;
-
-		}
-
-		public function vendor_product_actions( $actions, $product_id, $user_id ) {
-
-			if( self::user_is_vendor() ) {
-
-				if($user_id != get_current_user_id()) {
-
-					unset( $actions['fpd-add-view'] );
-					unset( $actions['fpd-edit-product-title'] );
-					unset( $actions['fpd-edit-product-options'] );
-					unset( $actions['fpd-save-as-template'] );
-					unset( $actions['fpd-remove-product'] );
-
-				}
-
-
-			}
-
-			return $actions;
-
-		}
-
-		public function vendor_view_actions( $actions, $view_id, $user_id ) {
-
-			if( self::user_is_vendor() ) {
-
-				if( $user_id != get_current_user_id() ) {
-
-					unset( $actions['fpd-edit-view-layers'] );
-					unset( $actions['fpd-edit-view-title'] );
-					unset( $actions['fpd-duplicate-view'] );
-					unset( $actions['fpd-remove-view'] );
-
-				}
-
-
-			}
-
-			return $actions;
 
 		}
 
@@ -205,7 +122,6 @@ if(!class_exists('FPD_WC_Dokan')) {
 					'id' 		=> 'fpd_wc_dokan_user_global_products',
 					'default'	=> 'none',
 					'type' 		=> 'select',
-					'class'		=> 'radykal-select2',
 					'css'		=> 'width: 200px',
 					'options'   => self::get_users_options()
 				),
@@ -298,6 +214,15 @@ if(!class_exists('FPD_WC_Dokan')) {
 
 			$user = wp_get_current_user();
 			return in_array( 'seller', (array) $user->roles );
+
+		}
+
+		public function add_body_classes( $classes ) {
+
+			if( self::user_is_vendor() )
+				$classes .= ' dokan-vendor';
+
+			return $classes;
 
 		}
 

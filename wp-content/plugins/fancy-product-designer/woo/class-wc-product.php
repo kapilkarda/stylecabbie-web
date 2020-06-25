@@ -457,9 +457,43 @@ if( !class_exists('FPD_WC_Product') ) {
 
 					jQuery('#fpd-extern-download-pdf').click(function(evt) {
 
+						var $this = jQuery(this);
+
 						evt.preventDefault();
 						if(fpdProductCreated) {
-							fancyProductDesigner.actions.downloadFile('pdf');
+
+							if(<?php echo class_exists('Fancy_Product_Designer_Export') && isset($_GET['order']) ? 'true' : 'false' ?>) {
+
+								$this.addClass('fpd-disabled');
+								fancyProductDesigner.toggleSpinner(true);
+
+								var printData = fancyProductDesigner.getPrintOrderData();
+								printData.name = "<?php echo isset($_GET['order']) ? $_GET['order'].'_'.$_GET['item_id'] : ''; ?>";
+
+								var data = {
+									action: 'fpd_pr_export',
+									print_data: JSON.stringify(printData)
+								};
+
+								jQuery.post(adminAjaxURL, data, function(response) {
+
+									if(response && response.file_url) {
+										window.open(response.file_url, '_blank')
+									}
+									else {
+										alert('Something went wrong. Please contact the site owner!');
+									}
+
+									$this.removeClass('fpd-disabled');
+									fancyProductDesigner.toggleSpinner(false);
+
+								}, 'json');
+
+							}
+							else {
+								fancyProductDesigner.actions.downloadFile('pdf');
+							}
+
 						}
 						else {
 							FPDUtil.showModal("<?php _e('The product is not created yet, try again when the product has been fully loaded into the designer', 'fpd_label'); ?>");
@@ -705,6 +739,15 @@ if( !class_exists('FPD_WC_Product') ) {
 									function(response) {
 
 										if(typeof response === 'object') {
+
+											if(response.length == 0) {
+
+												alert('The product does not exists or has no views!');
+												fancyProductDesigner.toggleSpinner(false);
+												return;
+
+											}
+
 											fancyProductDesigner.loadProduct(
 												response,
 												<?php echo $product_settings->get_option('replace_initial_elements'); ?>,

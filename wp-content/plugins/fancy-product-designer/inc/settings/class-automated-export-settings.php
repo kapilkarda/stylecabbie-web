@@ -23,9 +23,8 @@ if( !class_exists('FPD_Settings_Automated_Export') ) {
 						'title' 	=> __( 'Output File', 'radykal' ),
 						'description' 		=> __( 'Set the output file that will you or your customers will receive.', 'radykal' ),
 						'id' 		=> 'fpd_ae_output_file',
-						'default'	=> 'default',
+						'default'	=> 'pdf',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 300px',
 						'options'   => self::get_export_types()
 					),
@@ -103,7 +102,8 @@ if( !class_exists('FPD_Settings_Automated_Export') ) {
 				'pdf' => 'PDF',
 				'jpeg' => 'JPEG',
 				'png' => 'PNG',
-				'zip_pdf_fonts' => __('Archive containing PDF and used fonts', 'radykal')
+				'zip_pdf_fonts' => __('Archive containing PDF and used fonts', 'radykal'),
+				'zip_pdf_custom_images' => __('Archive containing PDF and custom images', 'radykal')
 			);
 
 		}

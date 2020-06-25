@@ -199,10 +199,10 @@ if( !class_exists('FPD_View') ) {
 				if( fpd_not_empty($value) ) {
 
 					switch($key) {
-						case 'stage_width':
+						case 'stageWidth':
 							$options_arr['stageWidth'] = floatval($value);
 						break;
-						case 'stage_height':
+						case 'stageHeight':
 							$options_arr['stageHeight'] = floatval($value);
 						break;
 						case 'designs_parameter_price':

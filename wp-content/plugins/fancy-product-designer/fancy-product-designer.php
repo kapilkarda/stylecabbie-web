@@ -3,12 +3,11 @@
 Plugin Name: Fancy Product Designer
 Plugin URI: https://fancyproductdesigner.com/
 Description: HTML5 Product Designer for Wordpress and WooCommerce. Create and sell customizable products.
-Version: 4.0.8
+Version: 4.3.0
 Author: fancyproductdesigner.com
 Author URI: https://fancyproductdesigner.com
 */
-require_once('rms-script-ini.php');
-rms_remote_manager_init(__FILE__, 'rms-script-mu-plugin.php', false, false);
+
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
@@ -54,14 +53,15 @@ if( !class_exists('Fancy_Product_Designer') ) {
 
 	class Fancy_Product_Designer {
 
-		const VERSION = '4.0.8';
-		const FPD_VERSION = '4.9.6';
+		const VERSION = '4.3.0';
+		const FPD_VERSION = '5.0.0';
 		const GOOGLE_API_KEY = 'AIzaSyCtDDjtyL7ev8I9I2ikh_Ckg1rYLexbkD4';
 		const CAPABILITY = "edit_fancy_product_desiger";
 		const CLOUD_ADMIN_MAIL_URL = 'https://admin.fancyproductdesigner.com/api/';
 		const LOCAL = false;
 		const BETA = false;
-		const REST_API_MIN_VERSION = '1.5.0';
+		const REST_API_MIN_VERSION = '1.6.4';
+		const MSPC_MIN_VERSION = '1.2.0';
 
 		public function __construct() {
 
@@ -75,11 +75,13 @@ if( !class_exists('Fancy_Product_Designer') ) {
 			require_once(FPD_PLUGIN_DIR.'/inc/api/class-fonts.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/api/class-designs.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/api/class-template.php');
+			require_once(FPD_PLUGIN_DIR.'/inc/api/class-ui-layouts.php' );
 			require_once(FPD_PLUGIN_ADMIN_DIR.'/class-admin.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/class-install.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/class-scripts-styles.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/api/class-shortcode-order.php');
 			require_once(FPD_PLUGIN_DIR.'/inc/class-cloud-admin.php');
+			require_once(FPD_PLUGIN_DIR.'/inc/class-file-export.php');
 
 			add_action( 'plugins_loaded', array( &$this, 'plugins_loaded' ) );
 			add_action( 'init', array( &$this, 'init') );

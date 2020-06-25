@@ -214,8 +214,8 @@ if( !class_exists('FPD_Settings_Advanced') ) {
 					),
 
 					array(
-						'title' 	=> __( 'jQuery No Conflict Mode', 'radykal' ),
-						'description' 		=> __( 'Turns on the jQuery no conflict mode. Turn it on if you are facing some Javascript issues.', 'radykal' ),
+						'title' 	=> __( 'jQuery No-Conflict Mode', 'radykal' ),
+						'description' 		=> __( 'Enables jQuery No-Conflict mode. If your website uses another library using the $ as an alias, enable this option.', 'radykal' ),
 						'id' 		=> 'fpd_jquery_no_conflict',
 						'default'	=> 'no',
 						'type' 		=> 'checkbox'

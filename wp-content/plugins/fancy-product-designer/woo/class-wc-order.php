@@ -101,7 +101,7 @@ if(!class_exists('FPD_WC_Order')) {
 					$data_url = $item['_fpd_product_thumbnail'];
 					$base64_str = substr($data_url, strpos($data_url, ",")+1);
 
-					if( !is_view_order_page() && file_put_contents($temp_img_path, base64_decode($base64_str)) ) {
+					if( !is_page(get_the_ID()) && !is_view_order_page() && file_put_contents($temp_img_path, base64_decode($base64_str)) ) {
 						$this->embedded_mail_images[] = $temp_img_path;
 						$item_thumb_src = 'cid:'.basename($temp_img_path, '.d');
 					}

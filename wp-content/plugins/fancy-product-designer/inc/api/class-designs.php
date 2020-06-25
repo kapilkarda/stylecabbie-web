@@ -42,7 +42,7 @@ if( !class_exists('FPD_Designs') ) {
 					$general_parameters_array = $this->default_image_options;
 					$final_parameters = array();
 
-					//get attachments from fancy design category
+					//get attachments from design category
 					$args = array(
 						 'posts_per_page' => -1,
 						 'post_type' => 'attachment',
@@ -56,22 +56,27 @@ if( !class_exists('FPD_Designs') ) {
 					//category parameters
 					$category_parameters_array = array();
 					$category_parameters = get_option( 'fpd_category_parameters_'.$category->slug );
-					if( strpos($category_parameters, 'enabled') !== false ) {
-						//convert string to array
-						parse_str($category_parameters, $category_parameters_array);
+					parse_str($category_parameters, $category_parameters_array);
+
+					//category parameters disabled
+					if( !isset($category_parameters_array['enabled']) || !$category_parameters_array['enabled'] ) {
+						$category_parameters_array = array();
 					}
 
-					if(is_array($designs)) {
+					if( is_array($designs) ) {
+
 						foreach( $designs as $design ) {
 
 							//merge general parameters with category parameters
 							$final_parameters = array_merge( $general_parameters_array, $category_parameters_array );
 
 							//single element parameters
+							$single_design_parameters_array = array();
 							$single_design_parameters = get_post_meta($design->ID, 'fpd_parameters', true);
-							if( strpos($single_design_parameters, 'enabled') !== false ) {
-								$single_design_parameters_array = array();
-								parse_str($single_design_parameters, $single_design_parameters_array);
+							parse_str($single_design_parameters, $single_design_parameters_array);
+
+							//replace with sinlge parameters if enabled
+							if( isset($single_design_parameters_array['enabled']) && $single_design_parameters_array['enabled'] ) {
 								$final_parameters = $single_design_parameters_array;
 							}
 
@@ -235,7 +240,7 @@ if( !class_exists('FPD_Designs') ) {
 					'title' => $category_design->post_title,
 					'image' => $origin_image,
 					'thumbnail' => get_post_meta($category_design->ID, 'fpd_thumbnail', true),
-					'parameters' => $parameters
+					'parameters' => (object) $parameters
 				);
 
 				array_push( $category_designs_data, $design_props );
@@ -335,21 +340,24 @@ if( !class_exists('FPD_Designs') ) {
 				}
 
 			}
-			else if( isset($fields['title']) ) {
+
+			if( isset($fields['title']) ) {
 
 				$result = wp_update_term( $category_id, 'fpd_design_category', array(
 					'name' => $fields['title']
 				));
 
 			}
-			else if( isset($fields['parent_id']) ) {
+
+			if( isset($fields['parent_id']) ) {
 
 				$result = wp_update_term( $category_id, 'fpd_design_category', array(
 					'parent' => $fields['parent_id']
 				));
 
 			}
-			else if( isset($fields['options']) ) {
+
+			if( isset($fields['options']) ) {
 
 				$category_term = get_term( $category_id, 'fpd_design_category' );
 
@@ -357,6 +365,25 @@ if( !class_exists('FPD_Designs') ) {
 					$result = update_option( 'fpd_category_parameters_'.$category_term->slug, http_build_query( $fields['options'] ) );
 				else
 					$result = update_option( 'fpd_category_parameters_'.$category_term->slug, $fields['options'] );
+
+			}
+
+			if( isset($fields['designs']) ) {
+
+				$category = get_term($category_id, 'fpd_design_category');
+
+				if( is_null($category) ) {
+
+					return new WP_Error(
+						'category-design-save-fail',
+						__('Category does not exist!', 'radykal')
+					);
+
+				}
+
+				$category_slug = $category->slug;
+
+				$result = FPD_Designs::save_category_designs( $category_slug, $fields['designs']);
 
 			}
 

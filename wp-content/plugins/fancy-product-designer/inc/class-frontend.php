@@ -17,7 +17,7 @@ if(!class_exists('FPD_Frontend_Product')) {
 
 			add_action( 'wp_head', array( &$this, 'head_frontend') );
 
-			//SINGLE FANCY PRODUCT
+			//SINGLE PRODUCT
 			add_filter( 'body_class', array( &$this, 'add_body_classes') );
 			add_action( 'fpd_after_product_designer', array( &$this, 'output_shortcode_js'), 1 );
 
@@ -32,6 +32,10 @@ if(!class_exists('FPD_Frontend_Product')) {
 
 			//module shortcode
 			add_shortcode( 'fpd_module', array( &$this, 'shortcode_module_handler') );
+
+			//print-ready download for customers
+			add_action( 'wp_ajax_fpd_pr_export', array( &$this, 'create_print_ready_file' ) );
+			add_action( 'wp_ajax_nopriv_fpd_pr_export', array( &$this, 'create_print_ready_file' ) );
 
 		}
 
@@ -309,7 +313,7 @@ if(!class_exists('FPD_Frontend_Product')) {
 						adminAjaxURL = "<?php echo admin_url('admin-ajax.php'); ?>";
 
 					<?php echo fpd_get_option('fpd_jquery_no_conflict') ? 'jQuery.noConflict();' : ''; ?>
-					jQuery(document).ready(function() {
+					jQuery(document).ready(function($) {
 
 						//return;
 
@@ -869,13 +873,13 @@ if(!class_exists('FPD_Frontend_Product')) {
 			if( $insert_id ) {
 				echo json_encode(array(
 					'id' => $insert_id,
-					'message' => FPD_Settings_Labels::get_translation( 'misc', 'shortcode_order:_success_sent' ),
+					'message' => FPD_Settings_Labels::get_translation( 'misc', 'shortcode_order:success_sent' ),
 				));
 			}
 			else {
 
 				echo json_encode(array(
-					'error' => FPD_Settings_Labels::get_translation( 'misc', 'shortcode_order:_fail_sent' ),
+					'error' => FPD_Settings_Labels::get_translation( 'misc', 'shortcode_order:fail_sent' ),
 				));
 
 			}
@@ -917,6 +921,24 @@ if(!class_exists('FPD_Frontend_Product')) {
 			ob_end_clean();
 
 			return $output;
+
+		}
+
+		public function create_print_ready_file() {
+
+			if( isset($_POST['print_data']) && class_exists('Fancy_Product_Designer_Export') ) {
+
+				$print_data = json_decode(stripslashes($_POST['print_data']), true);
+				$file = Fancy_Product_Designer_Export::create_print_ready_file( $print_data );
+				$file_url = content_url( '/fancy_products_orders/print_ready_files/' . $file );
+
+				echo json_encode(array(
+					'file_url' => $file_url
+				));
+
+			}
+
+			die;
 
 		}
 

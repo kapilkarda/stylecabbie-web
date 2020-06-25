@@ -1600,12 +1600,12 @@ var FPDUtil =  {
 			imageParts = source.split('.');
 
 			//only png and svg are colorizable
-			if($.inArray('png', imageParts) == -1 && $.inArray('svg', imageParts) == -1) {
+			if(jQuery.inArray('png', imageParts) == -1 && jQuery.inArray('svg', imageParts) == -1) {
 				element.fill = element.colors = false;
 				return false;
 			}
 			else {
-				if($.inArray('svg', imageParts) == -1) {
+				if(jQuery.inArray('svg', imageParts) == -1) {
 					return 'png';
 				}
 				else {
@@ -1645,11 +1645,11 @@ var FPDUtil =  {
 	 */
 	updateTooltip : function($container) {
 
-		var $tooltips = $container ? $container.find('.fpd-tooltip') : $('.fpd-tooltip');
+		var $tooltips = $container ? $container.find('.fpd-tooltip') : jQuery('.fpd-tooltip');
 
 		$tooltips.each(function(i, tooltip) {
 
-			var $tooltip = $(tooltip);
+			var $tooltip = jQuery(tooltip);
 			if($tooltip.hasClass('tooltipstered')) {
 				$tooltip.tooltipster('reposition');
 			}
@@ -1714,8 +1714,8 @@ var FPDUtil =  {
 				callbacks: {
 					onTotalScrollOffset: 100,
 					onTotalScroll:function() {
-						$(this).trigger('_sbOnTotalScroll');
-						FPDUtil.refreshLazyLoad($(this).find('.fpd-grid'), true);
+						jQuery(this).trigger('_sbOnTotalScroll');
+						FPDUtil.refreshLazyLoad(jQuery(this).find('.fpd-grid'), true);
 					}
 				}
 			});
@@ -1751,7 +1751,7 @@ var FPDUtil =  {
 	showModal : function(htmlMessage, fullscreen, type, $container) {
 
 		type = type === undefined ? '' : type;
-		$container = $container === undefined ? $('body') : $container;
+		$container = $container === undefined ? jQuery('body') : $container;
 
 		if($container.is('body')) {
 			$container.addClass('fpd-overflow-hidden')
@@ -1760,12 +1760,12 @@ var FPDUtil =  {
 		var fullscreenCSS = fullscreen ? 'fpd-fullscreen' : '',
 			html = '<div class="fpd-modal-internal fpd-modal-overlay"><div class="fpd-modal-wrapper fpd-shadow-3"><div class="fpd-modal-close"><span class="fpd-icon-close"></span></div><div class="fpd-modal-content"></div></div></div>';
 
-		if($('.fpd-modal-internal').length === 0) {
+		if(jQuery('.fpd-modal-internal').length === 0) {
 
 			$container.append(html)
 			.children('.fpd-modal-internal:first').click(function(evt) {
 
-				var $target = $(evt.target);
+				var $target = jQuery(evt.target);
 				if($target.hasClass('fpd-modal-overlay')) {
 
 					$target.find('.fpd-modal-close').click();
@@ -1797,9 +1797,11 @@ var FPDUtil =  {
 	 * @param {String} text The text for the message.
 	 * @static
 	 */
-	showMessage : function(text) {
+	showMessage : function(text, autoRemove) {
 
-		var $body = $('body'),
+		autoRemove = autoRemove === undefined ? true : autoRemove;
+
+		var $body = jQuery('body'),
 			$snackbarWrapper;
 
 		if($body.children('.fpd-snackbar-wrapper').length > 0) {
@@ -1809,7 +1811,7 @@ var FPDUtil =  {
 			$snackbarWrapper = $body.append('<div class="fpd-snackbar-wrapper"></div>').children('.fpd-snackbar-wrapper');
 		}
 
-		var $snackbar = $('<div class="fpd-snackbar fpd-shadow-1"><p></p></div>');
+		var $snackbar = jQuery('<div class="fpd-snackbar fpd-shadow-1"><p></p></div>');
 		$snackbar.children('p').html(text);
 		$snackbar.appendTo($snackbarWrapper);
 
@@ -1817,11 +1819,16 @@ var FPDUtil =  {
 
 			$snackbar.addClass('fpd-show-up');
 
-			setTimeout(function() {
-				$snackbar.remove();
-			}, 5000);
+			if(autoRemove) {
+				setTimeout(function() {
+					$snackbar.remove();
+				}, 5000);
+			}
+
 
 		}, 10);
+
+		return $snackbar;
 
 	},
 
@@ -1845,6 +1852,11 @@ var FPDUtil =  {
 				.removeClass('fpd-on-loading').fadeOut(0)
 				.stop().fadeIn(200).css('background-image', 'url("'+this.src+'")');
 			};
+			image.onerror = function() {
+
+				$picture.parent('.fpd-item').remove();
+
+			}
 
 		}
 
@@ -1861,7 +1873,7 @@ var FPDUtil =  {
 	 */
 	refreshLazyLoad : function($container, loadByCounter) {
 
-		if($container && $container.length > 0 && $container.is(':visible')) {
+		if($container && $container.length > 0 /* && $container.is(':visible') */) {
 
 			var $item = $container.children('.fpd-item.fpd-hidden:first'),
 				counter = 0,
@@ -1899,7 +1911,7 @@ var FPDUtil =  {
 			properties = Object.keys(options.defaults.elementParameters),
 			additionalKeys  = FPDUtil.getType(object.type) === 'text' ? Object.keys(options.defaults.textParameters) : Object.keys(options.defaults.imageParameters);
 
-		properties = $.merge(properties, additionalKeys);
+		properties = jQuery.merge(properties, additionalKeys);
 
 		var parameters = {};
 		for(var i=0; i < properties.length; ++i) {
@@ -2020,12 +2032,17 @@ var FPDUtil =  {
 	 */
 	checkImageDimensions : function(fpdInstance, imageW, imageH) {
 
-		var currentCustomImageParameters = fpdInstance.currentViewInstance.options.customImageParameters;
+		var imageRestrictions = fpdInstance.currentViewInstance.options.customImageParameters;
 
-		if(imageW > currentCustomImageParameters.maxW ||
-		imageW < currentCustomImageParameters.minW ||
-		imageH > currentCustomImageParameters.maxH ||
-		imageH < currentCustomImageParameters.minH) {
+		var uploadZone = fpdInstance.currentViewInstance.getUploadZone(fpdInstance.currentViewInstance.currentUploadZone);
+		if(uploadZone) {
+			imageRestrictions = $.extend({}, imageRestrictions, uploadZone);
+		}
+
+		if(imageW > imageRestrictions.maxW ||
+		imageW < imageRestrictions.minW ||
+		imageH > imageRestrictions.maxH ||
+		imageH < imageRestrictions.minH) {
 
 			fpdInstance._loadingCustomImage = false;
 
@@ -2039,10 +2056,10 @@ var FPDUtil =  {
 			}
 
 			var msg = fpdInstance.getTranslation('misc', 'uploaded_image_size_alert')
-					  .replace('%minW', currentCustomImageParameters.minW)
-					  .replace('%minH', currentCustomImageParameters.minH)
-					  .replace('%maxW', currentCustomImageParameters.maxW)
-					  .replace('%maxH', currentCustomImageParameters.maxH);
+					  .replace('%minW', imageRestrictions.minW)
+					  .replace('%minH', imageRestrictions.minH)
+					  .replace('%maxW', imageRestrictions.maxW)
+					  .replace('%maxH', imageRestrictions.maxH);
 
 			FPDUtil.showModal(msg);
 			return false;
@@ -2215,7 +2232,7 @@ var FPDUtil =  {
 			var color = ci.title,
 				colorName = fpdInstance.mainOptions.hexNames[color.replace('#', '').toLowerCase()];
 
-			$(ci).attr('title', colorName ? colorName : color).addClass('fpd-tooltip');
+			jQuery(ci).attr('title', colorName ? colorName : color).addClass('fpd-tooltip');
 
 			FPDUtil.updateTooltip($spContainer);
 
@@ -2308,7 +2325,7 @@ var FPDUtil =  {
 
 	isSVG : function(element) {
 
-		return element !== null && (element.type === FPDPathGroupName || element.d !== undefined || $.inArray('svg', element.source.split('.')) !== -1);
+		return element !== null && (element.type === FPDPathGroupName || element.d !== undefined || jQuery.inArray('svg', element.source.split('.')) !== -1);
 
 	},
 
@@ -2455,7 +2472,7 @@ var FancyProductDesignerOptions = function() {
 		* @for Options.defaults
 		* @type {Aarray}
 		* @default [{name: 'Arial'}, {name: 'Lobster', url: 'google'}]
-		* @example since V4.3 set font like this<br />[{name: "Lobster", url: "google"}, {name: 'Custom', url: 'https://yourdomain.com/fonts/custom.ttf"}]
+		* @example <br />[{name: "Lobster", url: "google"}, {name: 'Custom', url: 'https://yourdomain.com/fonts/custom.ttf"}, {name: 'Aller', url: 'path/Aller.ttf', variants: {'n7': 'path/Aller__bold.ttf','i4': 'path/Aller__italic.ttf','i7': 'path/Aller__bolditalic.ttf'}}]
 		*/
 		fonts: [{name: 'Arial'}, {name: 'Lobster', url: 'google'}],
 		/**
@@ -3062,14 +3079,14 @@ var FancyProductDesignerOptions = function() {
 		*/
 		replaceColorsInColorGroup: false,
 		/**
-		* Defines the image types in lowercase that can be uploaded. Currently the designer supports jpg, svg and png images.
+		* Defines the image types in lowercase that can be uploaded. Currently the designer supports jpg, svg, png images and PDF files.
 		*
 		* @property allowedImageTypes
 		* @for Options.defaults
 		* @type {Array}
 		* @default []
 		*/
-		allowedImageTypes: ['jpeg', 'png', 'svg'],
+		allowedImageTypes: ['jpeg', 'png', 'svg', 'pdf'],
 		/**
 		* To add photos from Pixabay, you have to set an <a href="https://pixabay.com/api/docs/" target="_blank">Pixabay API key</a>.
 		*
@@ -3822,6 +3839,16 @@ var FancyProductDesignerOptions = function() {
 			* version 4.8.2
 			*/
 			uploadZoneMovable: false,
+			/**
+			* If true the upload zone can be removed by the user.
+			*
+			* @property uploadZoneRemovable
+			* @type {Boolean}
+			* @for Options.defaults.imageParameters
+			* @default false
+			* version 5.0.0
+			*/
+			uploadZoneRemovable: false,
 			padding: 0,
 			minScaleLimit: 0.01
 		},
@@ -3993,19 +4020,19 @@ var FancyProductDesignerOptions = function() {
 
 		typeof merge === 'undefined' ? {} : merge;
 
-		var options = $.extend({}, defaults, merge);
-		options.elementParameters = $.extend({}, defaults.elementParameters, options.elementParameters);
-		options.textParameters = $.extend({}, defaults.textParameters, options.textParameters);
-		options.imageParameters = $.extend({}, defaults.imageParameters, options.imageParameters);
-		options.customTextParameters = $.extend({}, defaults.customTextParameters, options.customTextParameters);
-		options.customImageParameters = $.extend({}, defaults.customImageParameters, options.customImageParameters);
-		options.customAdds = $.extend({}, defaults.customAdds, options.customAdds);
-		options.customImageAjaxSettings = $.extend({}, defaults.customImageAjaxSettings, options.customImageAjaxSettings);
-		options.qrCodeProps = $.extend({}, defaults.qrCodeProps, options.qrCodeProps);
-		options.imageEditorSettings = $.extend({}, defaults.imageEditorSettings, options.imageEditorSettings);
-		options.dynamicViewsOptions = $.extend({}, defaults.dynamicViewsOptions, options.dynamicViewsOptions);
-		options.priceFormat = $.extend({}, defaults.priceFormat, options.priceFormat);
-		options.printingBox = $.extend({}, defaults.printingBox, options.printingBox);
+		var options = jQuery.extend({}, defaults, merge);
+		options.elementParameters = jQuery.extend({}, defaults.elementParameters, options.elementParameters);
+		options.textParameters = jQuery.extend({}, defaults.textParameters, options.textParameters);
+		options.imageParameters = jQuery.extend({}, defaults.imageParameters, options.imageParameters);
+		options.customTextParameters = jQuery.extend({}, defaults.customTextParameters, options.customTextParameters);
+		options.customImageParameters = jQuery.extend({}, defaults.customImageParameters, options.customImageParameters);
+		options.customAdds = jQuery.extend({}, defaults.customAdds, options.customAdds);
+		options.customImageAjaxSettings = jQuery.extend({}, defaults.customImageAjaxSettings, options.customImageAjaxSettings);
+		options.qrCodeProps = jQuery.extend({}, defaults.qrCodeProps, options.qrCodeProps);
+		options.imageEditorSettings = jQuery.extend({}, defaults.imageEditorSettings, options.imageEditorSettings);
+		options.dynamicViewsOptions = jQuery.extend({}, defaults.dynamicViewsOptions, options.dynamicViewsOptions);
+		options.priceFormat = jQuery.extend({}, defaults.priceFormat, options.priceFormat);
+		options.printingBox = jQuery.extend({}, defaults.printingBox, options.printingBox);
 
 		return options;
 
@@ -4046,6 +4073,8 @@ var FancyProductDesignerOptions = function() {
 var FancyProductDesignerView = function($productStage, view, callback, fabricCanvasOptions) {
 
 	'use strict';
+
+	$ = jQuery;
 
 	fabricCanvasOptions = typeof fabricCanvasOptions === 'undefined' ? {} : fabricCanvasOptions;
 
@@ -5866,6 +5895,12 @@ var FancyProductDesignerView = function($productStage, view, callback, fabricCan
 					parameters.lockMovementX = parameters.lockMovementY = false;
 				}
 
+				if(parameters.uploadZoneRemovable) {
+					parameters.removable = true;
+					parameters.copyable = false;
+					parameters.hasControls = true;
+				}
+
 			}
 
 			parameters.lockRotation = true;
@@ -6073,8 +6108,8 @@ var FancyProductDesignerView = function($productStage, view, callback, fabricCan
 			_clipElement(element);
 		}
 
-		//set z position
-		if(parameters.z >= 0) {
+		//set z position, check if element has canvas prop, otherwise its not added into canvas
+		if(element.canvas && parameters.z >= 0) {
 			element.moveTo(parameters.z);
 			_bringToppedElementsToFront();
 		}
@@ -6396,10 +6431,21 @@ var FancyProductDesignerView = function($productStage, view, callback, fabricCan
 			if(last.interaction === 'remove') {
 				instance.stage.add(last.element);
 				last.interaction = 'add';
+				$this.trigger('elementAdd', [last.element]);
 			}
 			else if(last.interaction === 'add') {
+
+				var hasReplace = last.element.replace;
 				instance.stage.remove(last.element);
 				last.interaction = 'remove';
+				$this.trigger('elementRemove', [last.element]);
+
+				if(hasReplace && instance.undos.length && instance.undos[instance.undos.length-1].element.replace == hasReplace) {
+					last = instance.undos.pop();
+					instance.stage.add(last.element);
+					$this.trigger('elementAdd', [last.element]);
+				}
+
 			}
 
 			if(!last.element._ignore) {
@@ -6435,10 +6481,12 @@ var FancyProductDesignerView = function($productStage, view, callback, fabricCan
 			if(last.interaction === 'remove') {
 				instance.stage.add(last.element);
 				last.interaction = 'add';
+				$this.trigger('elementAdd', [last.element]);
 			}
 			else if(last.interaction === 'add') {
 				instance.stage.remove(last.element);
 				last.interaction = 'remove';
+				$this.trigger('elementRemove', [last.element]);
 			}
 
 			if(!last.element._ignore) {
@@ -8370,6 +8418,10 @@ var FPDToolbar = function($uiElementToolbar, fpdInstance) {
 
 var FPDToolbarSmart = function($uiElementToolbar, fpdInstance) {
 
+	'use strict';
+
+	$ = jQuery;
+
 	var instance = this,
 		$body = $('body'),
 		$uiToolbarSub = $uiElementToolbar.children('.fpd-sub-panel'),
@@ -9452,6 +9504,10 @@ var FPDToolbarSmart = function($uiElementToolbar, fpdInstance) {
 
 var FPDMainBar = function(fpdInstance, $mainBar, $modules, $draggableDialog) {
 
+	'use strict';
+
+	$ = jQuery;
+
 	var instance = this,
 		$body = $('body'),
 		$nav = $mainBar.children('.fpd-navigation'),
@@ -9533,10 +9589,12 @@ var FPDMainBar = function(fpdInstance, $mainBar, $modules, $draggableDialog) {
 
 		});
 
-		$body.append($draggableDialog);
+		var $dialogContainer = fpdInstance.mainOptions.modalMode ? $('.fpd-modal-product-designer') : $body;
+		$dialogContainer.append($draggableDialog);
+
 		$draggableDialog.draggable({
 			handle: $draggableDialog.find('.fpd-dialog-head'),
-			containment: $body
+			containment: $dialogContainer
 		});
 
 		//select module
@@ -9568,7 +9626,7 @@ var FPDMainBar = function(fpdInstance, $mainBar, $modules, $draggableDialog) {
 		});
 
 		//prevent document scrolling when in dialog content
-		$('.fpd-draggable-dialog').on('mousewheel', function(evt) {
+		$draggableDialog.on('mousewheel', function(evt) {
 			 evt.preventDefault();
 		});
 
@@ -9662,6 +9720,7 @@ var FPDMainBar = function(fpdInstance, $mainBar, $modules, $draggableDialog) {
 			if($draggableDialog.attr('style') === undefined || $draggableDialog.attr('style') === '') {
 				$draggableDialog.css('top', $mainBar.offset().top + $mainBar.height());
 			}
+
 			$draggableDialog.addClass('fpd-active')
 			.find('.fpd-dialog-title').text($selectedNavItem.find('.fpd-label').text());
 
@@ -9704,9 +9763,19 @@ var FPDMainBar = function(fpdInstance, $mainBar, $modules, $draggableDialog) {
 		$content.children('.fpd-secondary-module').children('.'+className).addClass('fpd-active')
 		.siblings().removeClass('fpd-active');
 
-
+		var label = null;
 		if(className === 'fpd-upload-zone-adds-panel') {
 			$content.find('.fpd-upload-zone-adds-panel .fpd-bottom-nav > :not(.fpd-hidden)').first().click();
+		}
+		else if(className === 'fpd-saved-designs-panel') {
+			label = fpdInstance.getTranslation('actions', 'load')
+		}
+
+		if($content.parent('.fpd-draggable-dialog').length > 0 && label) {
+
+			$draggableDialog.addClass('fpd-active')
+			.find('.fpd-dialog-title').text(label);
+
 		}
 
 		fpdInstance.$container.trigger('secondaryModuleCalled', [className, $content.children('.fpd-secondary-module').children('.fpd-active')]);
@@ -9975,11 +10044,14 @@ FPDMainBar.availableModules = [
 	'layouts'
 ];
 
-var FPDActions = function(fpdInstance, $actions){
+var FPDActions = function(fpdInstance, $actions) {
+
+	'use strict';
+
+	$ = jQuery;
 
 	var instance = this,
-		snapLinesGroup,
-		$actionContainer = fpdInstance.$mainWrapper.children('.fpd-actions-container');
+		snapLinesGroup;
 
 	this.currentActions = fpdInstance.mainOptions.actions;
 
@@ -10014,23 +10086,12 @@ var FPDActions = function(fpdInstance, $actions){
 
 		});
 
-		fpdInstance.$container.on('screenSizeChange', function(evt, device){
-
-			if(device === 'smartphone') {
-				$actionContainer.insertBefore(fpdInstance.$mainWrapper);
-			}
-			else {
-				$actionContainer.appendTo(fpdInstance.$mainWrapper);
-			}
-
-		});
-
 	};
 
 	//set action button to specific position
 	var _setActionButtons = function(pos) {
 
-		fpdInstance.$mainWrapper.children('.fpd-actions-container').append('<div class="fpd-actions-wrapper fpd-pos-'+pos+'"></div>');
+		fpdInstance.$container.find('.fpd-actions-container').append('<div class="fpd-actions-wrapper fpd-pos-'+pos+'"></div>');
 
 		var posActions = instance.currentActions[pos];
 
@@ -10039,7 +10100,7 @@ var FPDActions = function(fpdInstance, $actions){
 			var actionName = posActions[i],
 				$action = $actions.children('[data-action="'+actionName+'"]');
 
-			fpdInstance.$mainWrapper.find('.fpd-actions-wrapper.fpd-pos-'+pos).append($action.clone());
+			fpdInstance.$container.find('.fpd-actions-wrapper.fpd-pos-'+pos).append($action.clone());
 		}
 
 	};
@@ -10135,7 +10196,7 @@ var FPDActions = function(fpdInstance, $actions){
 
 		this.currentActions = actions;
 
-		fpdInstance.$mainWrapper.children('.fpd-actions-container').empty();
+		fpdInstance.$container.find('.fpd-actions-container').empty();
 
 		var keys = Object.keys(actions);
 		for(var i=0; i < keys.length; ++i) {
@@ -10199,6 +10260,8 @@ var FPDActions = function(fpdInstance, $actions){
 		}
 		else if(action === 'save') {
 
+			fpdInstance.mainBar.toggleDialog(false);
+
 			var $prompt = FPDUtil.showModal(fpdInstance.getTranslation('actions', 'save_placeholder'), false, 'prompt', fpdInstance.$modalContainer);
 			$prompt.find('.fpd-btn').text(fpdInstance.getTranslation('actions', 'save')).click(function() {
 
@@ -10244,7 +10307,7 @@ var FPDActions = function(fpdInstance, $actions){
 			if(fpdInstance.mainOptions.saveActionBrowserStorage) {
 
 				var savedProducts = _getSavedProducts();
-				if(savedProducts) {
+				if(savedProducts && savedProducts.length > 0) {
 
 					for(var i=0; i < savedProducts.length; ++i) {
 
@@ -10255,6 +10318,9 @@ var FPDActions = function(fpdInstance, $actions){
 
 					FPDUtil.createScrollbar(fpdInstance.mainBar.$content.find('.fpd-saved-designs-panel .fpd-scroll-area'));
 
+				}
+				else {
+					fpdInstance.mainBar.$content.find('.fpd-saved-designs-panel .fpd-empty-saved-designs').toggleClass('fpd-hidden', false);
 				}
 
 			}
@@ -10686,6 +10752,8 @@ FPDActions.rulerVerImg = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAABk
 var FPDImageEditor = function($container, targetElement, fpdInstance) {
 
 	'use strict';
+
+	$ = jQuery;
 
 	var options = fpdInstance.mainOptions.imageEditorSettings;
 
@@ -11211,7 +11279,7 @@ var FPDImageEditor = function($container, targetElement, fpdInstance) {
 
 			_resizeCanvas();
 
-		});
+		}, {crossOrigin: "anonymous"});
 
 	};
 
@@ -11265,6 +11333,10 @@ var FPDImageEditor = function($container, targetElement, fpdInstance) {
 };
 
 var FPDDesignsModule = function(fpdInstance, $module) {
+
+	'use strict';
+
+	$ = jQuery;
 
 	var instance = this,
 		searchInLabel = '',
@@ -11353,7 +11425,7 @@ var FPDDesignsModule = function(fpdInstance, $module) {
 			}
 			else {
 
-				if(designs.length > 1) { //display categories
+				if(designs.length > 1 || designs[0].category) { //display categories
 					categoriesUsed = true;
 					instance.toggleCategories();
 				}
@@ -11530,11 +11602,12 @@ var FPDDesignsModule = function(fpdInstance, $module) {
 			var $visibleCats = $allCats.hide().filter(function() {
 				var title = $(this).children('span').text();
 				return $.inArray(title, catTitles) > -1;
-			}).show();
+			}).show($visibleCats);
 
 			if($visibleCats.length === 1) {
 				$visibleCats.first().click();
-				$module.addClass('fpd-single-cat');
+				$module.toggleClass('fpd-single-cat');
+
 			}
 
 		}
@@ -11549,6 +11622,10 @@ var FPDDesignsModule = function(fpdInstance, $module) {
 };
 
 var FPDProductsModule = function(fpdInstance, $module) {
+
+	'use strict';
+
+	$ = jQuery;
 
 	var instance = this,
 		currentCategoryIndex = 0,
@@ -11734,6 +11811,10 @@ var FPDProductsModule = function(fpdInstance, $module) {
 
 var FPDTextModule = function(fpdInstance, $module) {
 
+	'use strict';
+
+	$ = jQuery;
+
 	var currentViewOptions;
 
 	var _initialize = function() {
@@ -11852,7 +11933,12 @@ var FPDLayersModule = {
 
 			if(element.uploadZone) {
 				$lastItem.addClass('fpd-add-layer')
-				.find('.fpd-cell-2').append('<span><span class="fpd-icon-add"></span></span>');
+				.find('.fpd-cell-2').append('<span class="fpd-icon-add"></span>');
+
+				if(element.uploadZoneRemovable) {
+					$lastItem.find('.fpd-icon-add').after('<span class="fpd-remove-element"><span class="fpd-icon-remove"></span></span>');
+				}
+
 			}
 			else {
 
@@ -12215,6 +12301,10 @@ var FPDLayersModule = {
 
 var FPDImagesModule = function(fpdInstance, $module) {
 
+	'use strict';
+
+	$ = jQuery;
+
 	var lazyClass = fpdInstance.mainOptions.lazyLoad ? 'fpd-hidden' : '',
 		$imageInput = $module.find('.fpd-input-image'),
 		$uploadScrollArea = $module.find('[data-context="upload"] .fpd-scroll-area'),
@@ -12298,10 +12388,19 @@ var FPDImagesModule = function(fpdInstance, $module) {
 
 		var acceptTypes = [];
 		allowedFileTypes.forEach(function(imageTpye) {
-			if(imageTpye == 'svg') {
-				imageTpye += '+xml';
+
+			if(imageTpye == 'pdf') {
+				acceptTypes.push('application/pdf')
 			}
-			acceptTypes.push('image/'+imageTpye)
+			else {
+
+				if(imageTpye == 'svg') {
+					imageTpye += '+xml';
+				}
+				acceptTypes.push('image/'+imageTpye);
+
+			}
+
 		});
 		$imageInput.attr('accept', acceptTypes.join());
 
@@ -12388,7 +12487,25 @@ var FPDImagesModule = function(fpdInstance, $module) {
 			var storageImages = JSON.parse(window.localStorage.getItem('fpd_uploaded_images'));
 
 			storageImages.forEach(function(storageImage) {
+
 				_addThumbnail(storageImage.url, storageImage.title)
+
+				var image = new Image();
+				image.src = storageImage.url;
+				image.onerror = function() {
+
+					var removeIndex = null;
+					storageImages.forEach(function(storedImg, key) {
+						if(storedImg.url == image.src) { removeIndex = key; }
+					})
+
+					if(removeIndex != null) {
+						storageImages.splice(removeIndex, 1);
+						window.localStorage.setItem('fpd_uploaded_images', JSON.stringify(storageImages));
+					}
+
+				}
+
 			});
 
 		}
@@ -12634,6 +12751,7 @@ var FPDImagesModule = function(fpdInstance, $module) {
 
 		//check maximum allowed size
 		var maxSizeBytes = fpdInstance.mainOptions.customImageParameters.maxSize * 1024 * 1024;
+
 		if(file.size > maxSizeBytes) {
 			FPDUtil.showMessage(fpdInstance.getTranslation('misc', 'maximum_size_info').replace('%filename', file.name).replace('%mb', fpdInstance.mainOptions.customImageParameters.maxSize));
 			return;
@@ -12642,6 +12760,61 @@ var FPDImagesModule = function(fpdInstance, $module) {
 		//load image with FileReader
 		var reader = new FileReader();
     	reader.onload = function (evt) {
+
+	    	if(file.type === 'application/pdf') {
+
+		    	var $uploadSnackBar = FPDUtil.showMessage(fpdInstance.getTranslation('modules', 'images_pdf_upload_info'), false);
+
+				var formdata = new FormData();
+				formdata.append('uploadsDir', uploadsDir);
+				formdata.append('uploadsDirURL', uploadsDirURL);
+				formdata.append('pdf', file);
+
+				var uploadAjaxSettings  = $.extend({}, ajaxSettings);
+				uploadAjaxSettings.data = formdata;
+				uploadAjaxSettings.processData = false;
+				uploadAjaxSettings.contentType = false;
+
+		        uploadAjaxSettings.success = function(data) {
+
+					if(data && data.error === undefined) {
+
+						data.pdf_images.forEach(function(pdfImageData, i) {
+
+							var $lastItem = _addThumbnail(pdfImageData.image_url, pdfImageData.filename);
+
+							if(i == 0 && addToStage) {
+								_addGridItemToStage($lastItem);
+							}
+
+							_storeUploadedImage(pdfImageData.image_url, pdfImageData.filename);
+
+						})
+
+						$uploadSnackBar.remove();
+
+					}
+					else {
+						$uploadSnackBar.remove();
+						FPDUtil.showModal(data.error);
+					}
+
+				};
+
+				var xhr = $.ajax(uploadAjaxSettings)
+				.fail(function(evt) {
+
+					if(evt.statusText !== 'abort') {
+
+						$uploadSnackBar.remove();
+						FPDUtil.showModal(evt.statusText);
+
+					}
+
+				});
+
+		    	return;
+	    	}
 
 			//check image resolution of jpeg
 	    	if(file.type === 'image/jpeg') {
@@ -12747,20 +12920,20 @@ var FPDImagesModule = function(fpdInstance, $module) {
 
 								_storeUploadedImage(data.image_src, data.filename);
 
+								$lastItem
+								.data('source', data.image_src) //update source to local server image
+								.removeClass('fpd-loading')
+								.children('.fpd-loading-bar').remove();
+
 								if(addToStage) {
-
-									$lastItem.data('source', data.image_src); //update source to local image
 									_addGridItemToStage($lastItem);
-
 								}
 
 							}
-							else {
+							else { //upload error, e.g. max_upload_size
+								$lastItem.remove();
 								FPDUtil.showModal(data.error);
 							}
-
-							$lastItem.removeClass('fpd-loading')
-							.children('.fpd-loading-bar').remove();
 
 						};
 
@@ -12769,8 +12942,7 @@ var FPDImagesModule = function(fpdInstance, $module) {
 
 							if(evt.statusText !== 'abort') {
 
-								$lastItem.removeClass('fpd-loading')
-								.children('.fpd-loading-bar').remove();
+								$lastItem.remove();
 								FPDUtil.showModal(evt.statusText);
 
 							}
@@ -12857,12 +13029,10 @@ var FPDImagesModule = function(fpdInstance, $module) {
 
 			var $this = $(this);
 
-			albumID = $this.data('value');
-
 			$this.parent().prevAll('.fpd-dropdown-current:first').val($this.text());
 			$this.siblings('.fpd-item').show();
 
-			_selectAlbum(albumID);
+			_selectAlbum($this.data('value'));
 
 		});
 
@@ -12886,8 +13056,8 @@ var FPDImagesModule = function(fpdInstance, $module) {
 						for(var i=0; i < photos.length; ++i) {
 
 							var photo = photos[i],
-								photoLargest = photo.images[0] ? photo.images[0].source : photo.source;
-								photoThumbnail = photo.images[photo.images.length-1] ? photo.images[photo.images.length-1].source : photo.source;
+								photoLargest = photo.images[0] ? photo.images[0].source : photo.source,
+								photoThumbnail = photo.images[photo.images.length-1] ? photo.images[photo.images.length-1].source : photo.source,
 								$lastItem = $('<div/>', {
 									'class': 'fpd-item '+lazyClass,
 									'data-title': photo.id,
@@ -12917,6 +13087,7 @@ var FPDImagesModule = function(fpdInstance, $module) {
 		};
 
 		if(location.protocol !== 'https:') {
+			FPDUtil.log('Facebook Apps can only run in https', 'info');
 			return;
 		}
 
@@ -12929,7 +13100,7 @@ var FPDImagesModule = function(fpdInstance, $module) {
 				status: true,
 				cookie: true,
 				xfbml: true,
-				version: 'v3.0'
+				version: 'v5.0'
 			});
 
 			FB.Event.subscribe('auth.statusChange', function(response) {
@@ -12973,10 +13144,10 @@ var FPDImagesModule = function(fpdInstance, $module) {
 			popupTop = (window.screen.height - 500) / 2;
 
 		var templatesType = typeof fpdInstance.mainOptions.templatesType === 'object' ? fpdInstance.mainOptions.templatesType[0] : fpdInstance.mainOptions.templatesType,
-			popup = window.open(fpdInstance.mainOptions.templatesDirectory+'/instagram_auth.'+fpdInstance.mainOptions.templatesType, '', 'width=700,height=500,left='+popupLeft+',top='+popupTop+'');
+			popup = window.open(fpdInstance.mainOptions.templatesDirectory+'/instagram_auth.'+templatesType, '', 'width=700,height=500,left='+popupLeft+',top='+popupTop+'');
 
 		FPDUtil.popupBlockerAlert(popup, fpdInstance);
-		popup.onload = new function() {
+		popup.onload = function() {
 
 			if(window.location.hash.length == 0) {
 				popup.open('https://instagram.com/oauth/authorize/?client_id='+instagramClientId+'&redirect_uri='+instagramRedirectUri+'&response_type=token', '_self');
@@ -13579,6 +13750,10 @@ var FPDTextLayersModule = {
 
 var FPDLayoutsModule = function(fpdInstance, $module) {
 
+	'use strict';
+
+	$ = jQuery;
+
 	var instance = this,
 		currentLayouts = [],
 		_layoutElementLoadingIndex = 0,
@@ -13713,7 +13888,6 @@ var FancyProductDesigner = function(elem, opts) {
 		firstProductCreated = false,
 		inTextField = false,
 		initCSSClasses = '',
-		anonymFuncs = {},
 		_totalProductElements = 0,
 		_productElementLoadingIndex = 0,
 		_outOfBoundingBoxLabel = '';
@@ -13994,8 +14168,8 @@ var FancyProductDesigner = function(elem, opts) {
 				evt.preventDefault();
 
 				$body.addClass('fpd-overflow-hidden').removeClass('fpd-modal-mode-active');
-
 				$modalProductDesigner.addClass('fpd-fullscreen').fadeIn(300);
+
 				if(instance.currentViewInstance) {
 					instance.currentViewInstance.resetCanvasSize();
 					instance.resetZoom();
@@ -14070,14 +14244,12 @@ var FancyProductDesigner = function(elem, opts) {
 
 		if(!canvasIsSupported || (FPDUtil.isIE() && Number(FPDUtil.isIE()) <= minIE)) {
 
-			anonymFuncs.loadCanvasError = function(html) {
+			_loadTemplate('canvaserror', instance.mainOptions.templatesType, 0, function(html) {
 
 				$elem.append($.parseHTML(html)).fadeIn(300);
 				$elem.trigger('templateLoad', [this.url]);
 
-			};
-
-			_loadTemplate('canvaserror', instance.mainOptions.templatesType, 0, anonymFuncs.loadCanvasError);
+			});
 
 			/**
 		     * Gets fired when the browser does not support HTML5 canvas.
@@ -14222,6 +14394,17 @@ var FancyProductDesigner = function(elem, opts) {
 
 		});
 
+		instance.$container.on('screenSizeChange', function(evt, device){
+
+			if(device === 'smartphone') {
+				instance.$actionsWrapper.insertBefore(instance.$mainWrapper);
+			}
+			else {
+				instance.$actionsWrapper.appendTo(instance.$mainWrapper);
+			}
+
+		});
+
 		//window resize handler
 		var device = '';
 		$window.resize(function() {
@@ -14267,7 +14450,6 @@ var FancyProductDesigner = function(elem, opts) {
 					instance.mainBar.setContentWrapper('draggable-dialog');
 				}
 
-
 			}
 			else if(currentDevice == 'tablet') {
 			}
@@ -14294,274 +14476,274 @@ var FancyProductDesigner = function(elem, opts) {
 				$elem.trigger('screenSizeChange', [currentDevice]);
 			}
 
+			if(instance.currentViewInstance) {
+				instance.currentViewInstance.resetCanvasSize();
+			}
+
 			device = currentDevice;
 
 		});
 
-
 		instance.loadFonts(instance.mainOptions.fonts, function() {
-			instance.mainOptions.templatesDirectory ? _loadUIElements() : _ready();
+			instance.mainOptions.templatesDirectory ?
+				_loadTemplate('productdesigner', instance.mainOptions.templatesType, 0, _loadProductDesignerTemplate)
+			:
+				_ready();
 		});
 
 	};
 
 	//now load UI elements from external HTML file
-	var _loadUIElements = function() {
+	var _loadProductDesignerTemplate = function(html) {
 
-		anonymFuncs.loadProductDesignerTemplate = function(html) {
+		/**
+	     * Gets fired as soon as a template has been loaded.
+	     *
+	     * @event FancyProductDesigner#templateLoad
+	     * @param {Event} event
+	     * @param {string} URL - The URL of the loaded template.
+	     */
+		$elem.trigger('templateLoad', [this.url]);
 
-			/**
-		     * Gets fired as soon as a template has been loaded.
-		     *
-		     * @event FancyProductDesigner#templateLoad
-		     * @param {Event} event
-		     * @param {string} URL - The URL of the loaded template.
-		     */
-			$elem.trigger('templateLoad', [this.url]);
+		$uiElements = $(html);
 
-			$uiElements = $(html);
+		$uiElements.find('[data-defaulttext]').each(function(index, uiElement) {
 
-			$uiElements.find('[data-defaulttext]').each(function(index, uiElement) {
+			instance.translateElement($(uiElement));
 
-				instance.translateElement($(uiElement));
+		});
 
-			});
+		instance.translatedUI = $uiElements;
 
-			instance.translatedUI = $uiElements;
+		if(instance.mainOptions.mainBarContainer) {
 
-			if(instance.mainOptions.mainBarContainer) {
+			$elem.addClass('fpd-main-bar-container-enabled');
+			$mainBar = $(instance.mainOptions.mainBarContainer).addClass('fpd-container fpd-main-bar-container fpd-tabs fpd-tabs-top fpd-sidebar fpd-grid-columns-'+instance.mainOptions.gridColumns).html($uiElements.children('.fpd-mainbar')).children('.fpd-mainbar');
 
-				$elem.addClass('fpd-main-bar-container-enabled');
-				$mainBar = $(instance.mainOptions.mainBarContainer).addClass('fpd-container fpd-main-bar-container fpd-tabs fpd-tabs-top fpd-sidebar fpd-grid-columns-'+instance.mainOptions.gridColumns).html($uiElements.children('.fpd-mainbar')).children('.fpd-mainbar');
+		}
+		else {
+			$mainBar = $elem.prepend($uiElements.children('.fpd-mainbar')).children('.fpd-mainbar');
+		}
+
+		$modules = $uiElements.children('.fpd-modules');
+
+		if($elem.hasClass('fpd-sidebar')) {
+			$elem.height(instance.mainOptions.stageHeight);
+		}
+		else {
+			$elem.width(instance.mainOptions.stageWidth);
+		}
+
+		//show tabs content
+		$body.on('click', '.fpd-module-tabs > div', function() {
+
+			var $this = $(this),
+				context = $(this).data('context');
+
+			$this.addClass('fpd-active').siblings().removeClass('fpd-active');
+			$this.parent().next('.fpd-module-tabs-content').children().hide().filter('[data-context="'+context+'"]').show();
+
+		});
+
+		//setup modules
+		if(instance.mainOptions.mainBarModules) {
+
+			instance.mainBar = new FPDMainBar(
+				instance,
+				$mainBar,
+				$modules,
+				$uiElements.children('.fpd-draggable-dialog')
+			);
+
+		}
+
+		//init Actions
+		if(instance.mainOptions.actions) {
+			instance.actions = new FPDActions(instance, $uiElements.children('.fpd-actions'));
+		}
+
+		/**
+	     * Gets fired as soon as the user interface with all modules, actions is set and translated.
+	     *
+	     * @event FancyProductDesigner#uiSet
+	     * @param {Event} event
+	     */
+		$elem.trigger('uiSet');
+
+		//init Toolbar
+		var $elementToolbar = $uiElements.children('.fpd-element-toolbar');
+		if(['smart', 'inside-bottom', 'inside-top'].indexOf(instance.mainOptions.toolbarPlacement) !== -1) {
+			$elementToolbar = $uiElements.children('.fpd-element-toolbar-smart');
+			instance.toolbar = new FPDToolbarSmart($elementToolbar, instance);
+		}
+		else {
+			instance.toolbar = new FPDToolbar($elementToolbar, instance);
+		}
+
+		$elem.on('elementSelect', function(evt, element) {
+
+			evt.stopPropagation();
+			evt.preventDefault();
+
+			if(element && !element._ignore && instance.currentViewInstance) {
+
+				//upload zone is selected
+				if(element.uploadZone && !instance.mainOptions.editorMode) {
+
+					element.set('borderColor', 'transparent');
+
+					var customAdds = $.extend(
+						{},
+						instance.currentViewInstance.options.customAdds,
+						element.customAdds ? element.customAdds : {}
+					);
+
+					//mobile fix: elementSelect is triggered before click, this was adding an image on mobile
+					setTimeout(function() {
+
+						instance.currentViewInstance.currentUploadZone = element.title;
+						instance.mainBar.toggleUploadZoneAdds(customAdds);
+						instance.mainBar.toggleUploadZonePanel();
+
+					}, 100);
+
+
+					return;
+				}
+				//if element has no upload zone and an upload zone is selected, close dialogs and call first module
+				else if(instance.currentViewInstance.currentUploadZone) {
+
+					instance.mainBar.toggleDialog(false);
+					instance.mainBar.toggleUploadZonePanel(false);
+
+				}
+
+				instance.toolbar.update(element);
+
+				if(instance.mainOptions.openTextInputOnSelect && FPDUtil.getType(element.type) === 'text' && element.editable) {
+
+					$elementToolbar.find('.fpd-tool-edit-text').click();
+				}
+
+				_updateEditorBox(element);
 
 			}
 			else {
-				$mainBar = $elem.prepend($uiElements.children('.fpd-mainbar')).children('.fpd-mainbar');
-			}
 
-			$modules = $uiElements.children('.fpd-modules');
-
-			if($elem.hasClass('fpd-sidebar')) {
-				$elem.height(instance.mainOptions.stageHeight);
-			}
-			else {
-				$elem.width(instance.mainOptions.stageWidth);
-			}
-
-			//show tabs content
-			$body.on('click', '.fpd-module-tabs > div', function() {
-
-				var $this = $(this),
-					context = $(this).data('context');
-
-				$this.addClass('fpd-active').siblings().removeClass('fpd-active');
-				$this.parent().next('.fpd-module-tabs-content').children().hide().filter('[data-context="'+context+'"]').show();
-
-			});
-
-			//setup modules
-			if(instance.mainOptions.mainBarModules) {
-
-				instance.mainBar = new FPDMainBar(
-					instance,
-					$mainBar,
-					$modules,
-					$uiElements.children('.fpd-draggable-dialog')
-				);
+				instance.toolbar.toggle(false);
+				$body.children('[class^="fpd-element-toolbar"]').find('input').spectrum('destroy');
 
 			}
 
-			//init Actions
-			if(instance.mainOptions.actions) {
-				instance.actions = new FPDActions(instance, $uiElements.children('.fpd-actions'));
+		})
+		.on('elementChange', function(evt, type, element) {
+
+			if(!element._ignore) {
+				instance.toolbar.toggle(false, false);
 			}
 
-			/**
-		     * Gets fired as soon as the user interface with all modules, actions is set and translated.
-		     *
-		     * @event FancyProductDesigner#uiSet
-		     * @param {Event} event
-		     */
-			$elem.trigger('uiSet');
-
-			//init Toolbar
-			var $elementToolbar = $uiElements.children('.fpd-element-toolbar');
-			if(['smart', 'inside-bottom', 'inside-top'].indexOf(instance.mainOptions.toolbarPlacement) !== -1) {
-				$elementToolbar = $uiElements.children('.fpd-element-toolbar-smart');
-				instance.toolbar = new FPDToolbarSmart($elementToolbar, instance);
-			}
-			else {
-				instance.toolbar = new FPDToolbar($elementToolbar, instance);
+			if(instance.mainOptions.fabricCanvasOptions.allowTouchScrolling) {
+				$elem.addClass('fpd-disable-touch-scrolling');
+				instance.currentViewInstance.stage.allowTouchScrolling = false;
 			}
 
-			$elem.on('elementSelect', function(evt, element) {
+		})
+		.on('elementModify', function(evt, element, parameters) {
 
-				evt.stopPropagation();
-				evt.preventDefault();
+			if(instance.productCreated && !element._ignore) {
 
-				if(element && !element._ignore && instance.currentViewInstance) {
+				if(!instance.toolbar.isTransforming) {
 
-					//upload zone is selected
-					if(element.uploadZone && !instance.mainOptions.editorMode) {
-
-						element.set('borderColor', 'transparent');
-
-						var customAdds = $.extend(
-							{},
-							instance.currentViewInstance.options.customAdds,
-							element.customAdds ? element.customAdds : {}
-						);
-
-						//mobile fix: elementSelect is triggered before click, this was adding an image on mobile
-						setTimeout(function() {
-
-							instance.currentViewInstance.currentUploadZone = element.title;
-							instance.mainBar.toggleUploadZoneAdds(customAdds);
-							instance.mainBar.toggleUploadZonePanel();
-
-						}, 100);
-
-
-						return;
+					if(parameters.fontSize !== undefined) {
+					instance.toolbar.updateUIValue('fontSize', Number(parameters.fontSize));
 					}
-					//if element has no upload zone and an upload zone is selected, close dialogs and call first module
-					else if(instance.currentViewInstance.currentUploadZone) {
-
-						instance.mainBar.toggleDialog(false);
-						instance.mainBar.toggleUploadZonePanel(false);
-
+					if(parameters.scaleX !== undefined) {
+						instance.toolbar.updateUIValue('scaleX', parseFloat(Number(parameters.scaleX).toFixed(2)));
+					}
+					if(parameters.scaleY !== undefined) {
+						instance.toolbar.updateUIValue('scaleY', parseFloat(Number(parameters.scaleY).toFixed(2)));
+					}
+					if(parameters.angle !== undefined) {
+						instance.toolbar.updateUIValue('angle', parseInt(parameters.angle));
+					}
+					if(parameters.text !== undefined) {
+						instance.toolbar.updateUIValue('text', parameters.text);
 					}
 
-					instance.toolbar.update(element);
-
-					if(instance.mainOptions.openTextInputOnSelect && FPDUtil.getType(element.type) === 'text' && element.editable) {
-
-						$elementToolbar.find('.fpd-tool-edit-text').click();
+					if(instance.currentElement && !instance.currentElement.uploadZone) {
+						instance.toolbar.updatePosition(instance.currentElement);
 					}
-
-					_updateEditorBox(element);
-
-				}
-				else {
-
-					instance.toolbar.toggle(false);
-					$body.children('[class^="fpd-element-toolbar"]').find('input').spectrum('destroy');
 
 				}
 
-			})
-			.on('elementChange', function(evt, type, element) {
+				//text link group
+				if(parameters.text && element.textLinkGroup.length > 0) {
 
-				if(!element._ignore) {
-					instance.toolbar.toggle(false, false);
-				}
+					for(var i=0; i < instance.viewInstances.length; ++i) {
 
-				if(instance.mainOptions.fabricCanvasOptions.allowTouchScrolling) {
-					$elem.addClass('fpd-disable-touch-scrolling');
-					instance.currentViewInstance.stage.allowTouchScrolling = false;
-				}
+						instance.viewInstances[i].fCanv.getObjects().forEach(function(obj) {
 
-			})
-			.on('elementModify', function(evt, element, parameters) {
+							if(obj !== element && FPDUtil.getType(obj.type) === 'text' && obj.textLinkGroup === element.textLinkGroup) {
+								obj.set('text', element.text);
+								$elem.trigger('_doPricingRules');
+							}
 
-				if(instance.productCreated && !element._ignore) {
-
-					if(!instance.toolbar.isTransforming) {
-
-						if(parameters.fontSize !== undefined) {
-						instance.toolbar.updateUIValue('fontSize', Number(parameters.fontSize));
-						}
-						if(parameters.scaleX !== undefined) {
-							instance.toolbar.updateUIValue('scaleX', parseFloat(Number(parameters.scaleX).toFixed(2)));
-						}
-						if(parameters.scaleY !== undefined) {
-							instance.toolbar.updateUIValue('scaleY', parseFloat(Number(parameters.scaleY).toFixed(2)));
-						}
-						if(parameters.angle !== undefined) {
-							instance.toolbar.updateUIValue('angle', parseInt(parameters.angle));
-						}
-						if(parameters.text !== undefined) {
-							instance.toolbar.updateUIValue('text', parameters.text);
-						}
-
-						if(instance.currentElement && !instance.currentElement.uploadZone) {
-							instance.toolbar.updatePosition(instance.currentElement);
-						}
-
-					}
-
-					//text link group
-					if(parameters.text && element.textLinkGroup.length > 0) {
-
-						for(var i=0; i < instance.viewInstances.length; ++i) {
-
-							instance.viewInstances[i].fCanv.getObjects().forEach(function(obj) {
-
-								if(obj !== element && FPDUtil.getType(obj.type) === 'text' && obj.textLinkGroup === element.textLinkGroup) {
-									obj.set('text', element.text);
-									$elem.trigger('_doPricingRules');
-								}
-
-							})
-
-						}
+						})
 
 					}
 
 				}
 
-			})
-			.on('screenSizeChange', function(evt, device) {
+			}
 
-				$elem.removeClass('fpd-device-smartphone fpd-device-tablet fpd-device-desktop')
-				.addClass('fpd-device-'+device);
+		})
+		.on('screenSizeChange', function(evt, device) {
 
-			});
+			$elem.removeClass('fpd-device-smartphone fpd-device-tablet fpd-device-desktop')
+			.addClass('fpd-device-'+device);
 
-			//switchers
-			$('.fpd-switch-container').click(function() {
+		});
 
-				var $this = $(this);
+		//switchers
+		$('.fpd-switch-container').click(function() {
 
-				if($this.hasClass('fpd-curved-text-switcher')) {
+			var $this = $(this);
 
-					var z = instance.currentViewInstance.getZIndex(instance.currentElement),
-						defaultText = instance.currentElement.get('text'),
-						parameters = instance.currentViewInstance.getElementJSON(instance.currentElement);
+			if($this.hasClass('fpd-curved-text-switcher')) {
 
-					parameters.z = z;
-					parameters.curved = instance.currentElement.type == 'i-text';
-					parameters.textAlign = 'center';
+				var z = instance.currentViewInstance.getZIndex(instance.currentElement),
+					defaultText = instance.currentElement.get('text'),
+					parameters = instance.currentViewInstance.getElementJSON(instance.currentElement);
 
-					function _onTextModeChanged(evt, textElement) {
-						instance.currentViewInstance.stage.setActiveObject(textElement);
-						$elem.off('elementAdd', _onTextModeChanged);
+				parameters.z = z;
+				parameters.curved = instance.currentElement.type == 'i-text';
+				parameters.textAlign = 'center';
 
-						setTimeout(function() {
-							$('.fpd-tool-curved-text').click();
-						}, 100);
+				function _onTextModeChanged(evt, textElement) {
+					instance.currentViewInstance.stage.setActiveObject(textElement);
+					$elem.off('elementAdd', _onTextModeChanged);
 
-					};
-					$elem.on('elementAdd', _onTextModeChanged);
+					setTimeout(function() {
+						$('.fpd-tool-curved-text').click();
+					}, 100);
 
-					instance.currentViewInstance.removeElement(instance.currentElement);
-					instance.currentViewInstance.addElement('text', defaultText, defaultText, parameters);
+				};
+				$elem.on('elementAdd', _onTextModeChanged);
 
-				}
+				instance.currentViewInstance.removeElement(instance.currentElement);
+				instance.currentViewInstance.addElement('text', defaultText, defaultText, parameters);
 
-			});
+			}
 
-			$('.fpd-dropdown').click(function() {
+		});
 
-				$(this).toggleClass('fpd-active');
+		$('.fpd-dropdown').click(function() {
 
-			});
+			$(this).toggleClass('fpd-active');
 
-			_ready();
+		});
 
-		};
-
-		_loadTemplate('productdesigner', instance.mainOptions.templatesType, 0, anonymFuncs.loadProductDesignerTemplate);
+		_ready();
 
 	};
 
@@ -14572,7 +14754,7 @@ var FancyProductDesigner = function(elem, opts) {
 
 			fabric.Image.fromURL(instance.mainOptions.watermark, function(oImg) {
 				instance.watermarkImg = oImg;
-			});
+			}, {crossOrigin: "anonymous"});
 
 		}
 
@@ -14587,6 +14769,9 @@ var FancyProductDesigner = function(elem, opts) {
 			};
 
 		}
+
+
+		//window.localStorage.setItem('fpd-gt-closed', 'no');
 
 		//store a boolean to detect if the text in textarea (toolbar) was selected, then dont deselect
 		var _fixSelectionTextarea = false;
@@ -14731,7 +14916,7 @@ var FancyProductDesigner = function(elem, opts) {
 
 			if(FPDUtil.localStorageAvailable()) {
 
-				window.localStorage.setItem('fpd-gt-closed', true);
+				window.localStorage.setItem('fpd-gt-closed', 'yes');
 
 			}
 
@@ -14756,8 +14941,9 @@ var FancyProductDesigner = function(elem, opts) {
 				if(instance.mainOptions.guidedTour && Object.keys(instance.mainOptions.guidedTour).length > 0) {
 
 					var firstKey = Object.keys(instance.mainOptions.guidedTour)[0];
+
 					if(FPDUtil.localStorageAvailable()) {
-						if(!window.localStorage.getItem('fpd-gt-closed')) {
+						if(window.localStorage.getItem('fpd-gt-closed') !== 'yes') {
 							instance.selectGuidedTourStep(firstKey);
 						}
 					}
@@ -15225,6 +15411,7 @@ var FancyProductDesigner = function(elem, opts) {
 				instance.mainBar.__setup = true; //initial active module fix
 			}
 
+			$window.resize();
 
 			/**
 		     * Gets fired as soon as a product has been fully added to the designer.
@@ -16086,7 +16273,7 @@ var FancyProductDesigner = function(elem, opts) {
 
 					}
 
-				});
+				}, {crossOrigin: "anonymous"});
 
 			}, backgroundColor, options, instance.watermarkImg);
 
@@ -16239,7 +16426,14 @@ var FancyProductDesigner = function(elem, opts) {
 
 		}
 		else {
-			allElements = instance.viewInstances[viewIndex].stage.getObjects();
+
+			if(instance.viewInstances[viewIndex]) {
+				allElements = instance.viewInstances[viewIndex].stage.getObjects();
+			}
+			else {
+				return [];
+			}
+
 		}
 
 		//remove bounding-box and printing-box object
@@ -16632,7 +16826,9 @@ var FancyProductDesigner = function(elem, opts) {
 		options = options === undefined ? {} : options;
 
 		var image = new Image;
-    		image.src = source;
+
+    	image.src = source;
+    	image.crossOrigin = "anonymous";
 
     	this.toggleSpinner(true, instance.getTranslation('misc', 'loading_image'));
     	instance.$viewSelectionWrapper.addClass('fpd-disabled');
@@ -16683,22 +16879,41 @@ var FancyProductDesigner = function(elem, opts) {
 	 * @method setDimensions
 	 * @param {Number} width The width in pixel.
 	 * @param {Number} height The height in pixel.
+	 * @param {Number} [viewIndex=-1] The target views. -1 targets all views.
 	 */
-	this.setDimensions = function(width, height) {
+	this.setDimensions = function(width, height, viewIndex) {
 
-		instance.mainOptions.stageWidth = width;
-		instance.mainOptions.stageHeight = height;
+		viewIndex = viewIndex === undefined ? -1 : viewIndex;
 
-		instance.$container.find('.fpd-product-stage').width(width);
-		for(var i=0; i < instance.viewInstances.length; ++i) {
+		var targetViews = [];
+		if(viewIndex == -1) {
 
-			instance.viewInstances[i].options.stageWidth = width;
-			instance.viewInstances[i].options.stageHeight = height;
-			instance.viewInstances[i].resetCanvasSize();
+			instance.mainOptions.stageWidth = width;
+			instance.mainOptions.stageHeight = height;
+			targetViews = instance.viewInstances;
 
 		}
+		else {
+			targetViews.push(instance.viewInstances[viewIndex]);
+		}
 
-		if(instance.mainBar && instance.mainBar.$content && instance.$container.filter('[class*="fpd-off-canvas-"]').length > 0) {
+		if(viewIndex == instance.currentViewIndex || viewIndex == -1) {
+			instance.$container.find('.fpd-product-stage').width(width);
+		}
+
+		targetViews.forEach(function(targetView) {
+
+			targetView.options.stageWidth = width;
+			targetView.options.stageHeight = height;
+
+			if(viewIndex == instance.currentViewIndex) {
+				targetView.resetCanvasSize();
+			}
+
+		})
+
+		if((viewIndex == instance.currentViewIndex || viewIndex == -1) && instance.mainBar && instance.mainBar.$content && instance.$container.filter('[class*="fpd-off-canvas-"]').length > 0) {
+
 			instance.mainBar.$content.height(instance.$mainWrapper.height());
 		}
 
@@ -17189,10 +17404,13 @@ var FancyProductDesigner = function(elem, opts) {
 		toggle = toggle === undefined ? $elem.hasClass('fpd-not-responsive') : toggle;
 
 		$elem.toggleClass('fpd-not-responsive', !toggle);
-		this.viewInstances.forEach(function(viewInstance) {
+		this.viewInstances.forEach(function(viewInstance, viewIndex) {
 
 			viewInstance.options.responsive = toggle;
-			viewInstance.resetCanvasSize();
+
+			if(viewIndex == instance.currentViewIndex) {
+				viewInstance.resetCanvasSize();
+			}
 
 		});
 
@@ -17328,14 +17546,42 @@ fpd.getDepositPhotosPurchaseMedia(function(data) {
 				if(fontItem.hasOwnProperty('url')) {
 
 					if(fontItem.url == 'google') { //from google fonts
-						googleFonts.push(fontItem.name);
+						googleFonts.push(fontItem.name+':400,400i,700,700i');
 					}
 					else { //custom fonts
 
-						var fontFormat = fontItem.url.search('.woff') !== -1 ? 'woff' : 'TrueType',
+						var fontFamily = fontItem.name,
+							fontFormat = fontItem.url.search('.woff') !== -1 ? 'woff' : 'TrueType',
 							fontURL = instance.mainOptions._loadFromScript ? (instance.mainOptions._loadFromScript+fontItem.url) : fontItem.url;
-						$customFontsStyle.append('@font-face {font-family:"'+fontItem.name+'"; src:url("'+fontURL+'") format("'+fontFormat+'");}');
-						customFonts.push(fontItem.name);
+
+						fontFamily += ':n4'
+
+						$customFontsStyle.append('@font-face {font-family:"'+fontItem.name+'"; font-style: normal; font-weight: normal; src:url("'+fontURL+'") format("'+fontFormat+'");}');
+
+						if(fontItem.variants) {
+
+							Object.keys(fontItem.variants).forEach(function(fv) {
+
+								var ffVars = {
+									'n7': 'font-style: normal; font-weight: bold;',
+									'i4': 'font-style: italic; font-weight: normal;',
+									'i7': 'font-style: italic; font-weight: bold;'
+								};
+
+								fontURL = instance.mainOptions._loadFromScript ? (instance.mainOptions._loadFromScript+fontItem.variants[fv]) : fontItem.variants[fv];
+
+
+								$customFontsStyle.append('@font-face {font-family:"'+fontItem.name+'"; '+ffVars[fv]+' src:url("'+fontURL+'") format("'+fontFormat+'");}');
+
+							})
+
+
+
+							fontFamily += ','+Object.keys(fontItem.variants).toString();
+
+						}
+
+						customFonts.push(fontFamily);
 
 					}
 
@@ -17390,11 +17636,18 @@ fpd.getDepositPhotosPurchaseMedia(function(data) {
 
 	};
 
+	/**
+	 * Generates an object that will be used for the print-ready export. This objects includes the used fonts and the SVG data strings to generate the PDF.
+	 *
+	 * @method getPrintOrderData
+	 * @version 4.7.6
+	 */
 	this.getPrintOrderData = function() {
 
 		var printOrderData = {
 			used_fonts: instance.getUsedFonts(),
-			svg_data: []
+			svg_data: [],
+			custom_images: []
 		};
 
 		for(var i=0; i < instance.viewInstances.length; ++i) {
@@ -17405,6 +17658,12 @@ fpd.getDepositPhotosPurchaseMedia(function(data) {
 			});
 
 		}
+
+		instance.getCustomElements('image').forEach(function(img) {
+
+			printOrderData.custom_images.push(img.element.source);
+
+		})
 
 		return printOrderData;
 

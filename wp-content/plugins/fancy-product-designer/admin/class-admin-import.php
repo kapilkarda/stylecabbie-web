@@ -21,6 +21,9 @@ if( !class_exists('FPD_Admin_Import') ) {
 				$extract_to_dir = $upload_dir . '/fpd_imports/';
 				$local_zip_path = $extract_to_dir . $zip_name;
 
+				if( !file_exists($extract_to_dir) )
+					wp_mkdir_p( $extract_to_dir );
+
 				move_uploaded_file($_FILES['fpd_import_file']['tmp_name'], $local_zip_path);
 
 				$result = $this->extract_zip($local_zip_path, $extract_to_dir, $zip_name, isset($_POST['fpd_import_to_library']));
@@ -28,7 +31,7 @@ if( !class_exists('FPD_Admin_Import') ) {
 				@unlink($local_zip_path); //delete uploaded zip file
 
 				if($this->error !== null)
-					echo '<div class="error"><p>'.$result.'</p></div>';
+					echo '<div class="error"><p>'.$this->error.'</p></div>';
 
 			}
 

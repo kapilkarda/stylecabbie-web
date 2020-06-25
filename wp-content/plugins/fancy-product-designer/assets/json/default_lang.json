@@ -51,7 +51,7 @@
 		"info_content": "You can set the info text in the Fancy Product Designer Labels settings.",
 		"print": "Print",
 		"save": "Save",
-		"load": "Load",
+		"load": "Load Designs",
 		"manage_layers": "Manage Layers",
 		"qr_code": "Add QR-Code",
 		"qr_code_input": "Enter a URL, some text...",
@@ -64,7 +64,8 @@
 		"ruler": "Toggle Ruler",
 		"previous_view": "Previous View",
 		"next_view": "Next View",
-		"start_guided_tour": "Start Guided Tour"
+		"start_guided_tour": "Start Guided Tour",
+		"load_designs_empty": "No Designs saved yet!"
 	},
 	"modules": {
 		"products": "Swap Product",
@@ -81,6 +82,7 @@
 		"manage_layers": "Manage Layers",
 		"images_agreement": "I have the rights to use the images.",
 		"images_confirm_button": "Confirm",
+		"images_pdf_upload_info": "Creating images from PDF...",
 		"pixabay_search": "Search in Pixabay library",
 		"depositphotos_search": "Search in depositphotos.com",
 		"depositphotos_search_category": "Search In ",
@@ -113,8 +115,8 @@
 		"minimum_dpi_info": "The JPEG image does not have the required DPI of %dpi.",
 		"maximum_size_info": "The image %filename exceeds the maximum file size of %mbMB.",
 		"customization_button": "Customize",
-		"shortcode_order:_success_sent": "The order has been successfully sent to the site owner!",
-		"shortcode_order:_fail_sent": "The order could not be sent. Please try again or contact the site owner!",
+		"shortcode_order:success_sent": "The order has been successfully sent to the site owner!",
+		"shortcode_order:fail_sent": "The order could not be sent. Please try again or contact the site owner!",
 		"not_supported_device_info": "Sorry! But the product designer can not be displayed on your device. Please use a device with a larger screen!",
 		"share:_button": "Share Design",
 		"share:_process": "An unique URL to share will be created for you...",

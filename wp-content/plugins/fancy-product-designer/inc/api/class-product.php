@@ -308,6 +308,15 @@ if(!class_exists('FPD_Product')) {
 
 		}
 
+		public function get_username() {
+
+			$user_id = $this->get_user_id();
+			$user_info = get_userdata( intval($user_id) );
+
+			return $user_info->user_nicename;
+
+		}
+
 		public function get_views( $serialize_elements = false ) {
 
 			global $wpdb;

@@ -1,6 +1,6 @@
 <?php
 
-//checks if a product has fancy product enabled
+//checks if a product has product designer enabled
 function is_fancy_product( $post_id ) {
 
     return fpd_has_content( $post_id ) !== false;

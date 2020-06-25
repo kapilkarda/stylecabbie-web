@@ -220,6 +220,10 @@ if(!class_exists('FPD_User_Products')) {
 
 							if(response.data) {
 
+								fancyProductDesigner.mainBar
+								.$content.find('.fpd-saved-designs-panel .fpd-empty-saved-designs')
+								.toggleClass('fpd-hidden', Object.keys(response.data).length !== 0);
+
 								Object.keys(response.data).forEach(function(metaKey) {
 
 									var fpdData = response.data[metaKey].fpd_data;

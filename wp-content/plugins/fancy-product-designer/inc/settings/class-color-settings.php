@@ -20,6 +20,7 @@ if( !class_exists('FPD_Settings_Colors') ) {
 						'css' 		=> 'width:500px;',
 						'default'	=> '',
 						'type' 		=> 'values-group',
+						'fullwidth'	=> true,
 						'options'   => array(
 							'hex_key' => 'HEX-Color',
 							'name' => 'Name'
@@ -81,7 +82,7 @@ if( !class_exists('FPD_Settings_Colors') ) {
 
 					array(
 						'title' => __( 'Color Picker Swatches', 'radykal' ),
-						'description' 		=> __( 'Display color suggestions in the color picker.', 'radykal' ),
+						'description' 		=> __( 'Display color suggestions in the color picker. Enter hexadecimal color(s) separated by comma. E.g. #000,#fff,#990000', 'radykal' ),
 						'id' 		=> 'fpd_color_colorPickerPalette',
 						'css' 		=> 'width:300px;',
 						'default'	=> '',

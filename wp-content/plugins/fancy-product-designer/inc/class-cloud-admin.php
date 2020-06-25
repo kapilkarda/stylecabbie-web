@@ -23,11 +23,6 @@ if(!class_exists('FPD_Cloud_Admin')) {
 			add_action( 'fpd_shortcode_order_mail_message', array(&$this, 'shortcode_order_mail'), 10, 3);
 			add_action( 'fpd_shortcode_order_mail_attachments', array(&$this, 'shortcode_order_attachments'), 10, 3);
 
-
-			//SETTINGS
-			add_action( 'radykal_settings_block_start', array(&$this, 'before_ae_settings_block') );
-			add_filter( 'radykal_settings_block_css_class', array(&$this, 'radykal_ae_settings_block_css_class'), 10, 2 );
-
 		}
 
 		public function shortcode_order_mail( $message, $order_id, $order_data ) {
@@ -182,100 +177,6 @@ if(!class_exists('FPD_Cloud_Admin')) {
 			}
 
 			return $attachments;
-
-		}
-
-		public function before_ae_settings_block( $key ) {
-
-			$api_key = get_option( 'fpd_ae_admin_api_key', '' );
-
-			if( $key == 'ae-general' && ( empty($api_key) && !class_exists('Fancy_Product_Designer_Export') ) ):
-			?>
-			<div class="fpd-settings-block-overlay">
-
-				<div class="fpd-overlay-content">
-					<h2><?php _e('Mail a print-ready file whenever an order is made to selected recipients.', 'radykal'); ?></h2>
-					<p class="description"><?php _e('To unlock the "Automated Export" you<br><a href="https://admin.fancyproductdesigner.com" target="_blank">need an account in our ADMIN solution and subscribe to the premium plan</a><br>OR<br><a href="https://elopage.com/s/radykal/fancy-product-designer-export-add-on/payment?locale=en" target="_blank">buy the Fancy Product Designer | Export add-on</a>.', 'radykal'); ?></p>
-					<span class="description"><?php _e('The API key can be found in the Site Configurations in the ADMIN solution.', 'radykal'); ?></span>
-					<input type="text" class="widefat" placeholder="<?php _e('Enter ADMIN API Key', 'radykal'); ?>" />
-					<p><button class="button-primary" id="fpd-unlock-ae"><?php _e('Unlock Automated Export', 'radykal'); ?></button></p>
-				</div>
-
-			</div>
-			<script type="text/javascript">
-
-				jQuery(document).ready(function() {
-
-					jQuery('#fpd-unlock-ae').click(function(evt) {
-
-						evt.preventDefault();
-
-						var $this = jQuery('#fpd-unlock-ae'),
-							apiKey = $this.parent().prev('input').val();
-
-						if(apiKey.length === 0) {
-							fpdMessage("<?php _e( 'Please enter an API key!', 'radykal'); ?>", 'error');
-							return;
-						}
-
-						$this.addClass('radykal-disabled');
-						jQuery.ajax({
-							url: "<?php echo admin_url('admin-ajax.php'); ?>",
-							data: {
-								action: 'fpd_checkapikey',
-								_ajax_nonce: "<?php echo FPD_Admin::$ajax_nonce; ?>",
-								api_key: apiKey
-							},
-							type: 'post',
-							dataType: 'json',
-							success: function(data) {
-
-								if(data && data.error_code) {
-
-									if(data.error_code == 'api-key-wrong') {
-										fpdMessage("<?php _e( 'The API key is wrong!', 'radykal'); ?>", 'error');
-									}
-									else if(data.error_code == 'no-sub') {
-										fpdMessage("<?php _e( 'An active premium plan is required to unlock \"Automated Export\"!', 'radykal'); ?>", 'error');
-									}
-
-								}
-								else if(data && data.created_at) {
-									$this.parents('.radykal-settings-block:first').removeClass('fpd-block-overlay-active') //remove blur
-									.find('.form-table #fpd_ae_admin_api_key').val(data.api_key) //set api key in input
-									.parents('.radykal-settings-block:first').children('.fpd-settings-block-overlay').remove(); //remove overlay
-
-								}
-								else {
-									fpdMessage("<?php _e( 'Something went wrong. Please try again or contact the Fancy Product Designer Support!', 'radykal'); ?>", 'error');
-								}
-
-								$this.removeClass('radykal-disabled');
-
-							}
-						});
-
-					});
-
-
-
-
-				});
-
-			</script>
-			<?php
-			endif;
-
-		}
-
-		public function radykal_ae_settings_block_css_class( $class, $block_id ) {
-
-			$api_key = fpd_get_option( 'fpd_ae_admin_api_key' );
-
-			if( $block_id == 'ae-general' && ( empty($api_key)  && !class_exists('Fancy_Product_Designer_Export') ) )
-				$class .= ' fpd-block-overlay-active';
-
-			return $class;
 
 		}
 

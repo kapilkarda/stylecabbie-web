@@ -199,7 +199,7 @@ if(!class_exists('FPD_WC_Cart')) {
 		//meta data displayed after the title, key: value
 	    public function get_item_data( $other_data, $cart_item ) {
 
-		    if ( isset($cart_item['fpd_data']) && fpd_get_option('fpd_cart_show_element_props') !== 'none' ) {
+		    if ( isset($cart_item['fpd_data']) && fpd_get_option('fpd_cart_show_element_props') == 'props' ) {
 
 				//get fpd data
 				$fpd_data = $cart_item['fpd_data'];
@@ -399,25 +399,18 @@ if(!class_exists('FPD_WC_Cart')) {
 						//check if fill is set and if yes, look for a hex name
 						if( isset($elementParams['fill']) && @$elementParams['fill'] && is_string($elementParams['fill']) ) {
 
-							$hex =  strtolower(str_replace('#', '', $elementParams['fill']));
-							$hex_name = fpd_get_hex_name($hex);
-							$hex_title = empty($hex_name) ? '#'.$hex : $hex_name. ' - #'.$hex;
+							$element_colors = isset($elementParams['svgFill']) ? $elementParams['svgFill'] : array($elementParams['fill']);
+							$color_display = self::color_display( $element_colors );
 
-							$hex_title = apply_filters( 'fpd_wc_cart_item_color_name', $hex_title, $hex, empty($hex_name) ? $hex_name : null);
-
-							$color_contrast = fpd_get_contrast_color($elementParams['fill']);
-
-							if( !empty($hex_title) ) {
-
-								$color_html = '<span style="border:1px solid #f2f2f2;font-size:11px;margin-right:4px;padding:2px 3px;background: '.$elementParams['fill'].'; color:'.$color_contrast.'">'.strtoupper($hex_title).'</span>';
+							if( !empty($color_display) ) {
 
 								//show only used colors
 								if( $format === 'used_colors' ) {
-									$display_elements[$hex] = $color_html;
+									$display_elements[] = $color_display;
 									continue;
 								}
 
-								array_push($values, $color_html);
+								array_push($values, $color_display);
 
 							}
 
@@ -444,6 +437,31 @@ if(!class_exists('FPD_WC_Cart')) {
 			}
 
 			return $display_elements;
+
+		}
+
+		public static function color_display( $color_arr ) {
+
+			$color_html = '';
+			foreach($color_arr as $color_value) {
+
+				$hex =  strtolower(str_replace('#', '', $color_value));
+				$hex_name = fpd_get_hex_name($hex);
+				$hex_title = empty($hex_name) ? '#'.$hex : $hex_name. ' - #'.$hex;
+
+				$hex_title = apply_filters( 'fpd_wc_cart_item_color_name', $hex_title, $hex, empty($hex_name) ? null : $hex_name);
+
+				if( !empty($hex_title) ) {
+
+					$color_contrast = fpd_get_contrast_color($color_value);
+					$color_html .= '<span style="border:1px solid #f2f2f2;font-size:11px;margin-right:4px;padding:2px 3px;background: '.$color_value.'; color:'.$color_contrast.'">'.strtoupper($hex_title).'</span>';
+
+				}
+
+
+			}
+
+			return $color_html;
 
 		}
 

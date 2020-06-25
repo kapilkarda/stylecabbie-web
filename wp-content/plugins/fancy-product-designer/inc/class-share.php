@@ -171,11 +171,6 @@ if(!class_exists('FPD_Share')) {
 						jQuery(".fpd-share-widget, .fpd-share-url").addClass('fpd-hidden');
 						jQuery('.fpd-share-process').removeClass('fpd-hidden');
 
-						var variationsSer = $productWrapper.find('.variations_form .variations select')
-											.filter(function(index, element) {
-												return $(element).val() != "";
-    										}).serialize();
-
 						var scale = $selector.width() > 800 ? Number(800 / $selector.width()).toFixed(2) : 1;
 						fancyProductDesigner.getViewsDataURL(function(dataURLs) {
 
@@ -191,13 +186,23 @@ if(!class_exists('FPD_Share')) {
 								if(response.share_id !== undefined) {
 
 									var pattern = new RegExp('(share_id=).*?(&|$)'),
-										shareUrl = window.location.href + '?' + variationsSer;
+										shareUrl = window.location.href;
 
-									if(shareUrl.search(pattern) >= 0){
+									if(shareUrl.search(pattern) >= 0) {
+										//replace share id
 										shareUrl = shareUrl.replace(pattern,'$1' + response.share_id + '$2');
 									}
 									else{
 										shareUrl = shareUrl + (shareUrl.indexOf('?')>0 ? '&' : '?') + 'share_id=' + response.share_id;
+									}
+
+									//append selected attributes of variable product
+									var variationsSer = $productWrapper.find('.variations_form .variations select')
+										.filter(function(index, element) {
+											return $(element).val() != "";
+										}).serialize();
+									if(variationsSer && variationsSer.length > 0) {
+										shareUrl += ('&' + variationsSer);
 									}
 
 									jsSocials.setDefaults('facebook', {

@@ -2,16 +2,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-function fpd_admin_display_version_info( $display_shortcode=false ) {
-
-	$shortcode_button = '';
-	if($display_shortcode)
-		$shortcode_button = '<a href="#" class="button-secondary" id="fpd-shortcode-builder">'.__('Shortcodes', 'radykal').'</a>';
-
-	echo '<div class="fpd-header-right">'.$shortcode_button.'<a href="http://support.fancyproductdesigner.com" target="_blank" class="button-primary">'.__('Support Center', 'radykal').'</a></div>';
-
-}
-
 function fpd_admin_get_file_content( $file ) {
 
 	$result = false;
@@ -150,8 +140,8 @@ function fpd_output_top_level_design_cat_options( $echoOutput=true, $idInValue=f
 	$category_options = array();
 	foreach($categories as $category) {
 
-		$category_options[$category->name] = $category->name;
 		$optionVal = $idInValue ? $category->term_id : $category->name;
+		$category_options[$optionVal] = $category->name;
 
 		if($echoOutput)
 			echo '<option value="'.$optionVal.'">'.$category->name.'</option>';

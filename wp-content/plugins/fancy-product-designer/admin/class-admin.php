@@ -12,15 +12,23 @@ if( !class_exists('FPD_Admin') ) {
 		public function __construct() {
 
 			require_once( FPD_PLUGIN_ADMIN_DIR . '/fpd-admin-functions.php' );
-			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-modal.php' );
-			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-manage-products.php' );
-			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-designs.php' );
+
+			//Resources
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-products.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-templates.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-views.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-options.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-ui-layouts.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-designs.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-orders.php' );
+			require_once( FPD_PLUGIN_ADMIN_DIR . '/resources/class-resource-pricing-rules.php' );
+
 			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-ajax.php');
 			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-scripts-styles.php' );
 			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-menus.php' );
-			require_once( FPD_PLUGIN_ADMIN_DIR . '/class-admin-ui-layout-composer.php' );
 
 			add_action( 'admin_init', array( &$this, 'init_admin' ) );
+			add_filter( 'admin_body_class', array(&$this, 'add_body_classes') );
 			add_action( 'add_meta_boxes', array( &$this, 'add_custom_box' ) );
 			add_action( 'save_post', array( &$this,'update_custom_meta_fields' ) );
 			add_action( 'admin_notices',  array( &$this, 'display_admin_notices' ) );
@@ -32,7 +40,10 @@ if( !class_exists('FPD_Admin') ) {
 			add_action( 'admin_footer-post-new.php', array( &$this, 'add_modal' ) );
 
 			//remove temp dir for files when mail has sent
-			add_action( 'phpmailer_init', array(&$this, 'init_phpmailer'));
+			add_action( 'phpmailer_init', array(&$this, 'init_phpmailer') );
+
+			//delete category parameters if design category is deleted
+			add_action( 'delete_term',  array( &$this, 'term_delete' ), 10, 4 );
 
 		}
 
@@ -100,11 +111,6 @@ if( !class_exists('FPD_Admin') ) {
 					$selected_layout_id = 'default';
 
 				}
-				else if( $_POST['fpd_method'] == 'reset' ) {
-
-					FPD_UI_Layout_Composer::reset_to_default($selected_layout_id);
-
-				}
 
 			}
 
@@ -155,7 +161,7 @@ if( !class_exists('FPD_Admin') ) {
 
 			$custom_fields = get_post_custom($post->ID);
 
-			require_once(FPD_PLUGIN_ADMIN_DIR.'/views/html-admin-meta-box.php');
+			require_once(FPD_PLUGIN_ADMIN_DIR.'/views/post-meta-box.php');
 
 		}
 
@@ -239,6 +245,13 @@ if( !class_exists('FPD_Admin') ) {
 			fpd_output_admin_notice(
 				'error',
 				'',
+				sprintf( __( 'Please update Multistep Product Configurator plugin. Minimum version %s required!', 'radykal' ), Fancy_Product_Designer::MSPC_MIN_VERSION),
+				class_exists('Multistep_Product_Configurator') && version_compare(Multistep_Product_Configurator::VERSION, Fancy_Product_Designer::MSPC_MIN_VERSION, '<')
+			);
+
+			fpd_output_admin_notice(
+				'error',
+				'',
 				sprintf( __( 'Please update Fancy Product Designer REST API plugin. Minimum version %s required!', 'radykal' ), Fancy_Product_Designer::REST_API_MIN_VERSION),
 				class_exists('FPD_Rest_Api') && (defined('FPD_Rest_Api::VERSION') && version_compare(FPD_Rest_Api::VERSION, Fancy_Product_Designer::REST_API_MIN_VERSION, '<') )
 			);
@@ -258,14 +271,15 @@ if( !class_exists('FPD_Admin') ) {
 				 __( 'Please check out the <a href="http://support.fancyproductdesigner.com/support/discussions/forums/5000283646" target="_blank">Changelog</a> and <a href="http://support.fancyproductdesigner.com/support/solutions/articles/5000582931-changelog-upgrading" target="_blank">Upgrading</a> instructions.', 'radykal' ),
 				 get_option( 'fpd_update_notice', false )
 			);
+
 			update_option( 'fpd_update_notice', false );
 
 		}
 
-		public function allow_svg_upload( $svg_mime ) {
+		public function allow_svg_upload( $upload_mimes ) {
 
-			$svg_mime['svg'] = 'image/svg+xml';
-			return $svg_mime;
+			$upload_mimes['svg'] = 'image/svg+xml';
+			return $upload_mimes;
 
 		}
 
@@ -310,7 +324,7 @@ if( !class_exists('FPD_Admin') ) {
 
 			$screen = get_current_screen();
 			if($screen->post_type !== 'shop_order')
-				require_once(FPD_PLUGIN_ADMIN_DIR.'/modals/modal-individual-product-settings.php');
+				require_once(FPD_PLUGIN_ADMIN_DIR.'/views/modal-individual-product-settings.php');
 
 		}
 
@@ -348,6 +362,24 @@ if( !class_exists('FPD_Admin') ) {
 				}
 
 			}
+
+		}
+
+		public function add_body_classes( $classes ) {
+
+			$screen = get_current_screen();
+			$screen_id = $screen->id;
+
+			if( strpos($screen_id, 'fancy_product_designer') !== false || strpos($screen_id, 'fancy-product-designer') !== false )
+				$classes .= ' fpd-backend';
+
+			return $classes;
+
+		}
+
+		public function term_delete( $term_id, $tax_id, $tax_slug, $term ) {
+
+			delete_option( 'fpd_category_parameters_'.$term->slug );
 
 		}
 

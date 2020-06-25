@@ -30,18 +30,16 @@ if( !class_exists('FPD_Settings_Fonts') ) {
 						'css' 		=> 'width: 100%;',
 						'default'	=> '',
 						'type' 		=> 'multiselect',
-						'class'		=> 'radykal-select2',
 						'options' 	=> self::get_google_webfonts()
 					),
 
 					array(
 						'title' 	=> __( 'Fonts Directory', 'radykal' ),
-						'description' 		=> __( "You can add your own fonts to the fonts directory of the plugin, these font files need to be .ttf or .woff files. TTF files are recommend, as these can be embedded into the exported PDF of an order.", 'radykal' ),
+						'description' 		=> __( "You can add your own fonts to wp-content-uploads/fpd-fonts. These font files need to be TrueType (.ttf) fonts. If you add font variants (italic, bold and bold-italic), these are not shown in this dropdown, these will be automatically loaded in the frontend.", 'radykal' ),
 						'id' 		=> 'fpd_fonts_directory',
 						'css' 		=> 'width: 100%;',
 						'default'	=> '',
 						'type' 		=> 'multiselect',
-						'class'		=> 'radykal-select2',
 						'options' 	=> self::get_custom_fonts()
 					),
 
@@ -114,7 +112,13 @@ if( !class_exists('FPD_Settings_Fonts') ) {
 				$files = scandir($fonts_dir);
 				foreach($files as $file) {
 					if( preg_match("/.(woff|ttf|WOFF|TTF)/", strtolower($file)) ) {
-						$font_files[str_replace(' ', '_', $file)] = str_replace('_', ' ', preg_replace("/\\.[^.\\s]{3,4}$/", "", $file) );
+
+						$count = 0;
+						str_replace(array('__bold', '__italic', '__bolditalic'), '', $file, $count);
+
+						//replace white in key, replace underscore with whitespace in value
+						if($count == 0)
+							$font_files[str_replace(' ', '_', $file)] = str_replace('_', ' ', preg_replace("/\\.[^.\\s]{3,4}$/", "", $file) );
 					}
 				}
 

@@ -63,24 +63,6 @@ if(!class_exists('FPD_Scripts_Styles')) {
 
 			wp_register_script( 'jquery-fpd', $fpd_js_url, $fpd_dep, $debug_mode ? $timestamp : Fancy_Product_Designer::FPD_VERSION );
 
-			//ui-layout composer
-			wp_register_script( 'fpd-ui-layout-composer-toolbar', plugins_url('/admin/js/ui-layout-composer-toolbar.js', FPD_PLUGIN_ADMIN_DIR), array(
-					'jquery-ui-core',
-					'jquery-ui-mouse',
-					'jquery-ui-sortable',
-					'jquery-ui-droppable',
-					'jquery-ui-widget',
-					'radykal-select2',
-					'radykal-ace-editor',
-					'radykal-admin',
-				), Fancy_Product_Designer::VERSION );
-
-			wp_register_style( 'fpd-ui-layout-composer-toolbar', plugins_url('/admin/css/ui-layout-composer-toolbar.css', FPD_PLUGIN_ADMIN_DIR), array(
-				'wp-color-picker',
-				'radykal-select2',
-				'radykal-admin'
-			), Fancy_Product_Designer::VERSION );
-
 		}
 
 		//includes scripts and styles in the frontend

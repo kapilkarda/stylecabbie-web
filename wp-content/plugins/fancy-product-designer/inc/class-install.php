@@ -8,9 +8,9 @@ if(!class_exists('FPD_Install')) {
 
 		const VERSION_NAME = 'fancyproductdesigner_version';
 		const UPDATE_VERSIONS = array(
-			'3.4.0' ,'3.4.3' ,'3.4.9' ,'3.5.1' ,'3.5.2', '3.5.4', '3.6.3', '3.7.2', '3.7.6', '3.7.9', '3.8.0', '3.8.4', '3.8.8', '3.9.0', '3.9.2', '3.9.3', '3.9.5', '4.0.0', '4.0.6'
+			'3.4.0' ,'3.4.3' ,'3.4.9' ,'3.5.1' ,'3.5.2', '3.5.4', '3.6.3', '3.7.2', '3.7.6', '3.7.9', '3.8.0', '3.8.4', '3.8.8', '3.9.0', '3.9.2', '3.9.3', '3.9.5', '4.0.0', '4.0.6', '4.1.0', '4.1.1', '4.1.4', '4.2.0', '4.3.0'
 		);
-		const UPDATE_LANG_VERSION = '4.0.6';
+		const UPDATE_LANG_VERSION = '4.3.0';
 
 		public function __construct() {
 
@@ -227,6 +227,22 @@ if(!class_exists('FPD_Install')) {
 
 				update_option( 'fpd_customization_required', get_option('fpd_customization_required', 'no') == 'no' ? 'none' : 'any'  );
 
+			}
+			else if($to_version === '4.1.0') {
+
+				if( fpd_table_exists(FPD_PRODUCTS_TABLE) ) {
+					$wpdb->query( "UPDATE ".FPD_PRODUCTS_TABLE." SET options = REPLACE(options, 'stage_width', 'stageWidth')");
+					$wpdb->query( "UPDATE ".FPD_PRODUCTS_TABLE." SET options = REPLACE(options, 'stage_height', 'stageHeight')");
+				}
+
+				if( fpd_table_exists(FPD_VIEWS_TABLE) ) {
+					$wpdb->query( "UPDATE ".FPD_VIEWS_TABLE." SET options = REPLACE(options, 'stage_width', 'stageWidth')");
+					$wpdb->query( "UPDATE ".FPD_VIEWS_TABLE." SET options = REPLACE(options, 'stage_height', 'stageHeight')");
+				}
+
+			}
+			else if($to_version === '4.2.0') {
+				update_option( 'fpd_react_enabled', 'yes' );
 			}
 
 		}

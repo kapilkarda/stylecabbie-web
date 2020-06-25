@@ -98,17 +98,38 @@ if(!class_exists('FPD_Shortcode_Order')) {
 
 		}
 
-		public static function get_orders( $limit=5, $offset=0 ) {
+		public static function get_orders( $limit=5, $offset=0, $include_order_data=false ) {
 
 			if( fpd_table_exists(FPD_ORDERS_TABLE) ) {
 
 				global $wpdb;
 
-				return $wpdb->get_results("SELECT * FROM ".FPD_ORDERS_TABLE." ORDER BY ID DESC LIMIT $limit OFFSET $offset");
+				if( $include_order_data ) {
+
+					return $wpdb->get_results(
+						"SELECT * FROM ".FPD_ORDERS_TABLE." ORDER BY ID DESC LIMIT $limit OFFSET $offset",
+						ARRAY_A
+					);
+
+				}
+				else {
+
+					$cols_str = "ID, created_date, CONCAT(customer_name, ' ',customer_mail) AS name";
+					$print_order_col_exists = $wpdb->get_var( "SHOW COLUMNS FROM ".FPD_ORDERS_TABLE." LIKE 'print_order'" );
+					if( !empty($print_order_col_exists) )
+						$cols_str .= ", LENGTH(print_order) as has_print_data";
+
+					return $wpdb->get_results(
+						"SELECT ".$cols_str." FROM ".FPD_ORDERS_TABLE." ORDER BY ID DESC LIMIT $limit OFFSET $offset",
+						ARRAY_A
+					);
+
+				}
+
 
 			}
 
-			return false;
+			return array();
 
 		}
 

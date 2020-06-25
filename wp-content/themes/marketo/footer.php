@@ -59,4 +59,15 @@ $footer_style = marketo_option( 'footer_style',marketo_defaults('footer_style') 
         }
     });
 });
-</script>>
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-64201999-5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-64201999-5');
+</script>
+
+

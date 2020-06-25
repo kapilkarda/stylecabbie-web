@@ -27,7 +27,7 @@ define( 'DB_NAME', 'staging' );
 define( 'DB_USER', 'stylecabbie' );
 
 /** MySQL database password */
-define( 'DB_PASSWORD', 'Style@123#' );
+define( 'DB_PASSWORD', 'Stylecabbie@123#' );
 
 /** MySQL hostname */
 define( 'DB_HOST', 'localhost' );

@@ -1,1 +1,0 @@
-try{jQuery(document).ready(function($){'use strict';});}catch(e){}

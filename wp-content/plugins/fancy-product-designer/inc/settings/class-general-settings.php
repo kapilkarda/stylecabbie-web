@@ -18,7 +18,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'id' 		=> 'fpd_product_designer_ui_layout',
 						'default'	=> 'default',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => self::get_saved_ui_layouts()
 					),
@@ -29,7 +28,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'id' 		=> 'fpd_product_designer_visibility',
 						'default'	=> 'page',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => self::get_product_designer_visibilities()
 					),
@@ -41,7 +39,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'css' 		=> 'min-width:350px;',
 						'default'	=> 'default',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => self::get_main_bar_positions()
 					),
@@ -88,8 +85,8 @@ if( !class_exists('FPD_Settings_General') ) {
 						'type' 		=> 'radio',
 						'description'	=>  __( 'If your customers can add multiple or large images, then save images on server, otherwise you may inspect some issues when adding the customized product to the cart. The images will be saved in wp-content/uploads/fancy_products_uploads/ directory.', 'radykal' ),
 						'options'	=> array(
-							'filereader' => __( 'No', 'radykal' ),
-							'php' => __( 'Yes', 'radykal' )
+							'php' => __( 'Yes (Highly Recommended)', 'radykal' ),
+							'filereader' => __( 'No (Can lead to issue when adding product to cart)', 'radykal' ),
 						),
 						'relations' => array(
 							'filereader' => array(
@@ -121,13 +118,13 @@ if( !class_exists('FPD_Settings_General') ) {
 						'title' => __( 'Allowed Image Types', 'radykal' ),
 						'id' 		=> 'fpd_allowedImageTypes',
 						'css' 		=> 'width:300px;',
-						'default'	=> array('jpeg', 'png', 'svg'),
+						'default'	=> array('jpeg', 'png', 'svg', 'pdf'),
 						'type' 		=> 'multiselect',
-						'class'		=> 'radykal-select2',
 						'options'   => array(
 							"jpeg" => 'JPEG',
 							"png" => 'PNG',
-							"svg" => 'SVG'
+							"svg" => 'SVG',
+							"pdf" => 'PDF'
 						)
 					),
 
@@ -181,7 +178,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'id' 		=> 'fpd_pixabayLang',
 						'default'	=> 'en',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => array(
 							'en' => 'English',
@@ -241,7 +237,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'id' 		=> 'fpd_depositphotosLang',
 						'default'	=> 'en',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => array(
 							'en' => 'English',
@@ -294,7 +289,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'id' 		=> 'fpd_depositphotosImageSize',
 						'default'	=> 's',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 200px',
 						'options'   => array(
 							's' => 'S (72DPI)',
@@ -548,7 +542,6 @@ if( !class_exists('FPD_Settings_General') ) {
 						'css' 		=> 'width:300px;',
 						'default'	=> array('facebook', 'twitter', 'googleplus', 'email'),
 						'type' 		=> 'multiselect',
-						'class'		=> 'radykal-select2',
 						'options'   => array(
 							"facebook" => 'Facebook',
 							"twitter" => 'Twitter',

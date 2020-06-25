@@ -185,9 +185,9 @@
 			    <div class="fpd-tool-line-height fpd-slider-group fpd-clearfix fpd-tooltip" data-defaulttext="Line Height" title="toolbar.line_height">
 					<span class="fpd-icon-format-line-spacing"></span>
 				    <div class="fpd-range-wrapper">
-					     <input class="fpd-slider-range" type="range" value="1" step="0.1" min="1" max="3" data-control="lineHeight" />
+					     <input class="fpd-slider-range" type="range" value="1" step="0.1" min="-2" max="3" data-control="lineHeight" />
 				    </div>
-				    <input class="fpd-slider-number fpd-number" type="number" value="1" step="0.1" min="1" max="3" data-control="lineHeight" />
+				    <input class="fpd-slider-number fpd-number" type="number" value="1" step="0.1" min="-2" max="3" data-control="lineHeight" />
 			    </div>
 
 			    <div class="fpd-tool-letter-spacing fpd-slider-group fpd-clearfix fpd-tooltip" data-defaulttext="Letter Spacing" title="toolbar.letter_spacing">
@@ -696,7 +696,7 @@
 								 <span class="fpd-price">Hello</span>
 					        </div>
 				        </div>
-				        <input type="file" multiple="multiple" class="fpd-input-image" name="files[]" accept="image/jpeg,image/jpg,image/png,image/svg+xml" />
+				        <input type="file" multiple="multiple" class="fpd-input-image" name="files[]" accept="image/jpeg,image/jpg,image/png,image/svg+xml,application/pdf" />
 		            </form>
 		            <div class="fpd-scroll-area">
 						<div class="fpd-grid fpd-grid-cover fpd-photo-grid"></div>
@@ -893,6 +893,8 @@
 			</div><!-- Upload Zone Adds -->
 
 			<div class="fpd-saved-designs-panel">
+
+				<div class="fpd-empty-saved-designs fpd-hidden" data-defaulttext="No Designs saved yet!">actions.load_designs_empty</div>
 
 				<div class="fpd-scroll-area">
 					<div class="fpd-grid fpd-grid-contain fpd-padding"></div>

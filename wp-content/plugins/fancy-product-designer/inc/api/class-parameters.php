@@ -75,7 +75,7 @@ if(!class_exists('FPD_Parameters')) {
 				'minDPI' => 'intval',
 				'filter' => function($value) { return $value == "0" ? false : $value; },
 				'scaleMode' => 'strval',
-				'minScaleLimit' => function($value) { return floatval(number_format(floatval($value), 4)); },
+				'minScaleLimit' => function($value) { return round(floatval($value), 4); },
 				'advancedEditing' => 'boolval',
 				'svgFill' => function($value) { return is_array($value) ? $value : ''; },
 				//upload zone
@@ -85,6 +85,7 @@ if(!class_exists('FPD_Parameters')) {
 				'adds_texts' => 'boolval',
 				'adds_designs' => 'boolval',
 				'uploadZoneMovable' => 'boolval',
+				'uploadZoneRemovable' => 'boolval',
 				//old (needs to be present)
 				'scale' => 'floatval',
 			);
@@ -198,7 +199,11 @@ if(!class_exists('FPD_Parameters')) {
 				}
 			}
 
-			if( isset($parameters['colorPicker'])  ) {
+			//if colors are empty, remove from props, so element might get colors from global options
+			if( isset($json_data['colors']) && $json_data['colors'] === '' )
+				unset($json_data['colors']);
+
+			if( isset($parameters['colorPicker']) && fpd_convert_string_value_to_int($parameters['colorPicker']) ) {
 				$json_data['colors'] = true;
 			}
 

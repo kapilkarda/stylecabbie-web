@@ -238,6 +238,7 @@ if(!class_exists('FPD_Product_Settings')) {
 
 			$custom_images_parameters = array();
 			$custom_image_options = FPD_Settings_Default_Element_Options::get_options();
+
 			$custom_image_options = $custom_image_options['custom-images'];
 			foreach( $custom_image_options as $option ) {
 

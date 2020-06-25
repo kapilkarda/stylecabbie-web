@@ -19,7 +19,6 @@ if( !class_exists('FPD_Settings_WooCommerce') ) {
 						'id' 		=> 'fpd_placement',
 						'default'	=> 'fpd-replace-image',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 300px',
 						'options'   => self::get_product_designer_positions()
 					),
@@ -30,7 +29,6 @@ if( !class_exists('FPD_Settings_WooCommerce') ) {
 						'id' 		=> 'fpd_start_customizing_button_position',
 						'default'	=> 'under-short-desc',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'css'		=> 'width: 300px',
 						'options'   => array(
 							'under-short-desc'	 => __( 'After Short Description', 'radykal' ),
@@ -196,8 +194,8 @@ if( !class_exists('FPD_Settings_WooCommerce') ) {
 					),
 
 					array(
-						'title' => __( 'Product Thumbnail', 'radykal' ),
-						'description' 		=> __( 'Display the product thumbnail of the order item in Account-Orders page and Order-Email.', 'radykal' ),
+						'title' => __( 'Customized Product Thumbnail', 'radykal' ),
+						'description' 		=> __( 'Show the thumbnail of the customized product in Account-Orders page and Order-Email.', 'radykal' ),
 						'id' 		=> 'fpd_order_product_thumbnail',
 						'default'	=> 'no',
 						'type' 		=> 'checkbox'
@@ -305,7 +303,6 @@ if( !class_exists('FPD_Settings_WooCommerce') ) {
 						'css' 		=> 'width:350px;',
 						'default'	=> 'none',
 						'type' 		=> 'select',
-						'class'		=> 'radykal-select2',
 						'options'   => self::get_cross_sells_display_options()
 					),
 

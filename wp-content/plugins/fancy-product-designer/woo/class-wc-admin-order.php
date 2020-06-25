@@ -30,7 +30,7 @@ if(!class_exists('FPD_Admin_Order')) {
 
 			add_meta_box(
 				'fpd-order',
-				__( 'Fancy Product Designer - Order Viewer', 'radykal' ),
+				__( 'Fancy Product Designer', 'radykal' ),
 				array( &$this, 'output_meta_box'),
 				'shop_order',
 				'normal',
@@ -72,23 +72,7 @@ if(!class_exists('FPD_Admin_Order')) {
 
 		public function output_meta_box()  {
 
-			global $woocommerce;
-
-			fpd_output_admin_notice(
-				'info',
-				 __( 'New ADMIN', 'radykal' ),
-				 __( '<a href="http://admin.fancyproductdesigner.com/" target="_blank">We created a new online solution with an improved Order viewer that has much more feature than this one.</a>', 'radykal' ),
-				 true,
-				 'fpd_notice_new_admin',
-				 true,
-				 true
-			);
-
-			?>
-			<div id="fpd-wc-order">
-				<?php include( FPD_PLUGIN_ADMIN_DIR.'/views/html-order-viewer.php' ); ?>
-			</div>
-			<?php
+			echo '<div id="fpd-react-root"></div>';
 
 		}
 
