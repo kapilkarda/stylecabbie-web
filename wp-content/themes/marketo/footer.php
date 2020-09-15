@@ -37,12 +37,15 @@ $footer_style = marketo_option( 'footer_style',marketo_defaults('footer_style') 
    top: 0px;
 }
 </style>
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     jQuery(document).ready(function ($) {
     	$("button").click(function() {
 		    //alert(this.name); // or alert($(this).attr('id'));Reset password
 		    if(this.name=='register' || this.name=='login' || this.value=='Reset password'){
 		    	$('<div class=loadingDiv></div>').prependTo(document.body);
+		    	setTimeout(function(){
+		    		$('<div class=loadingDiv></div>').remove(document.body);
+		    	},2000)
 		    }
 		});
     $('a').click(function(){
@@ -56,10 +59,13 @@ $footer_style = marketo_option( 'footer_style',marketo_defaults('footer_style') 
            
         }else{
              $('<div class=loadingDiv></div>').prependTo(document.body); 
+             setTimeout(function(){
+		    		$('<div class=loadingDiv></div>').remove(document.body);
+		    	},2000)
         }
     });
 });
-</script>
+</script> -->
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-64201999-5"></script>
 <script>

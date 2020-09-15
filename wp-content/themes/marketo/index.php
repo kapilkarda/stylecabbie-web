@@ -35,9 +35,11 @@ $column = ($sidebar == 1 || !is_active_sidebar('sidebar-1')) ? 'col-md-12' : 'co
                 get_sidebar();
             }
             ?>
+			
         </div><!-- Main row end -->
 
     </div><!-- Container end -->
 </section><!-- Main container end -->
+
 
 <?php get_footer(); ?>

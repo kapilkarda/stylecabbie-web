@@ -21,7 +21,7 @@ RewriteCond %{HTTP:Cookie} !comment_author_
 RewriteCond %{HTTP:Cookie} !safirmobilswitcher=mobil
 RewriteCond %{HTTP:Profile} !^[a-z0-9\"]+ [NC]
 RewriteCond %{DOCUMENT_ROOT}/wp-content/cache/all/$1/index.html -f [or]
-RewriteCond /home/stylecabbie/public_html/wp-content/cache/all/$1/index.html -f
+RewriteCond /home/u377484994/domains/stylecabbie.com/public_html/wp-content/cache/all/$1/index.html -f
 RewriteRule ^(.*) "/wp-content/cache/all/$1/index.html" [L]
 </IfModule>
 <FilesMatch "index\.(html|htm)$">
@@ -89,6 +89,9 @@ FileETag None
 </IfModule>
 </FilesMatch>
 # END LBCWpFastestCache
+
+
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -179,3 +182,9 @@ RewriteRule . /index.php [L]
 AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
 </IfModule>
 # END Enable Gzip Compression
+# DO NOT REMOVE THIS LINE AND THE LINES BELLOW SSL_REDIRECT:stylecabbie.com
+RewriteEngine on
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} (www\.)?stylecabbie.com
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# DO NOT REMOVE THIS LINE AND THE LINES BELLOW SSL_REDIRECT:stylecabbie.com

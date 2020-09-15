@@ -210,3 +210,5 @@ function reduce_min_strength_password_requirement( $strength ) {
     // 3 => Strong (default) | 2 => Medium | 1 => Weak | 0 => Very Weak (anything).
     return 0; 
 }
+
+

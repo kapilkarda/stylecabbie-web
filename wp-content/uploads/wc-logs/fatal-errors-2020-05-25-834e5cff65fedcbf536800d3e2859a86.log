@@ -1,4 +1,0 @@
-2020-05-25T13:17:03+00:00 CRITICAL Cannot redeclare reduce_min_strength_password_requirement() (previously declared in /home/stylecabbie/public_html/wp-content/themes/marketo-child/functions.php:209) in /home/stylecabbie/public_html/wp-content/themes/marketo/functions.php on line 411
-
-2020-05-25T13:17:10+00:00 CRITICAL Cannot redeclare reduce_min_strength_password_requirement() (previously declared in /home/stylecabbie/public_html/wp-content/themes/marketo-child/functions.php:209) in /home/stylecabbie/public_html/wp-content/themes/marketo/functions.php on line 411
-

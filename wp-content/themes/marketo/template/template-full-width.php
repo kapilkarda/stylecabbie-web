@@ -20,6 +20,6 @@ get_template_part( 'template-parts/header/content', 'page-header' );
 				</div> <!-- end full-width-content -->
 		<?php endwhile; ?>
     </div> <!-- end main-content -->
-
+	
 </div> <!-- end main-content -->
 <?php get_footer(); ?>

@@ -91,6 +91,9 @@ $_SERVER['HTTPS'] = 'on';
 define('WP_HOME', 'https://www.stylecabbie.com');
 define('WP_SITEURL', 'https://www.stylecabbie.com');
 
+define( 'WPMS_ON', true );
+define( 'WPMS_SMTP_PASS', 'Stylecabbie@123#' );
+
 //define('WP_MEMORY_LIMIT', '64M');
 
 /* That's all, stop editing! Happy publishing. */

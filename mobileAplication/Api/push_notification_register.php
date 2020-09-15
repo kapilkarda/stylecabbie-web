@@ -1,5 +1,8 @@
 <?php
-$conn = mysqli_connect('localhost','stylecabbie','Style@123#','staging');
+$conn = mysqli_connect('localhost','u377484994_stylecabbie','Stylecabbie@123#','u377484994_stylecabbie');
+if(!$conn){
+	echo'Not connect';
+}
 
 if (!$conn) {
 echo "Database not connected !";

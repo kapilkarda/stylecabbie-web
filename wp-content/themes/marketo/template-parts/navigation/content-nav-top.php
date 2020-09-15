@@ -20,10 +20,15 @@ if ($show_topbar_border) {
 <div class="xs-top-bar <?php echo esc_attr($border_class); ?> d-none d-md-none d-lg-block">
     <div class="<?php echo esc_attr($container); ?>">
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-6">
                 <div class="topbar-info-group">
                     <?php if ($top_bar_infos[0]['info_text'] != '') { ?>
                         <ul class="xs-top-bar-info">
+							<li>
+								<p style="margin-bottom:0px" >
+									Under the <b>Atmanirbhar Bharat</b> campaign
+								</p>
+							</li>
                             <?php foreach ($top_bar_infos as $top_bar_info) { ?>
                                 <li>
                                     <a href="<?php echo esc_url($top_bar_info['info_url']); ?>">
@@ -36,24 +41,23 @@ if ($show_topbar_border) {
                             <?php } ?>
                         </ul>
                     <?php } ?>
-                    <?php
-                    if ($header_social_links) { ?>
-                        <ul class="xs-social-list">
-                            <li class="xs-list-text"><?php echo esc_html__('Follow Us', 'marketo'); ?></li>
-                            <?php
-                            foreach ($header_social_links as $social) {
-                                $icon = (isset($social['social_icon']) ? $social['social_icon'] : '');
-                                ?>
-                                <li><a href="<?php echo esc_url($social['social_url']); ?>"><i
-                                            class="<?php echo esc_attr($icon); ?>"></i></a></li><?php
-                            }
-                            ?>
-                        </ul>
-                    <?php } ?>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
+				
                 <ul class="xs-top-bar-info right-content">
+					<?php
+                    if ($header_social_links) { ?>
+							<li class="xs-list-text"><?php echo esc_html__('Follow Us', 'marketo'); ?></li>
+							<?php
+													   foreach ($header_social_links as $social) {
+														   $icon = (isset($social['social_icon']) ? $social['social_icon'] : '');
+							?>
+							<li><a href="<?php echo esc_url($social['social_url']); ?>"><i
+																						   class="<?php echo esc_attr($icon); ?>"></i></a></li><?php
+													   }
+							?>
+					<?php } ?>
                     <?php if (is_user_logged_in()) : ?>
                         <li>
                             <a href="<?php echo marketo_get_account_link(); ?>"><?php echo esc_html__('My account', 'marketo'); ?></a>
