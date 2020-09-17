@@ -29,12 +29,42 @@
    opacity: 0.9;
    width:100%; 
    height:100%; 
-   background:url("https://stylecabbie.com/wp-content/uploads/loading1.gif") center center no-repeat;
+   background:url("https://stylecabbie.com/wp-content/uploads/svgloading.svg") center center no-repeat;
    top: 0px;
 }
 </style>
 
 <script type="text/javascript">
+
+	var isMobile = {
+	    Android: function() {
+	        return navigator.userAgent.match(/Android/i);
+	    },
+	    BlackBerry: function() {
+	        return navigator.userAgent.match(/BlackBerry/i);
+	    },
+	    iOS: function() {
+	        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+	    },
+	    Opera: function() {
+	        return navigator.userAgent.match(/Opera Mini/i);
+	    },
+	    Windows: function() {
+	        return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+	    },
+	    any: function() {
+	        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+	    }
+	};
+
+
+	if( isMobile.any() )
+	{ 
+		console.log('Mobile');
+	}else{
+		console.log('desktop');
+	}
+
 	console.log('hello');
     jQuery(document).ready(function ($) {
 
