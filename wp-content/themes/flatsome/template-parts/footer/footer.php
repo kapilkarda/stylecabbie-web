@@ -75,14 +75,15 @@
 		        console.log($(this).attr('href'));
 				var str = $(this).attr('href');
 		        var spl = str.split("/");
-		        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' || $(this).attr('href')=='#tab-additional_information'  ){
+		        
+		        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' || $(this).attr('href')=='#tab-additional_information' || $(this).attr('href')=='https://www.stylecabbie.com/my-account/'  ){
 		            
 		           
 		        }else{
 		        	$('<div class=loadingDiv></div>').prependTo(document.body);
 		        	setTimeout(function(){
-			    		$('<div class=loadingDiv></div>').remove();
-			    		//console.log('timeset');
+			    		$('<div class=loadingDiv></div>').detach();
+			    		console.log('timeset');
 			    	},2000)
 		        }
 		    });
