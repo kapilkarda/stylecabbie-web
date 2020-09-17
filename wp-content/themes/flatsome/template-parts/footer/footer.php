@@ -82,15 +82,15 @@
 		        	$('<div class=loadingDiv></div>').prependTo(document.body);
 		        	setTimeout(function(){
 			    		$('<div class=loadingDiv></div>').remove();
-			    		console.log('timeset');
+			    		//console.log('timeset');
 			    	},2000)
 		        }
 		    });
 		});
 	}else{
-		console.log('desktop');
+		//console.log('desktop');
 	}
 
-	console.log('hello');
+	//console.log('hello');
     
 </script>
