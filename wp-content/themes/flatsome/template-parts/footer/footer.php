@@ -79,6 +79,9 @@
 		           
 		        }else{
 		        	$('<div class=loadingDiv></div>').prependTo(document.body);
+		        	setTimeout(function(){
+			    		$('<div class=loadingDiv></div>').remove();
+			    	},2000)
 		        }
 		    });
 		});
