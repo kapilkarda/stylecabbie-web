@@ -32,6 +32,9 @@
    background:url("https://stylecabbie.com/wp-content/uploads/svgloading.svg") center center no-repeat;
    top: 0px;
 }
+* {
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);	
+}
 </style>
 
 <script type="text/javascript">
