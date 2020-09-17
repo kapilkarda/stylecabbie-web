@@ -6,18 +6,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class ES_DB_Actions extends ES_DB {
 	/**
+	 * Table Name
+	 *
 	 * @since 4.2.1
 	 * @var $table_name
 	 *
 	 */
 	public $table_name;
+
 	/**
+	 * Version
+	 *
 	 * @since 4.2.1
 	 * @var $version
 	 *
 	 */
 	public $version;
+
 	/**
+	 * Primary Key
+	 *
 	 * @since 4.2.1
 	 * @var $primary_key
 	 *
@@ -47,15 +55,21 @@ class ES_DB_Actions extends ES_DB {
 	 */
 	public function get_columns() {
 		return array(
-			'contact_id'  => '%d',
-			'message_id'  => '%d',
-			'campaign_id' => '%d',
-			'type'        => '%d',
-			'count'       => '%d',
-			'link_id'     => '%d',
-			'list_id'     => '%d',
-			'created_at'  => '%d',
-			'updated_at'  => '%d'
+			'contact_id'   => '%d',
+			'message_id'   => '%d',
+			'campaign_id'  => '%d',
+			'type'         => '%d',
+			'count'        => '%d',
+			'link_id'      => '%d',
+			'list_id'      => '%d',
+			'ip'     	   => '%s',
+			'country'      => '%s',
+			'device'       => '%s',
+			'browser'      => '%s',
+			'email_client' => '%s',
+			'os'           => '%s',
+			'created_at'   => '%d',
+			'updated_at'   => '%d',
 		);
 	}
 
@@ -66,15 +80,21 @@ class ES_DB_Actions extends ES_DB {
 	 */
 	public function get_column_defaults() {
 		return array(
-			'contact_id'  => null,
-			'message_id'  => null,
-			'campaign_id' => null,
-			'type'        => 0,
-			'count'       => 0,
-			'link_id'     => 0,
-			'list_id'     => 0,
-			'created_at'  => ig_es_get_current_gmt_timestamp(),
-			'updated_at'  => ig_es_get_current_gmt_timestamp()
+			'contact_id'   => null,
+			'message_id'   => null,
+			'campaign_id'  => null,
+			'type'         => 0,
+			'count'        => 0,
+			'link_id'      => 0,
+			'list_id'      => 0,
+			'ip'     	   => '',
+			'country'      => '',
+			'device'       => '',
+			'browser'      => '',
+			'email_client' => '',
+			'os'           => '',
+			'created_at'   => ig_es_get_current_gmt_timestamp(),
+			'updated_at'   => ig_es_get_current_gmt_timestamp()
 		);
 	}
 
@@ -90,24 +110,25 @@ class ES_DB_Actions extends ES_DB {
 	 */
 	public function add( $args, $explicit = true ) {
 
-		global $wpdb;
+		global $wpdb, $wpbd;
 
 		$ig_actions_table = IG_ACTIONS_TABLE;
 
 		$args_keys     = array_keys( $args );
-		$args_keys_str = implode( ", ", $args_keys );
+		$args_keys_str = implode( ', ', $args_keys );
 
 		$sql = "INSERT INTO $ig_actions_table ($args_keys_str)";
 
 		$args_values = array_values( $args );
+		$args_values = esc_sql( $args_values );
 
 		$args_values_str = $this->prepare_for_in_query( $args_values );
 
 		$sql .= " VALUES ($args_values_str) ON DUPLICATE KEY UPDATE";
 
-		$sql .= ( $explicit ) ? $wpdb->prepare( " created_at = created_at, count = count+1, updated_at = %d", ig_es_get_current_gmt_timestamp() ) : ' count = values(count)';
+		$sql .= ( $explicit ) ? $wpdb->prepare( ' created_at = created_at, count = count+1, updated_at = %d, ip = %s, country = %s, browser = %s, device = %s, os = %s, email_client = %s', ig_es_get_current_gmt_timestamp(), $args['ip'], $args['country'], $args['browser'], $args['device'], $args['os'], $args['email_client'] ) : ' count = values(count)';
 
-		$result = $wpdb->query( $sql );
+		$result = $wpbd->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( false !== $result ) {
 			return true;
@@ -128,24 +149,50 @@ class ES_DB_Actions extends ES_DB {
 	public function get_total_contacts_clicks_links( $days = 0, $distinct = true ) {
 		global $wpdb;
 
-		$ig_actions_table = IG_ACTIONS_TABLE;
+		$args = array(
+			IG_LINK_CLICK
+		);
 
+		$total_contacts_clicked = 0;
 		if ( $distinct ) {
-			$query = "SELECT COUNT(DISTINCT(`contact_id`)) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_contacts_clicked = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_contacts_clicked = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		} else {
-			$query = "SELECT COUNT(`contact_id`) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_contacts_clicked = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_contacts_clicked = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		}
 
-		$args[] = IG_LINK_CLICK;
-
-		if ( 0 != $days ) {
-			$days   = esc_sql( $days );
-			$where  = " AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))";
-			$query  .= $where;
-			$args[] = $days;
-		}
-
-		return $wpdb->get_var( $wpdb->prepare( $query, $args ) );
+		return $total_contacts_clicked;
 	}
 
 	/**
@@ -160,24 +207,50 @@ class ES_DB_Actions extends ES_DB {
 	public function get_total_contact_lost( $days = 0, $distinct = true ) {
 		global $wpdb;
 
-		$ig_actions_table = IG_ACTIONS_TABLE;
+		$args = array(
+			IG_CONTACT_UNSUBSCRIBE
+		);
 
+		$total_emails_unsubscribed = 0;
 		if ( $distinct ) {
-			$query = "SELECT COUNT(DISTINCT(`contact_id`)) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_unsubscribed = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_unsubscribed = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		} else {
-			$query = "SELECT COUNT(`contact_id`) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_unsubscribed = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_unsubscribed = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		}
 
-		$args[] = IG_CONTACT_UNSUBSCRIBE;
-
-		if ( 0 != $days ) {
-			$days   = esc_sql( $days );
-			$where  = " AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))";
-			$query  .= $where;
-			$args[] = $days;
-		}
-
-		return $wpdb->get_var( $wpdb->prepare( $query, $args ) );
+		return $total_emails_unsubscribed;
 	}
 
 
@@ -194,24 +267,50 @@ class ES_DB_Actions extends ES_DB {
 	public function get_total_contacts_opened_message( $days = 0, $distinct = true ) {
 		global $wpdb;
 
-		$ig_actions_table = IG_ACTIONS_TABLE;
+		$args = array(
+			IG_MESSAGE_OPEN
+		);
 
+		$total_emails_opened = 0;
 		if ( $distinct ) {
-			$query = "SELECT COUNT(DISTINCT(`contact_id`)) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_opened = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_opened = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		} else {
-			$query = "SELECT COUNT(`contact_id`) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_opened = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_opened = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		}
 
-		$args[] = IG_MESSAGE_OPEN;
-
-		if ( 0 != $days ) {
-			$days   = esc_sql( $days );
-			$where  = " AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))";
-			$query  .= $where;
-			$args[] = $days;
-		}
-
-		return $wpdb->get_var( $wpdb->prepare( $query, $args ) );
+		return $total_emails_opened;
 	}
 
 	/**
@@ -226,23 +325,84 @@ class ES_DB_Actions extends ES_DB {
 	public function get_total_emails_sent( $days = 0, $distinct = true ) {
 		global $wpdb;
 
-		$ig_actions_table = IG_ACTIONS_TABLE;
+		$args = array(
+			IG_MESSAGE_SENT
+		);
 
+		$total_emails_sent = 0;
 		if ( $distinct ) {
-			$query = "SELECT COUNT(DISTINCT(`contact_id`)) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_sent = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_sent = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(DISTINCT(`contact_id`)) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		} else {
-			$query = "SELECT COUNT(`contact_id`) FROM $ig_actions_table WHERE `type` = %d";
+			if ( 0 != $days ) {
+				$days   = esc_sql( $days );
+				$args[] = $days;
+				$total_emails_sent = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))",
+						$args
+					)
+				);
+			} else {
+				$total_emails_sent = $wpdb->get_var(
+					$wpdb->prepare(
+						"SELECT COUNT(`contact_id`) FROM {$wpdb->prefix}ig_actions WHERE `type` = %d",
+						$args
+					)
+				);
+			}
 		}
 
-		$args[] = IG_MESSAGE_SENT;
+		return $total_emails_sent;
+	}
 
-		if ( 0 != $days ) {
-			$days   = esc_sql( $days );
-			$where  = " AND created_at >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL %d DAY))";
-			$query  .= $where;
-			$args[] = $days;
+	/**
+	 * Get contact count based on campaign_id and type 
+	 *
+	 * @return string|null
+	 *
+	 * @since 4.5.2
+	 */
+	public function get_count_based_on_id_type( $campaign_id, $type, $distinct = true ) {
+		global $wpdb;
+
+		$args = array();
+		
+		$args[] = $campaign_id;
+		$args[] = $type;
+
+		$count = 0;
+		if ( $distinct ) {
+			$count = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(DISTINCT(`contact_id`)) as count FROM {$wpdb->prefix}ig_actions WHERE `campaign_id`= %d AND `type` = %d",
+					$args
+				)
+			);
+		} else {
+			$count = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT  COUNT(`contact_id`) as count FROM {$wpdb->prefix}ig_actions WHERE `campaign_id`= %d  AND `type` = %d",
+					$args
+				)
+			);
 		}
 
-		return $wpdb->get_var( $wpdb->prepare( $query, $args ) );
+		return $count;
 	}
 }

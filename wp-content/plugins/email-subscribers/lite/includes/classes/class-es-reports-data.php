@@ -104,8 +104,6 @@ if ( ! class_exists( 'ES_Reports_Data' ) ) {
 		 * @param int $days
 		 *
 		 * @return int
-		 *
-		 *
 		 */
 		public static function get_total_contact_lost( $days = 60, $distinct = true ) {
 			return ES()->actions_db->get_total_contact_lost( $days, $distinct );
@@ -121,16 +119,21 @@ if ( ! class_exists( 'ES_Reports_Data' ) ) {
 		 * @since 4.4.0
 		 */
 		public static function get_contacts_growth( $days = 60 ) {
+
 			$contacts = ES()->contacts_db->get_total_contacts_by_date();
+
+			$total = ES()->contacts_db->get_total_subscribed_contacts_before_days( $days );
 
 			$data = array();
 			for ( $i = $days; $i >= 0; $i -- ) {
-				$date = date( "Y-m-d", strtotime( '-' . $i . ' days' ) );
+				$date = gmdate( 'Y-m-d', strtotime( '-' . $i . ' days' ) );
 
-				$data[ $date ] = 0;
+				$count = isset( $contacts[ $date ] ) ? $contacts[ $date ] : 0;
+
+				$total += $count;
+
+				$data[ $date ] = $total;
 			}
-
-			$data = array_merge( $data, $contacts );
 
 			return $data;
 		}
@@ -174,17 +177,19 @@ if ( ! class_exists( 'ES_Reports_Data' ) ) {
 			$total_links_clicks = self::get_total_contacts_clicks_links( 60, false );
 			$total_message_sent = self::get_total_emails_sent( 60, false );
 			$total_contact_lost = self::get_total_contact_lost( 60, false );
-
 			$contacts_growth = self::get_contacts_growth();
 
-			$total_open_rate = $total_click_rate = $total_lost_rate = 0;
+			$total_open_rate  = 0;
+			$total_click_rate = 0; 
+			$total_lost_rate  = 0;
 			if ( $total_message_sent > 0 ) {
 				$total_open_rate  = ( $total_email_opens ) / $total_message_sent;
 				$total_click_rate = ( $total_links_clicks ) / $total_message_sent;
 				$total_lost_rate  = ( $total_contact_lost ) / $total_message_sent;
 			}
 
-			$avg_open_rate = $avg_click_rate = 0;
+			$avg_open_rate  = 0;
+			$avg_click_rate = 0;
 			if ( $total_message_sent > 0 ) {
 				$avg_open_rate  = ( $total_email_opens * 100 ) / $total_message_sent;
 				$avg_click_rate = ( $total_links_clicks * 100 ) / $total_message_sent;
@@ -214,7 +219,7 @@ if ( ! class_exists( 'ES_Reports_Data' ) ) {
 				'total_open_rate'    => number_format( $total_open_rate, 2 ),
 				'total_click_rate'   => $total_click_rate,
 				'total_lost_rate'    => $total_lost_rate,
-				'contacts_growth'    => $contacts_growth
+				'contacts_growth'    => $contacts_growth,
 			);
 
 			$data = array_merge( $data, $reports_data );

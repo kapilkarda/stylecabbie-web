@@ -47,28 +47,20 @@ class ES_Action_Delete_Contact extends ES_Workflow_Action {
 				if ( ! $data_type || ! $data_type->validate( $data_item ) ) {
 					continue;
 				}
-				$data = $data_type->get_data( $data_item );
 
-				$user_id = ! empty( $data['wp_user_id'] ) ? $data['wp_user_id'] : 0;
+				$data  = $data_type->get_data( $data_item );
+				$email = ! empty( $data['email'] ) ? $data['email'] : '';
 
-				if ( ! empty( $user_id ) ) {
-					$user = get_user_by( 'ID', $user_id );
+				if ( ! empty( $email ) ) {
+					$where      = $wpdb->prepare( 'email = %s', $email );
+					$contact_id = ES()->contacts_db->get_column_by_condition( 'id', $where );
 
-					if ( $user instanceof WP_User ) {
-						$email = $user->user_email;
-
-						$where      = $wpdb->prepare( 'email = %s', $email );
-						$contact_id = ES()->contacts_db->get_column_by_condition( 'id', $where );
-
-						if ( $contact_id ) {
-
-							ES()->contacts_db->delete_contacts_by_ids( $contact_id );
-						}
+					if ( $contact_id ) {
+						ES()->contacts_db->delete_contacts_by_ids( $contact_id );
 					}
 				}
 			}
 		}
-
 	}
 
 }

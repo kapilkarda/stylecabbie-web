@@ -7,7 +7,7 @@ jQuery(document).ready(function() {
 
     /**
      * Change description
-     */
+     */	 
 	jQuery(wcast_customizer.trigger_click).trigger( "click" );    
 	jQuery('#customize-theme-controls #accordion-section-themes').hide();
 	
@@ -17,6 +17,10 @@ jQuery(document).ready(function() {
 
 	if(jQuery("#customize-control-tracking_info_settings-show_track_label input").prop("checked") != true){	
 		jQuery('#customize-control-tracking_info_settings-track_header_text').hide();
+	}
+	
+	if(jQuery("#customize-control-tracking_info_settings-hide_trackig_header input").prop("checked") == true){	
+		jQuery('#customize-control-tracking_info_settings-header_text_change').hide();
 	}
 	
 	if(jQuery("#customize-control-woocommerce_customer_delivered_order_settings-wcast_enable_delivered_ga_tracking input").prop("checked") != true){	
@@ -45,21 +49,15 @@ jQuery(document).ready(function() {
 	}
 	
 	if(jQuery('#customize-control-tracking_info_settings-tracking_number_link input').prop("checked") == true){	
-		jQuery('#customize-control-tracking_info_settings-show_track_label').hide();
-		//jQuery('#customize-control-tracking_info_settings-shipment_link_header').hide();
-		//jQuery('#customize-control-tracking_info_settings-tracking_link_font_color').hide();
-		jQuery('#customize-control-tracking_info_settings-tracking_link_bg_color').hide();
-		//jQuery('#customize-control-tracking_info_settings-tracking_link_border').hide();
+		jQuery('#customize-control-tracking_info_settings-show_track_label').hide();	
+		jQuery('#customize-control-tracking_info_settings-tracking_link_bg_color').hide();		
 		jQuery('#customize-control-tracking_info_settings-track_header_text').hide();
 	} else{
 		if(jQuery("#customize-control-tracking_info_settings-show_track_label input").prop("checked") == true && jQuery('#customize-control-tracking_info_settings-tracking_number_link input').prop("checked") != true){	
 			jQuery('#customize-control-tracking_info_settings-track_header_text').show();
 		}	
 		jQuery('#customize-control-tracking_info_settings-show_track_label').show();
-		//jQuery('#customize-control-tracking_info_settings-shipment_link_header').show();
-		//jQuery('#customize-control-tracking_info_settings-tracking_link_font_color').show();
 		jQuery('#customize-control-tracking_info_settings-tracking_link_bg_color').show();
-		//jQuery('#customize-control-tracking_info_settings-tracking_link_border').show();
 	}
 	
 	var tracking_template = jQuery(".tracking_template_select").val();	
@@ -119,6 +117,15 @@ jQuery(document).on("click", "#customize-control-tracking_info_settings-show_pro
 		jQuery('#customize-control-tracking_info_settings-provider_border_color').hide();	
 	}
 });
+
+jQuery(document).on("click", "#customize-control-tracking_info_settings-hide_trackig_header input", function(){
+	if(jQuery(this).prop("checked") == true){	
+		jQuery('#customize-control-tracking_info_settings-header_text_change').hide();
+	} else{
+		jQuery('#customize-control-tracking_info_settings-header_text_change').show();
+	}	
+});	
+	
 jQuery(document).on("change", ".tracking_template_select", function(){
 	var tracking_template = jQuery(this).val();
 	
@@ -331,6 +338,30 @@ jQuery(document).on("change", "#_customize-input-customizer_delivered_order_sett
         } );
     } );
 } ( wp.customize ) );
+(function ( api ) {
+    api.section( 'customer_custom_completed_email', function( section ) {		
+        section.expanded.bind( function( isExpanded ) {				
+            var url;
+            if ( isExpanded ) {
+				jQuery('#save').trigger('click');
+                url = wcast_customizer.custom_completed_email_preview_url;
+                api.previewer.previewUrl.set( url );
+            }
+        } );
+    } );
+} ( wp.customize ) );
+(function ( api ) {
+    api.section( 'customer_shipped_email', function( section ) {		
+        section.expanded.bind( function( isExpanded ) {				
+            var url;
+            if ( isExpanded ) {
+				jQuery('#save').trigger('click');
+                url = wcast_customizer.shipped_email_preview_url;
+                api.previewer.previewUrl.set( url );
+            }
+        } );
+    } );
+} ( wp.customize ) );
 
 (function ( api ) {
     api.section( 'customer_updated_tracking_email', function( section ) {		
@@ -416,6 +447,18 @@ jQuery(document).on("change", "#_customize-input-customizer_delivered_order_sett
             if ( isExpanded ) {
 				jQuery('#save').trigger('click');
                 url = wcast_customizer.customer_intransit_preview_url;
+                api.previewer.previewUrl.set( url );
+            }
+        } );
+    } );
+} ( wp.customize ) );
+(function ( api ) {
+    api.section( 'customer_onhold_email', function( section ) {		
+        section.expanded.bind( function( isExpanded ) {				
+            var url;
+            if ( isExpanded ) {
+				jQuery('#save').trigger('click');
+                url = wcast_customizer.customer_onhold_preview_url;
                 api.previewer.previewUrl.set( url );
             }
         } );

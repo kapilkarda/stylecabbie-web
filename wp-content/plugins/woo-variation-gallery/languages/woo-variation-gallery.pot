@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../includes/class-woo-variation-gallery-export-import.php:32, ../includes/class-woo-variation-gallery-export-import.php:56
+#: ../includes/class-woo-variation-gallery-export-import.php:32, ../includes/class-woo-variation-gallery-export-import.php:61
 msgid "Woo Variation Gallery Images"
 msgstr ""
 
@@ -160,15 +160,15 @@ msgstr ""
 msgid "Gray"
 msgstr ""
 
-#: ../includes/functions.php:327
+#: ../includes/functions.php:349
 msgid "Variation Image Gallery"
 msgstr ""
 
-#: ../includes/functions.php:338
+#: ../includes/functions.php:360
 msgid "Add Gallery Images"
 msgstr ""
 
-#: ../includes/functions.php:340
+#: ../includes/functions.php:362
 msgid "Upgrade to pro to add more images and videos"
 msgstr ""
 
@@ -264,54 +264,54 @@ msgstr ""
 msgid "Please share the reason"
 msgstr ""
 
-#: ../woo-variation-gallery.php:372
+#: ../woo-variation-gallery.php:374
 msgid "Choose Image"
 msgstr ""
 
-#: ../woo-variation-gallery.php:373
+#: ../woo-variation-gallery.php:375
 msgid "Add Images"
 msgstr ""
 
-#: ../woo-variation-gallery.php:446
+#: ../woo-variation-gallery.php:448
 msgid "Settings"
 msgstr ""
 
-#: ../woo-variation-gallery.php:453
+#: ../woo-variation-gallery.php:455
 msgid "Go Pro"
 msgstr ""
 
-#: ../woo-variation-gallery.php:471
+#: ../woo-variation-gallery.php:473
 msgid "Currently, you are using older version of WooCommerce. It's recommended to use latest version of WooCommerce to work with %s."
 msgstr ""
 
-#: ../woo-variation-gallery.php:471
+#: ../woo-variation-gallery.php:473
 msgid "WooCommerce Variation Gallery"
 msgstr ""
 
-#: ../woo-variation-gallery.php:479
+#: ../woo-variation-gallery.php:481
 msgid "Please check PHP version requirement."
 msgstr ""
 
-#: ../woo-variation-gallery.php:481
+#: ../woo-variation-gallery.php:483
 msgid "It's required to use latest version of PHP to use <strong>WooCommerce Additional Variation Images</strong>."
 msgstr ""
 
-#: ../woo-variation-gallery.php:493
+#: ../woo-variation-gallery.php:495
 msgid "WooCommerce"
 msgstr ""
 
-#: ../woo-variation-gallery.php:501
+#: ../woo-variation-gallery.php:503
 msgid "<strong>WooCommerce Additional Variation Images</strong> is an add-on of "
 msgstr ""
 
-#: ../woo-variation-gallery.php:562
+#: ../woo-variation-gallery.php:564
 msgid "Read Documentation"
 msgstr ""
 
-#: ../woo-variation-gallery.php:563
+#: ../woo-variation-gallery.php:565
 msgid "Facing issue?"
 msgstr ""
 
-#: ../woo-variation-gallery.php:563
+#: ../woo-variation-gallery.php:565
 msgid "Please open a support ticket."
 msgstr ""

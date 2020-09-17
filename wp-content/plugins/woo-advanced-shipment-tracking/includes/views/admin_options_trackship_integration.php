@@ -2,72 +2,110 @@
 /**
  * html code for trackship tab
  */
-
+wp_enqueue_script( 'trackship_script' );
 ?>
 <section id="content3" class="tab_section">
 	<div class="d_table" style="">
 		<div class="tab_inner_container">
-			<?php $wc_ast_api_key = get_option('wc_ast_api_key'); 
-				if($wc_ast_api_key){
-			?>
-			<input id="tab_trackship_dashboard" type="radio" name="inner_tabs" class="inner_tab_input" data-tab="trackship-dashboard" checked>
-			<label for="tab_trackship_dashboard" class="inner_tab_label"><?php _e('Dashboard', 'woocommerce'); ?></label>
-			
-			<input id="tab_tracking_page" type="radio" name="inner_tabs" class="inner_tab_input" data-tab="tracking-page" <?php if(isset($_GET['tab']) && $_GET['tab'] == 'tracking-page'){ echo 'checked'; } ?>>
-			<label for="tab_tracking_page" class="inner_tab_label tracking_page_label"><?php _e('Tracking Page', 'woo-advanced-shipment-tracking'); ?></label>
-			
-			<input id="tab_status_notifications" type="radio" name="inner_tabs" class="inner_tab_input" data-tab="notifications" <?php if(isset($_GET['tab']) && $_GET['tab'] == 'notifications'){ echo 'checked'; } ?>>
-			<label for="tab_status_notifications" class="inner_tab_label"><?php _e('Notifications', 'woo-advanced-shipment-tracking'); ?></label>
-			
-			<input id="tab_tools" type="radio" name="inner_tabs" class="inner_tab_input" data-tab="tools" <?php if(isset($_GET['tab']) && $_GET['tab'] == 'tools'){ echo 'checked'; } ?>>
-			<label for="tab_tools" class="inner_tab_label"><?php _e('Tools', 'woo-advanced-shipment-tracking'); ?></label>					
-			<?php } ?>
-			<form method="post" id="wc_ast_trackship_form" action="" enctype="multipart/form-data">
-				<?php 
-				
-				if($wc_ast_api_key){								
-					$url = 'https://my.trackship.info/wp-json/tracking/get_user_plan';								
-					$args['body'] = array(
-						'user_key' => $wc_ast_api_key,				
-					);
-					$response = wp_remote_post( $url, $args );
-					if ( is_wp_error( $response ) ) {
-						
-					} else{
-						$plan_data = json_decode($response['body']);					
-					}					
-				?>
-				<?php 
-					require_once( 'admin_trackship_dashboard.php' );
-					require_once( 'admin_tracking_page_settings.php' );
-					require_once( 'admin_status_notifications.php' );
-					require_once( 'admin_options_tools.php' );
-				?>				
-				<?php } else{ ?>
-					<div class="section-content trackship_section">
-						<div class="trackship-upsell-overlay">
-							<div class="trackship-upsell-top">
-								<h3><img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/trackship-logo.png" class="trackship_logo"></h3>
-								<p class="trackship-upsell-subtitle">TracksShip is a premium shipment tracking API flatform that fully integrates with WooCommerce with the Advanced Shipment Tracking. TrackShip automates the order management workflows, reduces customer inquiries, reduces time spent on customer service, and improves the post-purchase experience and satisfaction of your customers.</p>
-								<p class="trackship-upsell-subtitle">You must have account TracksShip and connect your store in order to activate these advanced features:</p>
+			<div class="section-content trackship_section">
+						<div class="ts_row ts_header_row">
+							<div class="ts_col_6">
+								<div class="ts_col_inner">
+									<h1 class="ts_landing_header">Your Post-Shipping &amp; Delivery Autopilot</h1>
+									<p class="ts_landing_description">Trackship is a Multi-Carrier Shipment Tracking API that seamlessly integrates into your WooCommerce store and auto-tracks your shipments, automates your orders workflow, reduces the time spent on customer service and lets you provide a superior post-purchase experience to your customers.</p>
+									<a href="javascript:void(0);" target="_self" class="button-primary btn_green2 btn_large open_ts_video"><span><?php _e('Watch Video', 'woo-advanced-shipment-tracking'); ?></span><span class="dashicons dashicons-video-alt3"></span></a>
+									<a href="https://trackship.info/?utm_source=wpadmin&utm_campaign=tspage" target="_blank" class="button-primary btn_green2 btn_large"><span><?php _e('Start your free trial', 'woo-advanced-shipment-tracking'); ?></span></a>
+								</div>
 							</div>
-							<div class="trackship-upsell-content">
-								<ul>
-									<li>Automatically track your shipments with 100+ shipping providers.</li>
-									<li>Display Shipment Status and latest shipment status, update date and est. delivery date on WooCommerce orders admin.</li>
-									<li>Option to manually get shipment tracking updates for orders.</li>
-									<li>Automatically change order status to Delivered once the shipment is delivered to your customers.</li>
-									<li>Option to filter orders with invalid tracking numbers or by shipment status event in orders admin</li>
-									<li>Send personalized emails to notify the customer when their shipments are In Transit, Out For Delivery, Delivered or have an exception.</li>
-									<li>Direct customers to a Tracking page on your store.</li>
-								</ul>
-								<div class="text-center"><a href="https://trackship.info/?utm_source=wpadmin&utm_campaign=tspage" target="_blank" class="button-primary btn_green2 btn_large">SIGNUP NOW</a></div>
+							<div class="ts_col_6">
+								<div class="ts_col_inner ts_landing_banner">
+									<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-header-banner.png">
+								</div>
 							</div>
 						</div>
+						<div class="ts_row ts_features_section">							
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-100-supported-carriers.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Auto-Track Your Shipments</h3>
+										<p>Our Tracking API auto-tracks shipments with 200+ shipping providers across the globe</p>
+										<a href="https://trackship.info/features/auto-track-shipments/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-woocommerce-integration.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Seamless Integration</h3>
+										<p>Fully integrated into your store and can be easily managed on your WooCommerce admin</p>
+										<a href="https://trackship.info/docs/setup-trackship-on-woocommerce/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-home-better-customer-support.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Post-Shipping Automation</h3>
+										<p>TrackShip proactively updates tracking & delivery changes and automates your orders workflow</p>
+										<a href="https://trackship.info/features/post-shipping-automation/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-home-email-notifications.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Keep Your Customers informed</h3>
+										<p>Keep Your Customers informed with automated shipment & delivery notifications</p>
+										<a href="https://trackship.info/features/shipment-status-notifications/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>	
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-home-tracking-page.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Tracking Page on Your Store</h3>
+										<p>Engage your customers with a tracking page on your store with up-to-date shipment tracking info</p>
+										<a href="https://trackship.info/features/tracking-page/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>							
+							<div class="ts_col_4">
+								<div class="ts_col_inner">
+									<div class="ts_con_box_img">
+										<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/images/ts-home-tracking-delivery-analytics.png">
+									</div>
+									<div class="ts_icon_box_text">
+										<h3>Shipping & Delivery Analytics</h3>
+										<p>Analyse delivery performance, find out exception and get an overview of your shipments data</p>
+										<a href="https://trackship.info/features/tracking-delivery-analytics/" target="blank">read more</a>
+									</div>	
+								</div>
+							</div>		
+						</div>						
 					</div>
-				<?php }
-			?>			
-			</form>
 		</div>
 	</div>
 </section>
+<div id="" class="popupwrapper ts_video_popup" style="display:none;">
+	<div class="popuprow">
+		<div class="videoWrapper">
+		<iframe id="ts_video" src="https://www.youtube.com/embed/PhnqDorKN_c" frameborder="0"  allowfullscreen></iframe>
+		</div>
+	</div>
+	<div class="popupclose"></div>
+</div>

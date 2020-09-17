@@ -5,6 +5,9 @@
 	// Admin Part
 	add_action( 'woocommerce_save_product_variation', 'wvg_save_variation_gallery', 10, 2 );
 	
+	add_action( 'woocommerce_admin_process_variation_object', 'wvg_clear_default_variation_transient_by_variation' );
+	add_action( 'woocommerce_delete_product_transients', 'wvg_clear_default_variation_transient_by_product' );
+	
 	add_action( 'woocommerce_product_after_variable_attributes', 'wvg_gallery_admin_html', 10, 3 );
 	
 	// Frontend Part

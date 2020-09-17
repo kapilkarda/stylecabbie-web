@@ -1,0 +1,28 @@
+2020-09-16T06:04:09+00:00 CRITICAL Uncaught Error: Call to undefined function marketo_return() in /var/www/html/wp-content/plugins/marketo-features/widgets/twitter-feed/class-widget-twitter-feed.php:21
+Stack trace:
+#0 /var/www/html/wp-includes/class-wp-widget.php(380): Marketo_Twitter_Feed->widget()
+#1 /var/www/html/wp-includes/widgets.php(805): WP_Widget->display_callback()
+#2 /var/www/html/wp-content/themes/flatsome/template-parts/footer/footer.php(16): dynamic_sidebar()
+#3 /var/www/html/wp-includes/template.php(732): require('/var/www/html/w...')
+#4 /var/www/html/wp-includes/template.php(676): load_template()
+#5 /var/www/html/wp-includes/general-template.php(204): locate_template()
+#6 /var/www/html/wp-content/themes/flatsome/inc/structure/structure-footer.php(78): get_template_part()
+#7 /var/www/html/wp-includes/class-wp-hook.php(287): flatsome_page_footer()
+#8 /var/www/html/wp-includes/class-wp-hook.php(311): WP_Hook->apply_filters()
+#9 /var/www/html/wp-includes/plugin.php(478): WP_Hook->do_action()
+#10 /var/www/html/wp-content/themes/flat in /var/www/html/wp-content/plugins/marketo-features/widgets/twitter-feed/class-widget-twitter-feed.php on line 21
+
+2020-09-16T06:04:11+00:00 CRITICAL Uncaught Error: Call to undefined function marketo_return() in /var/www/html/wp-content/plugins/marketo-features/widgets/twitter-feed/class-widget-twitter-feed.php:21
+Stack trace:
+#0 /var/www/html/wp-includes/class-wp-widget.php(380): Marketo_Twitter_Feed->widget()
+#1 /var/www/html/wp-includes/widgets.php(805): WP_Widget->display_callback()
+#2 /var/www/html/wp-content/themes/flatsome/template-parts/footer/footer.php(16): dynamic_sidebar()
+#3 /var/www/html/wp-includes/template.php(732): require('/var/www/html/w...')
+#4 /var/www/html/wp-includes/template.php(676): load_template()
+#5 /var/www/html/wp-includes/general-template.php(204): locate_template()
+#6 /var/www/html/wp-content/themes/flatsome/inc/structure/structure-footer.php(78): get_template_part()
+#7 /var/www/html/wp-includes/class-wp-hook.php(287): flatsome_page_footer()
+#8 /var/www/html/wp-includes/class-wp-hook.php(311): WP_Hook->apply_filters()
+#9 /var/www/html/wp-includes/plugin.php(478): WP_Hook->do_action()
+#10 /var/www/html/wp-content/themes/flat in /var/www/html/wp-content/plugins/marketo-features/widgets/twitter-feed/class-widget-twitter-feed.php on line 21
+

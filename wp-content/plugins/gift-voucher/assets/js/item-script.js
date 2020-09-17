@@ -54,6 +54,9 @@ jQuery(document).ready(function($) {
         var $itemid = $(this).data('item-id')
             $catid = $(this).data('cat-id'),
             $itemprice = $(this).data('item-price');
+            $item_price_pdf = $(this).data('item-price-pdf');
+        
+        $("#item_pdf_price").val($item_price_pdf);
         $wpgv_item_id.val($itemid);
         $wpgv_total_price.val($itemprice);
         $wpgv_category_id.val($catid);
@@ -66,7 +69,7 @@ jQuery(document).ready(function($) {
             success: function(data) {
                 $(".wpgv-gifttitle h3, .itemtitle").html(data.title);
                 $(".wpgv-gifttitle span, .itemdescription").html(data.description);
-                $('.voucherValueCard').val((data.special_price) ? data.special_price : data.price);
+                $('.voucherValueCard').val(data.price);
                 $.each(data.images, function( key, value ) {
                     $(".wpgvstyle"+(parseInt(key)+1)+" .cardDiv .cardImgTop img").attr('src', value);
                 });
@@ -207,6 +210,7 @@ jQuery(document).ready(function($) {
             } else {
                 $shipping_email.closest('.wpgv-form-fields').find('.error').hide();
             }
+
             if(!($receipt_email.val() && wpgv_validateEmail($receipt_email.val()))) {
                 $error = 1;
                 $receipt_email.closest('.wpgv-form-fields').find('.error').show();
@@ -298,11 +302,11 @@ jQuery(document).ready(function($) {
                     success: function(data) {
                         $(".wpgv-itemtitle").html(data.title);
                         var $price = (data.special_price) ? data.special_price : data.price;
-                        $itempricespan.html($price);
+                        $itempricespan.html((parseFloat($price).toFixed(2)));
                         var $totalprice = (parseFloat($price)+parseFloat($website_commission_price.data('price'))).toFixed(2);
                         $totalpricespan.html($totalprice);
                         $paynowbtnspan.html($totalprice);
-                        $wpgv_total_price.val($totalprice);
+                        $wpgv_total_price.val(parseFloat(data.price).toFixed(2));
                     }
                 });
             }
@@ -314,7 +318,7 @@ jQuery(document).ready(function($) {
         var $catid = wpgv_b64EncodeUnicode($wpgv_category_id.val()),
             $itemid = wpgv_b64EncodeUnicode($wpgv_item_id.val()),
             $style = wpgv_b64EncodeUnicode($chooseStyle.val()),
-            $totalprice = wpgv_b64EncodeUnicode($wpgv_total_price.val()),
+            $totalprice = wpgv_b64EncodeUnicode(parseFloat($("#item_pdf_price").val())),
             $buyingfor = wpgv_b64EncodeUnicode($buying_for.val()),
             $yourname = wpgv_b64EncodeUnicode($your_name.val()),
             $recipientname = wpgv_b64EncodeUnicode($recipient_name.val()),

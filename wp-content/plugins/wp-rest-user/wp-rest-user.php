@@ -16,7 +16,7 @@
  * Plugin Name:       WP REST User
  * Plugin URI:        https://sk8.tech?utm_source=wp-admin&utm_medium=forum&utm_campaign=wp-rest-user
  * Description:       WP REST User adds in the 'User Registration' function for REST API.
- * Version:           1.4.2
+ * Version:           1.4.3
  * Author:            SK8Tech
  * Author URI:        https://sk8.tech?utm_source=wp-admin&utm_medium=forum&utm_campaign=wp-rest-user
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if (!defined('WPINC')) {
  * Start at version 1.1.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define('WP_REST_USER_VERSION', '1.4.2');
+define('WP_REST_USER_VERSION', '1.4.3');
 
 /**
  * Initialize Freemius SDK
@@ -56,7 +56,7 @@ if (!function_exists('wru_fs')) {
 			$wru_fs = fs_dynamic_init(array(
 				'id' => '3362',
 				'slug' => 'wp-rest-user',
-				'premium_slug' => 'wp-rest-filter-premium',
+				'premium_slug' => 'wp-rest-user-premium',
 				'type' => 'plugin',
 				'public_key' => 'pk_ad92ea533f1c9236024e43c9bfeb7',
 				'is_premium' => false,
@@ -64,7 +64,6 @@ if (!function_exists('wru_fs')) {
 				'has_paid_plans' => false,
 				'menu' => array(
 					'first-path' => 'plugins.php',
-					'account' => false,
 				),
 			));
 		}

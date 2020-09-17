@@ -45,6 +45,15 @@ abstract class ES_Field {
 	protected $type;
 
 	/**
+	 * Field description
+	 *
+	 * @since 4.4.6
+	 * 
+	 * @var string
+	 */
+	protected $description;
+
+	/**
 	 * Field name base
 	 *
 	 * @since 4.4.1
@@ -175,6 +184,32 @@ abstract class ES_Field {
 	}
 
 	/**
+	 * Set field description
+	 * 
+	 * @since 4.4.6
+	 * 
+	 * @param $description
+	 * 
+	 * @return $this
+	 */
+	public function set_description( $description ) {
+		$this->description = $description;
+		return $this;
+	}
+
+
+	/**
+	 * Get field description
+	 * 
+	 * @since 4.4.6
+	 * 
+	 * @return string
+	 */
+	public function get_description() {
+		return $this->description;
+	}
+
+	/**
 	 *
 	 * Set field placeholder
 	 *
@@ -270,19 +305,18 @@ abstract class ES_Field {
 	 * Outputs the extra field attrs in HTML attribute format.
 	 *
 	 * @since 4.4.1
+	 * 
+	 * @modified 4.5.4 Removed echo to allow escaping of attribute.
 	 */
 	public function output_extra_attrs() {
-		$string = '';
 
 		foreach ( $this->extra_attrs as $name => $value ) {
 			if ( is_null( $value ) ) {
-				$string .= esc_attr( $name ) . ' ';
+				echo esc_attr( $name ) . ' ';
 			} else {
-				$string .= esc_attr( $name ) . '="' . esc_attr( $value ) . '" ';
+				echo esc_attr( $name ) . '="' . esc_attr( $value ) . '" ';
 			}
 		}
-
-		echo $string; // phpcs:ignore
 	}
 
 

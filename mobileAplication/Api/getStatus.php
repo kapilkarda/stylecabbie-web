@@ -1,4 +1,4 @@
 <?php
-    $data = true;
+    $data = false;
     echo json_encode($data);
 ?>

@@ -47,12 +47,12 @@ if ($setting_options->is_style_choose_enable) {
 	$voucher_style = sanitize_text_field(base64_decode($_GET['style']));
 	$style_image = get_post_meta($itemid, 'style'.($voucher_style+1).'_image', true);
 	$image_attributes = get_attached_file( $style_image );
-	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
+	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_item');
 } else {
 	$voucher_style = $setting_options->voucher_style;
 	$style_image = get_post_meta($itemid, 'style1_image', true);
 	$image_attributes = get_attached_file( $style_image );
-	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
+	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_item');
 }
 
 switch ($voucher_style) {

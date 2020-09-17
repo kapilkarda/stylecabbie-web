@@ -3,7 +3,7 @@ Contributors: jack50n9, sk8tech
 Donate link: https://sk8.tech/donate?utm_source=plugin&utm_medium=forum&utm_campaign=wp-rest-user
 Tags: wp, rest, api, rest api, user, acf, cpt, json
 Requires at least: 4.7.0
-Tested up to: 5.1
+Tested up to: 5.5
 Requires PHP: 5.2.4
 Stable tag: trunk
 License: GPLv2 or later
@@ -21,11 +21,24 @@ This plugin fullfills such requirement by extending the existing WordPress REST 
 
 = Usage =
 
-To Register a User using REST API, send a POST request to /wp-json/wp/v2/users/register, with a JSON body (Set header: content-type: application/json) with three keys: username, email and password.
+== Register a User ==
 
-To Retrieve Password using REST API, send a POST request to /wp-json/wp/v2/users/lost-password, including a JSON (Set header: content-type: application/json) body with three keys: user_login.
-
-See the Screenshot below for POSTMAN demo:
+To Register a User using REST API, send a `POST` request to `/wp-json/wp/v2/users/register`, with a **JSON body** (Set header: content-type: application/json):
+`
+{
+	"username": "your-username",
+	"email": "username@test.com",
+	"password": "0000",
+}
+`
+If successful, you should receive the following response
+`
+{
+    "code": 200,
+    "id": 13,
+    "message": "User 'your-username' Registration was Successful"
+}
+`
 
 To perform further actions after user is registered, write and add_action:
 
@@ -35,6 +48,27 @@ function user_registered($user) {
 	// Do Something
 }
 `
+
+== Reset Password ==
+
+To Retrieve Password using REST API, send a `POST` request to ``/wp-json/wp/v2/users/lost-password`, including a **JSON body** (Set header: content-type: application/json):
+`
+{
+    "user_login": "username@test.com"
+}
+`
+
+`user_login` can be either user's username or email.
+
+If successful, you should receive the following response
+`
+{
+    "code": 200,
+    "message": "Reset Password link has been sent to your email."
+}
+`
+
+See the Screenshot below for POSTMAN demo:
 
 = Technical Support =
 
@@ -59,7 +93,7 @@ If you're planning on using your WordPress website as a Backend, and you're cons
 
 = Is it secure? =
 
-Great question! For the time being, this plugin only allows registering user as 'subscriber' role. 'Subscriber' role has very limited capability in terms what WordPress allows him/her to do. From our perspective, subscribers are quite harmless.
+Great question! For the time being, this plugin only allows registering user as 'subscriber' or 'contributor' role. 'Subscriber' role has very limited capability in terms what WordPress allows him/her to do. From our perspective, subscribers are quite harmless.
 
 = Does it work with WooCommerce? =
 
@@ -68,13 +102,20 @@ If you have WooCommerce installed and activated on your WordPress website, this 
  
 = There's a bug, what do I do? =
 
-Please email us at wp-rest-user@sk8.tech. 
+Please create a ticket on the [support forum](https://wordpress.org/support/plugin/wp-rest-user/). We'll get back to you ASAP.
  
 == Screenshots ==
  
 1. An sample REST API POST request using [WP REST User](https://wordpress.org/plugins/wp-rest-user/).
  
 == Changelog ==
+
+= 1.4.3 =
+
+* Tested up to WordPress 5.5
+* Added `id` to register user response.
+* Updated README
+* Bug fixes
 
 = 1.4.2 = 
 

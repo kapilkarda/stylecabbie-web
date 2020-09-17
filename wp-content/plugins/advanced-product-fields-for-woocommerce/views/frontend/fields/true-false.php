@@ -12,7 +12,7 @@ $unique = mt_rand(10000,99999);
                     if(!empty($model['field']->options['message']))
                         echo esc_html($model['field']->options['message']);
                     if($model['field']->pricing_enabled())
-                        echo ' <span class="wapf-pricing-hint">('. \SW_WAPF\Includes\Classes\Helper::format_pricing_hint($model['field']->pricing->type, $model['field']->pricing->amount) .')</span>';
+                        echo ' <span class="wapf-pricing-hint">('. \SW_WAPF\Includes\Classes\Helper::format_pricing_hint($model['field']->pricing->type, $model['field']->pricing->amount,$model['product'],'shop') .')</span>';
                     ?>
             </span>
         <?php } ?>

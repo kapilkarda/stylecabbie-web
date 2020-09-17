@@ -35,6 +35,11 @@ abstract class Document extends Controls_Stack {
 
 	private $main_id;
 
+	/**
+	 * @var bool
+	 */
+	private $is_saving = false;
+
 	private static $properties = [];
 
 	/**
@@ -519,6 +524,8 @@ abstract class Document extends Controls_Stack {
 			return false;
 		}
 
+		$this->set_is_saving( true );
+
 		/**
 		 * Before document save.
 		 *
@@ -573,6 +580,8 @@ abstract class Document extends Controls_Stack {
 		 * @param $data.
 		 */
 		do_action( 'elementor/document/after_save', $this, $data );
+
+		$this->set_is_saving( false );
 
 		return true;
 	}
@@ -820,13 +829,20 @@ abstract class Document extends Controls_Stack {
 		if ( ! $elements_data ) {
 			$elements_data = $this->get_elements_data();
 		}
+
+		$is_legacy_mode_active = Plugin::instance()->get_legacy_mode( 'elementWrappers' );
+
 		?>
 		<div <?php echo Utils::render_html_attributes( $this->get_container_attributes() ); ?>>
+			<?php if ( $is_legacy_mode_active ) { ?>
 			<div class="elementor-inner">
+			<?php } ?>
 				<div class="elementor-section-wrap">
 					<?php $this->print_elements( $elements_data ); ?>
 				</div>
+			<?php if ( $is_legacy_mode_active ) { ?>
 			</div>
+			<?php } ?>
 		</div>
 		<?php
 	}
@@ -976,17 +992,6 @@ abstract class Document extends Controls_Stack {
 	}
 
 	/**
-	 * @since 2.0.0
-	 * @access public
-	 * @deprecated 2.2.0 Use `Document::save_template_type()`.
-	 */
-	public function save_type() {
-		_deprecated_function( __METHOD__, '2.2.0', __CLASS__ . '::save_template_type()' );
-
-		$this->save_template_type();
-	}
-
-	/**
 	 * @since 2.3.0
 	 * @access public
 	 */
@@ -1104,6 +1109,25 @@ abstract class Document extends Controls_Stack {
 		}
 
 		return $last_edited;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function is_saving() {
+		return $this->is_saving;
+	}
+
+	/**
+	 * @param $is_saving
+	 *
+	 * @return $this
+	 */
+	public function set_is_saving( $is_saving ) {
+		$this->is_saving = $is_saving;
+
+		return $this;
 	}
 
 	/**

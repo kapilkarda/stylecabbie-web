@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 
 $dismissed = get_option('newsletter_dismissed', array());
 
-$user_count = $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where status='C'");
+$user_count = Newsletter::instance()->get_user_count();
 
 $is_administrator = current_user_can('administrator');
 
@@ -33,6 +33,21 @@ $warning = false;
 
 $warning |= empty($status_options['mail']);
 ?>
+<script>
+    function tnp_close_promotion() {
+        jQuery.post(ajaxurl + "?action=tnp_hide_promotion", {id: 'june-2020'});
+        document.getElementById('tnp-promotion-bar').style.display = 'none';
+    }
+</script>
+
+<?php if (get_option('newsletter_promotion') !== 'june-2020' && time() < gmmktime(0, 0, 0, 7, 15, 2020)) { ?>
+<div id="tnp-promotion-bar">
+    <a href="https://www.thenewsletterplugin.com/premium?utm_source=plugin-bar&utm_campaign=june-2020" onclick="tnp_close_promotion(); return true;" target="_blank">50% discount offer until July, 15. Check it out.</a>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="javascript:void(tnp_close_promotion('june-2020'))">No, thank you!</a>
+</div>
+<?php } ?>
+
 
 <div class="tnp-drowpdown" id="tnp-header">
     <a href="?page=newsletter_main_index"><img src="<?php echo plugins_url('newsletter'); ?>/images/header/tnp-logo-red-header.png" class="tnp-header-logo" style="vertical-align: bottom;"></a>
@@ -151,7 +166,7 @@ $warning |= empty($status_options['mail']);
             </li>
         <?php } elseif (is_wp_error($license_data)) { ?>
             <li class="tnp-professional-extensions-button-red">
-                <a href="?page=newsletter_main_main"><i class="fas fa-hand-paper" style="color: white"></i> <?php _e('License not valid', 'newsletter') ?></a>
+                <a href="?page=newsletter_main_main"><i class="fas fa-hand-paper" style="color: white"></i> <?php _e('Unable to check', 'newsletter') ?></a>
             </li>
             
         <?php } elseif ($license_data->expire == 0) { ?>

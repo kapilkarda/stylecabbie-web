@@ -56,6 +56,7 @@ The free version of our plugin works like a charm, but the premium one is an eve
 * Allow users to manage wishlists, rename and delete them, add or remove items
 * Allow users to search and see registered wishlists
 * Allow users to set visibility options for each wishlist, by making them either public (visible to everyone), private (visible to the owner only) or shared (visible only to people it has been shared with)
+* Allow users to manage the item quantity in the wishlist
 * Show multiple ‘Add to Cart’ buttons in the wishlist table
 * Show product price variations (Amazon style)
 * Allow users to move an element from one wishlist to another, right from the wishlist table
@@ -150,11 +151,9 @@ Yes, of course you can. To avoid Wishlist page to show product prices, you can h
 
 ## Changelog
 
-### 3.0.9 - Released on 09 March 2020
+### 3.0.13 - Released on 17 August 2020
 
-* Tweak: use wp_kses_post instead of esc_html for browse wishlist text
-* Update: plugin framework
-
+* Fix: moved check over Ajax Loading option on first wishlist init only, to avoid problems when dynamically loading ATW on variable products
 
 ## Support
 

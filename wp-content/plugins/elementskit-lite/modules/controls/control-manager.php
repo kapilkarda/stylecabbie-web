@@ -1,5 +1,5 @@
 <?php
-namespace ElementsKit\Modules\Controls;
+namespace ElementsKit_Lite\Modules\Controls;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  *
  * @since 1.0.0
  */
-abstract class Controls_Manager extends \Elementor\Controls_Manager {
+class Controls_Manager extends \Elementor\Controls_Manager {
     const IMAGECHOOSE = 'imagechoose';
     const AJAXSELECT2 = 'ajaxselect2';
     const WIDGETAREA  = 'widgetarea';

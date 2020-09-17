@@ -233,7 +233,11 @@ class ES_Select extends ES_Field {
 		</select>
 
 		<script type="text/javascript">
-			jQuery( 'body' ).trigger( 'wc-enhanced-select-init' );
+			jQuery(document).ready(function(){
+				if( 'function' === typeof jQuery.fn.ig_es_select2 ) {
+					jQuery('.ig-es-form-multiselect[data-name="<?php echo esc_attr( $this->get_name() ); ?>"]').ig_es_select2();
+				}
+			});
 		</script>
 
 		<?php

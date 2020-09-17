@@ -28,7 +28,7 @@ if(!empty($model['field']->options['choices'])) {
             $attributes['checked'] = '';
         $has_pricing = isset($option['pricing_type']) && $option['pricing_type'] !== 'none';
         if($has_pricing) {
-            $attributes['data-wapf-price'] = $option['pricing_amount'];
+	        $attributes['data-wapf-price'] = Helper::adjust_addon_price( $model['product'], $option['pricing_amount'], $option['pricing_type'], 'shop' );
             $attributes['data-wapf-pricetype'] = $option['pricing_type'];
         }
 
@@ -45,7 +45,7 @@ if(!empty($model['field']->options['choices'])) {
                     return $key . '="' . esc_attr($value) .'"';
                 else return $key;
             },' '),
-            esc_html($option['label']) . (isset($option['pricing_type']) && $option['pricing_type'] === 'none' ? '' : ' <span class="wapf-pricing-hint">('. Helper::format_pricing_hint($option['pricing_type'], $option['pricing_amount']) .')</span>')
+            esc_html($option['label']) . (isset($option['pricing_type']) && $option['pricing_type'] === 'none' ? '' : ' <span class="wapf-pricing-hint">('. Helper::format_pricing_hint($option['pricing_type'], $option['pricing_amount'],$model['product'],'shop') .')</span>')
         );
 
     }

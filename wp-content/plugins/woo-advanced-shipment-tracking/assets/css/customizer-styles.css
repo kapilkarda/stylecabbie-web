@@ -59,6 +59,15 @@
     display: inline-block;
     vertical-align: middle;
 }
+#accordion-section-customer_shipped_email>h3:before{
+	content: ' ';
+    background-image: url(icons/shipped-o.png);
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    display: inline-block;
+    vertical-align: middle;
+}
 #accordion-section-customer_failure_email>h3:before{
 	content: ' ';
     background-image: url(icons/failure-v4.png);
@@ -71,6 +80,15 @@
 #accordion-section-customer_intransit_email>h3:before{
 	content: ' ';
     background-image: url(icons/in-transit-v4.png);
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+    display: inline-block;
+    vertical-align: middle;
+}
+#accordion-section-customer_onhold_email>h3:before{
+	content: ' ';
+    background-image: url(icons/On-hold-v3.png);
     width: 20px;
     height: 20px;
     background-size: cover;
@@ -187,13 +205,11 @@
     display: block;
 	background: #f9f9f9;
     color: #505050;
+	font-size: 12px;
 }
 #customize-controls li.customize-control h3{
 	margin-top: 0px;
 	margin-bottom: 0;
-}
-#customize-controls li.customize-control h3.control_heading{
-	margin-bottom:14px;
 }
 .customize-control-description{
 	font-size: 12px;
@@ -201,4 +217,12 @@
 .customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-display_shipment_provider_name,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-table_header_block,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-hide_table_header,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-table_header,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-table_padding,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-shipment_link_header,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-tracking_link_font_color,.customize-control+.customize-control:not(.customize-control-kirki-code)#customize-control-tracking_info_settings-table_content_header{
     border-top: 0;
     padding-top: 0;	
+}
+#customize-control-wcast_availableforpickup_email_settings-wcast_availableforpickup_email_content,#customize-control-wcast_intransit_email_settings-wcast_intransit_email_content,#customize-control-wcast_onhold_email_settings-wcast_onhold_email_content,#customize-control-wcast_returntosender_email_settings-wcast_returntosender_email_content,#customize-control-wcast_outfordelivery_email_settings-wcast_outfordelivery_email_content,#customize-control-wcast_delivered_email_settings-wcast_delivered_status_email_content,#customize-control-wcast_failure_email_settings-wcast_failure_email_content,#customize-control-late_shipments_email_settings-wcast_late_shipments_email_content,#customize-control-woocommerce_customer_updated_tracking_order_settings-wcast_updated_tracking_email_content,#customize-control-woocommerce_customer_partial_shipped_order_settings-wcast_partial_shipped_email_content,#customize-control-woocommerce_customer_delivered_order_settings-wcast_delivered_email_content {
+    margin-bottom: 0;
+}
+#customize-control-wcast_availableforpickup_email_settings-wcast_availableforpickup_email_code_block,#customize-control-wcast_intransit_email_settings-wcast_intransit_email_code_block,#customize-control-wcast_onhold_email_settings-wcast_onhold_email_code_block,#customize-control-wcast_returntosender_email_code_block,#customize-control-wcast_outfordelivery_email_settings-wcast_outfordelivery_email_code_block,#customize-control-wcast_delivered_email_settings-wcast_delivered_status_email_code_block,#customize-control-wcast_failure_email_settings-wcast_failure_email_code_block,#customize-control-late_shipments_email_settings-wcast_late_shipments_email_code_block,#customize-control-wcast_updated_tracking_code_block,#customize-control-wcast_partial_shipped_code_block,#customize-control-wcast_email_code_block {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
 }

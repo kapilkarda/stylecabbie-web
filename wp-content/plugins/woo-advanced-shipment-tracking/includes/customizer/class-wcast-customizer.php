@@ -104,7 +104,7 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 				'description' => '',
 				'panel' => 'wcast_naviation_panel'
 			)
-		);
+		);	
 		
 		$wp_customize->add_section( 'customer_delivered_email',
 			array(
@@ -113,7 +113,13 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 				'panel' => 'wcast_naviation_panel'
 			)
 		);
-		
+		$wp_customize->add_section( 'customer_custom_completed_email',
+			array(
+				'title' => __( 'Completed order status email', 'woo-advanced-shipment-tracking' ),
+				'description' => esc_html__( '', 'woo-advanced-shipment-tracking'  ),
+				'panel' => 'wcast_naviation_panel'
+			)
+		);
 		$wp_customize->add_section( 'customer_partial_shipped_email',
 			array(
 				'title' => __( 'Partially Shipped status email', 'woo-advanced-shipment-tracking' ),
@@ -144,7 +150,15 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 				'description' => esc_html__( '', 'woo-advanced-shipment-tracking'  ),
 				'panel' => 'wcast_emails_panel'
 			)
-		);				
+		);	
+
+		$wp_customize->add_section( 'customer_onhold_email',
+			array(
+				'title' => __( 'On Hold', 'woo-advanced-shipment-tracking' ),
+				'description' => esc_html__( '', 'woo-advanced-shipment-tracking'  ),
+				'panel' => 'wcast_emails_panel'
+			)
+		);			
 		
 		$wp_customize->add_section( 'customer_returntosender_email',
 			array(
@@ -208,10 +222,12 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 				'ajax_url'              => admin_url('admin-ajax.php'),
 				'email_preview_url'        => $this->get_email_preview_url(),
 				'partial_shipped_email_preview_url' => $this->get_partial_shipped_email_preview_url(),
+				'custom_completed_email_preview_url' => $this->get_custom_completed_email_preview_url(),
 				'updated_tracking_email_preview_url' => $this->get_updated_tracking_email_preview_url(),
 				'tracking_preview_url'        => $this->get_tracking_preview_url(),				
 				'customer_failure_preview_url'  => $this->get_customer_failure_preview_url(),
 				'customer_intransit_preview_url'  => $this->get_customer_intransit_preview_url(),
+				'customer_onhold_preview_url'  => $this->get_customer_onhold_preview_url(),
 				'customer_outfordelivery_preview_url' => $this->get_customer_outfordelivery_preview_url(),
 				'customer_delivered_preview_url' => $this->get_customer_delivered_preview_url(),
 				'customer_returntosender_preview_url' => $this->get_customer_returntosender_preview_url(),
@@ -219,7 +235,16 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 				'admin_late_shipments_preview_url' => $this->get_admin_late_shipments_preview_url(),
 				'trigger_click'        => '#accordion-section-'.$_REQUEST['email'].' h3',
 				'wcast_enable_delivered_email' => $wcast_enable_delivered_email['enabled'],	
-			));		
+			));	
+
+			wp_localize_script('wp-color-picker', 'wpColorPickerL10n', array(
+				'clear'            => __( 'Clear' ),
+				'clearAriaLabel'   => __( 'Clear color' ),
+				'defaultString'    => __( 'Default' ),
+				'defaultAriaLabel' => __( 'Select default color' ),
+				'pick'             => __( 'Select Color' ),
+				'defaultLabel'     => __( 'Color value' ),
+			));	
 		}
 	}
 	
@@ -242,6 +267,18 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 	public static function get_partial_shipped_email_preview_url() {		
 			$email_preview_url = add_query_arg( array(
 				'wcast-partial-shipped-email-customizer-preview' => '1',
+			), home_url( '' ) );		
+
+		return $email_preview_url;
+	}
+	
+	/**
+	 * Get Customizer URL
+	 *
+	 */
+	public static function get_custom_completed_email_preview_url() {		
+			$email_preview_url = add_query_arg( array(
+				'wcast-custom-completed-email-customizer-preview' => '1',
 			), home_url( '' ) );		
 
 		return $email_preview_url;
@@ -293,6 +330,18 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 			), home_url( '' ) );		
 
 		return $customer_intransit_preview_url;
+	}
+	
+	/**
+	 * Get Tracking page preview URL
+	 *
+	 */
+	public static function get_customer_onhold_preview_url() {		
+			$customer_onhold_preview_url = add_query_arg( array(
+				'wcast-onhold-email-customizer-preview' => '1',
+			), home_url( '' ) );		
+
+		return $customer_onhold_preview_url;
 	}
 	
 	/**
@@ -430,7 +479,7 @@ class WC_Advanced_Shipment_Tracking_Customizer {
 	*/
 	public static function is_own_section( $key ) {
 				
-		if ($key === 'wcast_naviation_panel' || $key === 'ast_tracking_general_section' || $key === 'ast_tracking_per_item' || $key === 'ast_tracking_simple_section' || $key === 'ast_tracking_table_section' || $key === 'default_controls_section' || $key === 'tracking_page_section' || $key === 'customer_delivered_email' || $key === 'customer_partial_shipped_email' || $key === 'customer_updated_tracking_email' || $key === 'customer_failure_email' || $key === 'customer_intransit_email' || $key === 'customer_outfordelivery_email' || $key === 'customer_delivered_status_email' || $key === 'customer_returntosender_email' || $key === 'customer_availableforpickup_email' || $key === 'admin_late_shipments_email') {
+		if ($key === 'wcast_naviation_panel' || $key === 'ast_tracking_general_section' || $key === 'ast_tracking_per_item' || $key === 'ast_tracking_simple_section' || $key === 'ast_tracking_table_section' || $key === 'default_controls_section' || $key === 'tracking_page_section' || $key === 'customer_delivered_email' || $key === 'customer_custom_completed_email' || $key === 'customer_partial_shipped_email' || $key === 'customer_shipped_email' || $key === 'customer_updated_tracking_email' || $key === 'customer_failure_email' || $key === 'customer_intransit_email' || $key === 'customer_outfordelivery_email' || $key === 'customer_delivered_status_email' || $key === 'customer_returntosender_email' || $key === 'customer_availableforpickup_email' || $key === 'customer_onhold_email' || $key === 'admin_late_shipments_email') {
 			return true;
 		}
 
@@ -507,4 +556,4 @@ function wcast_customizer() {
  *
  * Backward compatibility.
 */
-$GLOBALS['WC_Advanced_Shipment_Tracking_Customizer'] = wcast_customizer();
+wcast_customizer();

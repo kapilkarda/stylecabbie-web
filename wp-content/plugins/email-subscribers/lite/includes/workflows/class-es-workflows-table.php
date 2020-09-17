@@ -90,6 +90,7 @@ class ES_Workflows_Table extends WP_List_Table {
 	 * @since 4.4.1
 	 */
 	public function render() {
+
 		$action      = ig_es_get_request_data( 'action' );
 		$workflow_id = ig_es_get_request_data( 'id' );
 
@@ -99,6 +100,9 @@ class ES_Workflows_Table extends WP_List_Table {
 		if ( ! empty( $action_status ) ) {
 			if ( ! empty( $workflow_id ) ) {
 				$workflow_edit_url = ES_Workflow_Admin_Edit::get_edit_url( $workflow_id );
+				if ( ! empty( $workflow_edit_url ) ) {
+					$workflow_edit_url = esc_url( $workflow_edit_url );
+				}
 				if ( 'added' === $action_status ) {
 					/* translators: %s: Workflow edit URL */
 					$message = sprintf( __( 'Workflow added. <a href="%s" class="text-indigo-600">Edit workflow</a>', 'email-subscribers' ), $workflow_edit_url );
@@ -124,7 +128,7 @@ class ES_Workflows_Table extends WP_List_Table {
 			ES_Common::show_message( $message, $status );
 		}
 		?>
-		<div class="wrap">
+		<div class="wrap pt-3 font-sans">
 			<?php
 			if ( 'new' === $action ) {
 				ES_Workflow_Admin_Edit::load_workflow();
@@ -142,19 +146,30 @@ class ES_Workflows_Table extends WP_List_Table {
 	 * Render Workflows list
 	 *
 	 * @since 4.4.1
+	 * 
+	 * @modified 4.4.4 Added wp-heading-inline class to heading tag.
 	 */
 	public function load_workflow_list() {
 		?>
-		<h1 class="wp-heading-inline"><?php esc_html_e( 'Workflows', 'email-subscribers' ); ?>
-			<a href="admin.php?page=es_workflows&action=new"
-				class="inline-flex justify-center rounded-md border border-transparent px-2.5 py-0.5 bg-white text-sm leading-5 font-medium text-white hover:text-white focus:text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-blue transition ease-in-out duration-150"><?php esc_html_e( 'Add New', 'email-subscribers' ); ?></a>
-			<?php do_action( 'ig_es_after_workflow_type_buttons' ); ?>
-		</h1>
-		<div id="poststuff">
+		<div class="flex">
+			<div>
+				<h2 class="wp-heading-inline text-3xl pb-1 font-bold text-gray-700 sm:leading-9 sm:truncate pr-4">
+					<?php esc_html_e( 'Workflows', 'email-subscribers' ); ?>
+				</h2>
+			</div>
+			<div class="mt-1">
+			<a href="admin.php?page=es_workflows&action=new" class="px-3 py-1 ml-2 leading-5 align-middle ig-es-title-button">
+				<?php esc_html_e( 'Add New', 'email-subscribers' ); ?></a>
+				<?php do_action( 'ig_es_after_workflow_type_buttons' ); ?>
+			</div>
+		</div>
+		<div><hr class="wp-header-end"></div>
+		<div id="poststuff" class="es-items-lists mt-4">
 			<div id="post-body" class="metabox-holder column-1">
 				<div id="post-body-content">
 					<div class="meta-box-sortables ui-sortable">
-						<form method="post">
+						<form method="get">
+							<input type="hidden" name="page" value="es_workflows" />
 							<?php
 								$this->prepare_items();
 								$this->display();
@@ -273,9 +288,9 @@ class ES_Workflows_Table extends WP_List_Table {
 	 */
 	public function column_status( $item ) {
 		return '<button type="button" class="ig-es-switch js-toggle-workflow-status" '
-					. 'data-workflow-id="' . $item['id'] . '" '
-					. 'data-ig-es-switch="' . ( '1' === $item['status'] ? 'active' : 'inactive' ) . '">'
-					. __( 'Toggle Status', 'email-subscribers' ) . '</button>';
+		. 'data-workflow-id="' . $item['id'] . '" '
+		. 'data-ig-es-switch="' . ( '1' === $item['status'] ? 'active' : 'inactive' ) . '">'
+		. __( 'Toggle Status', 'email-subscribers' ) . '</button>';
 	}
 
 	/**
@@ -334,12 +349,12 @@ class ES_Workflows_Table extends WP_List_Table {
 	 */
 	public function search_box( $text = '', $input_id = '' ) {
 		?>
-	<p class="search-box">
-		<label class="screen-reader-text"
+		<p class="search-box">
+			<label class="screen-reader-text"
 			for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_attr( $text ); ?>:</label>
-		<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
-		<?php submit_button( __( 'Search Workflows', 'email-subscribers' ), 'button', false, false, array( 'id' => 'search-submit' ) ); ?>
-	</p>
+			<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
+			<?php submit_button( __( 'Search Workflows', 'email-subscribers' ), 'button', false, false, array( 'id' => 'search-submit' ) ); ?>
+		</p>
 		<?php
 	}
 

@@ -23,14 +23,14 @@
 				});
 				
 				let d = new Date();
-    			let n = d.getHours() + 1;
+				let n = d.getHours() + 1;
 				$('.ig-es-time-picker').timepicker({
-				    timeFormat: 'H:mm',
-				    interval: 15,
-				    startTime: new Date(0,0,0,n,0,0), 
-				    dynamic: true,
-				    dropdown: true,
-				    scrollbar: false,
+					timeFormat: 'H:mm',
+					interval: 15,
+					startTime: new Date(0,0,0,n,0,0), 
+					dynamic: true,
+					dropdown: true,
+					scrollbar: false,
 					minTime: new Date(0,0,0,n,0,0)
 				});
 			},
@@ -42,10 +42,11 @@
 
 					$switch = $(this);
 
-					if ( $switch.is('.ig-es-loading') )
+					if ( $switch.is('.ig-es-loading') ) {
 						return;
+					}
 
-					state = $switch.attr( 'data-ig-es-switch' );
+					state     = $switch.attr( 'data-ig-es-switch' );
 					new_state = state === 'active' ? 'inactive' : 'active';
 
 					$switch.addClass('ig-es-loading');
@@ -70,64 +71,58 @@
 			init_show_hide: function() {
 
 				let update = function( $el ) {
-					let id = $el.data( 'ig-es-bind' );
-					let value = $el.val();
+					let id          = $el.data( 'ig-es-bind' );
+					let value       = $el.val();
 					let is_checkbox = $el.is('input[type="checkbox"]');
 
 					$('[data-ig-es-show]').each(function() {
 						if ( is_checkbox && $(this).data('ig-es-show') === id ) {
 							if ( $el.is(':checked') ) {
-		                        $(this).show();
+								$(this).show();
+							} else {
+								$(this).hide();
 							}
-							else {
-		                        $(this).hide();
+						} else {
+							let logic = $(this).data('ig-es-show').split('=');
+
+							if ( logic[0] !== id ) {
+								return;
 							}
-						}
-						else {
-		                    let logic = $(this).data('ig-es-show').split('=');
 
-		                    if ( logic[0] !== id ) {
-		                        return;
-		                    }
+							let possible_values = logic[1].split('|');
 
-		                    let possible_values = logic[1].split('|');
-
-		                    if ( possible_values.indexOf( value ) !== -1 ) {
-		                        $(this).show();
-		                    }
-		                    else {
-		                        $(this).hide();
-		                    }
+							if ( possible_values.indexOf( value ) !== -1 ) {
+								$(this).show();
+							} else {
+								$(this).hide();
+							}
 						}
 					});
 
 
-		            $('[data-ig-es-hide]').each(function() {
-		                if ( is_checkbox && $(this).data('ig-es-hide') === id ) {
-		                    if ( $el.is(':checked') ) {
-		                        $(this).hide();
-		                    }
-		                    else {
-		                        $(this).show();
-		                    }
-		                }
-		                else {
-		                    let logic = $(this).data('ig-es-hide').split('=');
+					$('[data-ig-es-hide]').each(function() {
+						if ( is_checkbox && $(this).data('ig-es-hide') === id ) {
+							if ( $el.is(':checked') ) {
+								$(this).hide();
+							} else {
+								$(this).show();
+							}
+						} else {
+							let logic = $(this).data('ig-es-hide').split('=');
 
-		                    if ( logic[0] !== id ) {
-		                        return;
-		                    }
+							if ( logic[0] !== id ) {
+								return;
+							}
 
-		                    let possible_values = logic[1].split('|');
+							let possible_values = logic[1].split('|');
 
-		                    if ( possible_values.indexOf( value ) !== -1 ) {
-		                        $(this).hide();
-		                    }
-		                    else {
-		                        $(this).show();
-		                    }
+							if ( possible_values.indexOf( value ) !== -1 ) {
+								$(this).hide();
+							} else {
+								$(this).show();
+							}
 						}
-		            });
+					});
 				};
 
 
@@ -147,6 +142,7 @@
 			init_triggers_box: function() {
 				IG_ES_Workflows.$trigger_select.change(function(){
 					IG_ES_Workflows.fill_trigger_fields( $(this).val() );
+					IG_ES_Workflows.remove_actions();
 				});
 			},
 
@@ -162,15 +158,15 @@
 
 					IG_ES_Workflows.$triggers_box.addClass('ig-es-loading');
 
-					let workflow_id = $('workflow_id').val();
+					let workflow_id = $('#workflow_id').val();
 					$.ajax({
-							url: ajaxurl,
-							data: {
-								action: 'ig_es_fill_trigger_fields',
-								trigger_name: trigger_name,
-								security: ig_es_workflows_data.security,
-								workflow_id: workflow_id
-							}
+						url: ajaxurl,
+						data: {
+							action: 'ig_es_fill_trigger_fields',
+							trigger_name: trigger_name,
+							security: ig_es_workflows_data.security,
+							workflow_id: workflow_id
+						}
 						})
 						.done(function(response){
 
@@ -209,8 +205,7 @@
 
 					if ($action.is('.js-open')) {
 						IG_ES_Workflows.action_edit_close($action);
-					}
-					else {
+					} else {
 						IG_ES_Workflows.action_edit_open($action);
 					}
 				});
@@ -225,17 +220,29 @@
 				$('#ig_es_workflow_save #publish').on('click', function(e){
 					let trigger_name = $('.js-trigger-select').val();
 
-					if( '' === trigger_name) {
+					if ( '' === trigger_name) {
 						e.preventDefault();
 						alert( ig_es_workflows_data.no_trigger_message );
 						return;
 					}
 
-					let actions_count = $('.ig-es-action:not([data-action-number=""]) .js-action-select').length;
-					if( 0 === actions_count) {
+					let actions = $('.ig-es-action:not([data-action-number=""]) .js-action-select');
+					if ( 0 === $( actions ).length ) {
 						e.preventDefault();
 						alert( ig_es_workflows_data.no_actions_message );
 						return;
+					} else {
+						$(actions).each(function() {
+							let action_name = $(this).val();
+							// Check if user have selected an action or not.
+							if( '' === action_name ) {
+								e.preventDefault();
+								// Open the action accordion if is not already open.
+								$(this).closest('.ig-es-action:not(.js-open)').find('.ig-es-action__header').trigger('click');
+								alert( ig_es_workflows_data.no_action_selected_message );
+								return false;
+							}
+						});
 					}
 				});
 			},
@@ -288,6 +295,8 @@
 				action_number     = ( typeof action_number !== 'undefined' && action_number !== '' ) ? action_number : IG_ES_Workflows.get_number_of_actions() + 1;
 				let $select       = $action.find('.js-action-select');
 
+				let selected_trigger = $('.js-trigger-select').val();
+
 				IG_ES_Workflows.$actions_box.addClass('ig-es-loading');
 
 				// Remove existing fields
@@ -299,6 +308,7 @@
 						action: 'ig_es_fill_action_fields',
 						action_name: selected_action,
 						action_number: action_number,
+						trigger_name: selected_trigger,
 						security: ig_es_workflows_data.security
 					}
 				}).done(function(response){
@@ -321,6 +331,16 @@
 			get_number_of_actions: function () {
 				return $('.ig-es-action:not([data-action-number=""])').length;
 			},
+
+			remove_actions: function() {
+				let number_of_actions = IG_ES_Workflows.get_number_of_actions();
+				if ( number_of_actions > 0 ) {
+					let confirm_trigger_change = window.confirm( ig_es_workflows_data.trigger_change_message );
+					if ( confirm_trigger_change ) {
+						$('.ig-es-action:not([data-action-number=""])').remove();
+					}
+				}
+			}
 		}
 
 		IG_ES_Workflows.init();

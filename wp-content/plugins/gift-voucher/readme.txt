@@ -2,8 +2,8 @@
 Contributors: codemenschen
 Tags: gift cards, gift certificates, gift voucher, premium vouchers, generate gift cards
 Requires at least: 4.0
-Tested up to: 5.3
-Stable tag: 3.3.9.1
+Tested up to: 5.5
+Stable tag: 3.3.10
 Requires PHP: 5.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -97,7 +97,8 @@ This plugin provides two types of voucher booking forms. They are,
 * Additional charges feature on each voucher order.
 * Custom value redemption feature from the backend.
 * Check the voucher balance page on the backend.
-* Stripe with SCA-ready, PayPal (Express checkout), MultiSafepay and Sofort Payment Gateway Integration and  Bank Transfer. 
+* Stripe with SCA-ready & Ideal Payment Option, PayPal (Express checkout), MultiSafepay and Sofort Payment Gateway Integration and  Bank Transfer. 
+* Generate Invoice for each voucher order.
 * 1-year support with updates included (Get 35% off on renewal license)
 * 100% Satisfaction Guarantee (14 days refund if found unsatisfactory)
 
@@ -112,6 +113,8 @@ Copy this shortcode and paste it where you want the gift voucher form to appear;
 
 – **[Gift Items/Packages Demo](https://www.codemenschen.at/gift-items-packages/)**
 Copy this shortcode and paste it where you want the gift item/package form appears; `[wpgv_giftitems]`
+Copy this shortcode and paste it where you want to display single gift item/package; `[wpgv_giftitems item_id=1]`
+Copy this shortcode and paste it where you want to display Category wise gift item/packages; `[wpgv_giftitems item_cat_id=1]`
 
 By accessing our testing platform, you will be able to discover all plugin features and test them as per your preference in front-end mode.
 
@@ -206,6 +209,23 @@ If you have suggestions about how to improve Gift Cards plugin, you can [write t
 12. Check Voucher Balance
 
 == Changelog ==
+
+= Version 3.3.10 - Released: August 21, 2020 =
+* Added different settings for Gift Voucher and Gift Items
+* Added mail send option through Admin
+* Added sorting option for Gift Items
+* Added New shortcode to show single Gift Item
+* Added New shortcode to show Gift Items by Category
+* Added different color option for Voucher and Form
+* Added check balance page in the pro version
+* Added Stripe Ideal payment option in the pro version
+* Added settings to remove first step from Gift voucher form in the pro version
+* Fixed Receipt wrong price error
+* Fixed PayPal Success page error
+* Fixed Special Price issue on Gift Items
+* Fixed Invalid notice issue on Debug Logs
+* Fixed Expiry date code issue from backend
+* Fixed style 3 barcode issue on pro version
 
 = Version 3.3.9.1 - Released: January 11, 2020 =
 * Fixed the PayPal amount capturing
@@ -420,7 +440,7 @@ If you have suggestions about how to improve Gift Cards plugin, you can [write t
 * Fixed Deutsch and Hindi translations
 * Updated voucher-script.js file
 
-= Version 10.4 - Released: May 28, 2018 =
+= Version 1.0.4 - Released: May 28, 2018 =
 * Fixed Deutsch Language translation
 * Fixed some bugs
 

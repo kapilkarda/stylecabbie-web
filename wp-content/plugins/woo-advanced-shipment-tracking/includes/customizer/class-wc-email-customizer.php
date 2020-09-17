@@ -161,7 +161,7 @@ class wcast_initialise_customizer_email {
 		$wp_customize->add_control( new WP_Customize_Heading_Control( $wp_customize, 'delivered_order_email_heading',
 			array(
 				'label' => __( 'Delivered order status email', 'woo-advanced-shipment-tracking' ),
-				'description' => __( 'This section lets you customize the Email Content.', 'woo-advanced-shipment-tracking' ),
+				'description' => '',
 				'section' => 'customer_delivered_email'
 			)
 		) );		
@@ -287,13 +287,28 @@ class wcast_initialise_customizer_email {
 		$wp_customize->add_control( new Skyrocket_TinyMCE_Custom_control( $wp_customize, 'woocommerce_customer_delivered_order_settings[wcast_delivered_email_content]',
 			array(
 				'label' => __( 'Email content', 'woo-advanced-shipment-tracking' ),
-				'description' => __( 'Available variables:', 'woo-advanced-shipment-tracking' ).' {site_title}, {customer_email}, {customer_first_name}, {customer_last_name}, {customer_username}, {order_number}',
+				'description' => '',
 				'section' => 'customer_delivered_email',
 				'input_attrs' => array(
 					'toolbar1' => 'bold italic bullist numlist alignleft aligncenter alignright link',
 					'mediaButtons' => true,
 					'placeholder' => __( $this->defaults['wcast_delivered_email_content'], 'woo-advanced-shipment-tracking' ),
 				)
+			)
+		) );
+		
+		$wp_customize->add_setting( 'wcast_email_code_block',
+			array(
+				'default' => $this->defaults['wcast_email_code_block'],
+				'transport' => 'postMessage',
+				'sanitize_callback' => ''
+			)
+		);
+		$wp_customize->add_control( new WP_Customize_codeinfoblock_Control( $wp_customize, 'wcast_email_code_block',
+			array(
+				'label' => __( 'Available variables:', 'woo-advanced-shipment-tracking' ),
+				'description' => '<code>{site_title}<br>{customer_email}<br>{customer_first_name}<br>{customer_last_name}<br>{customer_company_name}<br>{customer_username}<br>{order_number}</code>',
+				'section' => 'customer_delivered_email',				
 			)
 		) );
 		
@@ -407,22 +422,7 @@ class wcast_initialise_customizer_email {
 					'placeholder' => __( '', 'woo-advanced-shipment-tracking' ),
 				),
 			)
-		);
-		
-		$wp_customize->add_setting( 'wcast_email_code_block',
-			array(
-				'default' => $this->defaults['wcast_email_code_block'],
-				'transport' => 'postMessage',
-				'sanitize_callback' => ''
-			)
-		);
-		$wp_customize->add_control( new WP_Customize_codeinfoblock_Control( $wp_customize, 'wcast_email_code_block',
-			array(
-				'label' => __( 'Available variables:', 'woo-advanced-shipment-tracking' ),
-				'description' => '<code>{site_title}<br>{customer_email}<br>{customer_first_name}<br>{customer_last_name}<br>{customer_company_name}<br>{customer_username}<br>{order_number}</code>',
-				'section' => 'customer_delivered_email',				
-			)
-		) );	
+		);				
 	}
 		
 	/**

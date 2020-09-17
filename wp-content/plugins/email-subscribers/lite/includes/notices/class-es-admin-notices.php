@@ -39,7 +39,7 @@ class ES_Admin_Notices {
 	 * Store notices to DB
 	 */
 	public static function store_notices() {
-		update_option( 'ig_admin_notices', self::get_notices() );
+		update_option( 'ig_es_admin_notices', self::get_notices() );
 	}
 
 	/**
@@ -119,12 +119,15 @@ class ES_Admin_Notices {
 		}
 
 		foreach ( $notices as $notice ) {
+
 			if ( ! empty( self::$core_notices[ $notice ] ) ) {
+
 				add_action( 'admin_notices', array( __CLASS__, self::$core_notices[ $notice ] ) );
 			} else {
 				add_action( 'admin_notices', array( __CLASS__, 'output_custom_notices' ) );
 			}
 		}
+
 	}
 
 	/**
@@ -150,12 +153,15 @@ class ES_Admin_Notices {
 					$notice_args     = get_option( 'ig_es_custom_admin_notice_' . $notice );
 					$timezone_format = _x( 'Y-m-d', 'timezone date format' );
 					$ig_current_date = strtotime( date_i18n( $timezone_format ) );
-					if ( $notice_args['include'] ) {
-						include_once( $notice_args['include'] );
+
+					if ( ! empty( $notice_args['include'] ) && file_exists( $notice_args['include'] ) ) {
+						include_once  $notice_args['include'] ;
 					}
+
 					if ( ! empty( $notice_args['html'] ) ) {
-						echo $notice_args['html'];
+						echo wp_kses_post( $notice_args['html'] );
 					}
+
 					// if ( $notice_html ) {
 					// 	include dirname( __FILE__ ) . '/views/html-notice-custom.php';
 					// }
@@ -187,26 +193,41 @@ class ES_Admin_Notices {
 	 * If we need to update, include a message with the update button.
 	 */
 	public static function es_dismiss_admin_notice() {
+
 		$es_dismiss_admin_notice = ig_es_get_request_data( 'es_dismiss_admin_notice' );
 		$option_name             = ig_es_get_request_data( 'option_name' );
-		if ( $es_dismiss_admin_notice == '1' && ! empty( $option_name ) ) {
+		if ( '1' == $es_dismiss_admin_notice && ! empty( $option_name ) ) {
 			update_option( 'ig_es_' . $option_name, 'yes', false );
 			if ( in_array( $option_name, array( 'redirect_upsale_notice', 'dismiss_upsale_notice', 'dismiss_star_notice', 'star_notice_done' ) ) ) {
 				update_option( 'ig_es_' . $option_name . '_date', ig_get_current_date_time(), false );
 			}
-			if ( $option_name === 'star_notice_done' ) {
-				header( "Location: https://wordpress.org/support/plugin/email-subscribers/reviews/" );
+
+			// Covid-19 Offer
+			if ( 'offer_covid_19' === $option_name ) {
+				$url = 'https://www.icegram.com/email-subscribers-pricing/?utm_source=in_app&utm_medium=es_banner&utm_campaign=' . $option_name;
+				header( "Location: {$url}" );
 				exit();
 			}
-			if ( $option_name === 'redirect_upsale_notice' ) {
-				header( "Location: https://www.icegram.com/email-subscribers-starter-plan-pricing/?utm_source=es&utm_medium=es_upsale_banner&utm_campaign=es_upsale" );
+
+			if ( 'star_notice_done' === $option_name ) {
+				header( 'Location: https://wordpress.org/support/plugin/email-subscribers/reviews/' );
 				exit();
 			}
-			if ( $option_name === 'offer_bfcm_done_2019' || $option_name === 'offer_last_day_bfcm_done_2019' ) {
-				$url = "https://www.icegram.com/?utm_source=in_app&utm_medium=es_banner&utm_campaign=" . $option_name;
+			if ( 'redirect_upsale_notice' === $option_name ) {
+				header( 'Location: https://www.icegram.com/email-subscribers-starter-plan-pricing/?utm_source=es&utm_medium=es_upsale_banner&utm_campaign=es_upsell' );
+				exit();
+			}
+			if ( 'offer_bfcm_done_2019' === $option_name || 'offer_last_day_bfcm_done_2019' === $option_name ) {
+				$url = 'https://www.icegram.com/?utm_source=in_app&utm_medium=es_banner&utm_campaign=' . $option_name;
 				header( "Location: {$url}" );
 				exit();
 			} else {
+				
+				// Remove wp cron notice if user have acknowledged it.
+				if ( 'wp_cron_notice' === $option_name ) {
+					self::remove_notice( 'show_wp_cron' );
+				}
+				
 				$referer = wp_get_referer();
 				wp_safe_redirect( $referer );
 			}

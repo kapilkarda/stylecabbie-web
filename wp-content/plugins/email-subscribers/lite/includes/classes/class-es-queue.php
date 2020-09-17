@@ -23,7 +23,6 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 *
 		 * @since 4.2.1
 		 * @var $db
-		 *
 		 */
 		protected $db;
 
@@ -39,7 +38,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 			add_action( 'plugins_loaded', array( &$this, 'init' ), 1 );
 
 			add_action( 'ig_es_before_message_send', array( &$this, 'set_sending_status' ), 10, 3 );
-			//add_action( 'ig_es_email_sending_error', array( &$this, 'set_status_in_queue' ), 10, 4 );
+			// add_action( 'ig_es_email_sending_error', array( &$this, 'set_status_in_queue' ), 10, 4 );
 			add_action( 'ig_es_message_sent', array( &$this, 'set_sent_status' ), 10, 3 );
 			add_action( 'ig_es_message_sent', array( &$this, 'update_email_sent_count' ), 10, 3 );
 		}
@@ -63,6 +62,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 * @since 4.2.0
 		 */
 		public function queue_time_based_campaigns( $campaign_id = 0, $force = false ) {
+
 			/**
 			 * Steps
 			 *  1. Fetch all active campaigns
@@ -115,9 +115,9 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 
 					if ( ! empty( $start_time ) ) {
 
+						$meta_data = array();
 						$scheduled = ! empty( $meta['scheduled'] ) ? $meta['scheduled'] : 0;
-
-						$delay = $start_time - $now;
+						$delay     = $start_time - $now;
 
 						// seconds the campaign should created before the actual send time.
 						$time_created_before = 3600;
@@ -125,56 +125,72 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 						// Is it a good time to do now?
 						$do_it = $delay <= $time_created_before;
 
-						// By default do not schedule
-						if ( $do_it && ! $scheduled ) {
+						// If current time is within an hour range or has already passed the scheduled time(negative value fot $delay) e.g. for 11 A.M. post digest, do it if current time is between 10 A.M - 11 A.M. or it is after 11 A.M.
+						if ( $do_it ) {
 
-							$campaign['start_at'] = date( 'Y-m-d H:i:s', $start_time );
+							// By default do not schedule
+							if ( ! $scheduled ) {
 
-							$list_id = $campaign['list_ids'];
+								$campaign['start_at'] = gmdate( 'Y-m-d H:i:s', $start_time );
 
-							// Do we have active subscribers?
-							$contacts       = ES()->contacts_db->get_active_contacts_by_list_id( $list_id );
-							$total_contacts = count( $contacts );
-
-							if ( $total_contacts > 0 ) {
-								// Create a new mailing queue using this campaign
-								$result = $this->add_campaign_to_queue( $campaign, $total_contacts );
-
-								if ( is_array( $result ) ) {
-									$queue_id = $result['id'];
-									$hash     = $result['hash'];
-
-									$this->add_contacts_to_queue( $campaign_id, $hash, $queue_id, $contacts );
+								$post_ids = array();
+								if ( class_exists( 'ES_Post_Digest' ) ) {
+									$post_ids = ES_Post_Digest::get_post_id_for_post_digest( $campaign_id );
 								}
 
+								// Proceed only if we have posts for digest.
+								if ( ! empty( $post_ids ) ) {
+									$list_id = $campaign['list_ids'];
+									$list_id = explode( ',', $list_id );
+
+									// Do we have active subscribers?
+									$contacts       = ES()->contacts_db->get_active_contacts_by_list_id( $list_id );
+									$total_contacts = count( $contacts );
+
+									if ( $total_contacts > 0 ) {
+
+										// Create a new mailing queue using this campaign
+										$result = $this->add_campaign_to_queue( $campaign, $total_contacts );
+
+										if ( is_array( $result ) ) {
+
+											$queue_id = $result['id'];
+											$hash     = $result['hash'];
+
+											$this->add_contacts_to_queue( $campaign_id, $hash, $queue_id, $contacts );
+										}
+									}
+								}
 							}
-						}
 
-						$time_frame = ! empty( $rules['time_frame'] ) ? $rules['time_frame'] : '';
+							$time_frame = ! empty( $rules['time_frame'] ) ? $rules['time_frame'] : '';
 
-						if ( 'immediately' !== $time_frame ) {
+							if ( 'immediately' !== $time_frame ) {
 
-							$data = array(
-								'utc_start'   => $start_time,
-								'interval'    => $rules['interval'],
-								'time_frame'  => $time_frame,
-								'time_of_day' => $rules['time_of_day'],
-								'weekdays'    => $rules['weekdays'],
-								'force'       => true
-							);
+								$data = array(
+									'utc_start'   => $start_time,
+									'interval'    => $rules['interval'],
+									'time_frame'  => $time_frame,
+									'time_of_day' => $rules['time_of_day'],
+									'weekdays'    => $rules['weekdays'],
+									'force'       => true,
+								);
 
-							// Get the next run time.
-							$next_run = ig_es_get_next_future_schedule_date( $data );
+								// Get the next run time.
+								$next_run = ig_es_get_next_future_schedule_date( $data );
 
-							$meta_data['next_run'] = $next_run;
-							if ( $next_run == $start_time ) {
-								$meta_data['scheduled'] = 1;
+								$meta_data['next_run'] = $next_run;
+								if ( $next_run == $start_time ) {
+									$meta_data['scheduled'] = 1;
+								} else {
+									$meta_data['scheduled'] = 0;
+								}
 							} else {
-								$meta_data['scheduled'] = 0;
+								$meta_data['scheduled'] = 1;
 							}
-
 						} else {
-							$meta_data['scheduled'] = 1;
+							// If current time is not within an hour range, then mark it as unschedule so that when current time comes in an hour range before next scheduled time, reports can be queued and campaign can be set as scheduled.
+							$meta_data['scheduled'] = 0;
 						}
 
 						ES()->campaigns_db->update_campaign_meta( $campaign_id, $meta_data );
@@ -190,7 +206,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 * @since 4.2.1
 		 */
 		public function queue_sequences( $campaign_id = 0, $force = false ) {
-			global $wpdb;
+			global $wpbd;
 			/**
 			 * Steps
 			 *  1. Fetch all active Sequence Message
@@ -230,7 +246,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 
 				$rules = ! empty( $meta['rules'] ) ? $meta['rules'] : array();
 
-				//ES()->logger->info( 'Rules: ' . print_r( $rules, true ) );
+				// ES()->logger->info( 'Rules: ' . print_r( $rules, true ) );
 
 				if ( ! empty( $rules ) ) {
 
@@ -254,25 +270,25 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 					$ig_campaign_sent        = IG_MESSAGE_SENT;
 
 					$query_args = array(
-						"select"   => "SELECT lists_contacts.contact_id, UNIX_TIMESTAMP ( lists_contacts.subscribed_at + INTERVAL $offset ) AS timestamp",
-						"from"     => "FROM $ig_lists_contacts_table AS lists_contacts",
+						'select'   => "SELECT lists_contacts.contact_id, UNIX_TIMESTAMP ( lists_contacts.subscribed_at + INTERVAL $offset ) AS timestamp",
+						'from'     => "FROM $ig_lists_contacts_table AS lists_contacts",
 						'join1'    => "LEFT JOIN $ig_actions_table AS actions_sent_message ON lists_contacts.contact_id = actions_sent_message.contact_id AND actions_sent_message.type = $ig_campaign_sent AND actions_sent_message.campaign_id IN ($campaign_id)",
 						'join2'    => "LEFT JOIN $ig_queue_table AS queue ON lists_contacts.contact_id = queue.contact_id AND queue.campaign_id IN ($campaign_id)",
 						'where'    => "WHERE 1=1 AND lists_contacts.list_id IN ($list_ids) AND lists_contacts.status = 'subscribed' AND actions_sent_message.contact_id IS NULL AND queue.contact_id IS NULL",
-						'group_by' => "GROUP BY lists_contacts.contact_id",
-						'having'   => "HAVING timestamp <= " . ( $now + $queue_upfront ) . " AND timestamp >= " . ( $now - $grace_period ),
+						'group_by' => 'GROUP BY lists_contacts.contact_id',
+						'having'   => 'HAVING timestamp <= ' . ( $now + $queue_upfront ) . ' AND timestamp >= ' . ( $now - $grace_period ),
 						'order_by' => 'ORDER BY timestamp ASC',
 					);
 
 					$query = implode( ' ', $query_args );
 
-					//ES()->logger->info( '----------------------------Query Args (ig_es_contact_insert) ----------------------------' );
-					//ES()->logger->info( $query );
-					//ES()->logger->info( '----------------------------Query Args Complete (ig_es_contact_insert) ----------------------------' );
+					// ES()->logger->info( '----------------------------Query Args (ig_es_contact_insert) ----------------------------' );
+					// ES()->logger->info( $query );
+					// ES()->logger->info( '----------------------------Query Args Complete (ig_es_contact_insert) ----------------------------' );
 
-					$results = $wpdb->get_results( $query, ARRAY_A );
+					$results = $wpbd->get_results( $query, ARRAY_A );
 
-					//ES()->logger->info( 'Results: ' . print_r( $results, true ) );
+					// ES()->logger->info( 'Results: ' . print_r( $results, true ) );
 
 					if ( ! empty( $results ) ) {
 
@@ -295,13 +311,10 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 							if ( $timestamp - time() <= 0 ) {
 								wp_schedule_single_event( $timestamp, 'ig_es_cron_worker', array( $campaign_id ) );
 							}
-
 						}
 					}
-
 				}
 			}
-
 
 		}
 
@@ -339,14 +352,14 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 					'finish_at'   => '',
 					'created_at'  => ig_get_current_date_time(),
 					'updated_at'  => ig_get_current_date_time(),
-					'meta'        => maybe_serialize( array( 'type' => $campaign['type'] ) )
+					'meta'        => maybe_serialize( array( 'type' => $campaign['type'] ) ),
 				);
 
 				$queue_id = ES_DB_Mailing_Queue::add_notification( $data );
 
 				return array(
 					'hash' => $guid,
-					'id'   => $queue_id
+					'id'   => $queue_id,
 				);
 
 			}
@@ -380,13 +393,13 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 *
 		 * @param $campaign_id
 		 * @param $subscribers
-		 * @param null $timestamp
-		 * @param int $priority
-		 * @param bool $clear
-		 * @param bool $ignore_status
-		 * @param bool $reset
-		 * @param bool $options
-		 * @param bool $tags
+		 * @param null        $timestamp
+		 * @param int         $priority
+		 * @param bool        $clear
+		 * @param bool        $ignore_status
+		 * @param bool        $reset
+		 * @param bool        $options
+		 * @param bool        $tags
 		 *
 		 * @return bool|void
 		 *
@@ -394,7 +407,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 */
 		public function bulk_add( $campaign_id, $subscribers, $timestamp = null, $priority = 10, $clear = false, $ignore_status = false, $reset = false, $options = false, $tags = false ) {
 
-			global $wpdb;
+			global $wpdb, $wpbd;
 
 			if ( $clear ) {
 				$this->clear( $campaign_id, $subscribers );
@@ -455,9 +468,9 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 					$sql .= sprintf( ", tags = '%s'", $tags );
 				}
 
-				//ES()->logger->info( 'Adding Bulk SQL: ' . $sql );
+				// ES()->logger->info( 'Adding Bulk SQL: ' . $sql );
 
-				$success = $success && false !== $wpdb->query( $sql );
+				$success = $success && false !== $wpbd->query( $sql );
 
 			}
 
@@ -468,7 +481,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		/**
 		 * Clear queue which are not assigned to any campaign
 		 *
-		 * @param null $campaign_id
+		 * @param null  $campaign_id
 		 * @param array $subscribers
 		 *
 		 * @return bool
@@ -477,7 +490,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 */
 		public function clear( $campaign_id = null, $subscribers = array() ) {
 
-			global $wpdb;
+			global $wpdb, $wpbd;
 
 			$campaign_id = (int) $campaign_id;
 			$subscribers = array_filter( $subscribers, 'is_numeric' );
@@ -491,7 +504,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 				$sql .= $wpdb->prepare( ' AND queue.campaign_id = %d', $campaign_id );
 			}
 
-			return false !== $wpdb->query( $sql );
+			return false !== $wpbd->query( $sql );
 
 		}
 
@@ -514,20 +527,32 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 			$ig_queue_table     = IG_QUEUE_TABLE;
 			$ig_campaigns_table = IG_CAMPAIGNS_TABLE;
 
-			$sql = 'SELECT queue.campaign_id, queue.contact_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority';
+			$sql  = 'SELECT queue.campaign_id, queue.contact_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority';
 			$sql .= " FROM $ig_queue_table AS queue";
 			$sql .= " LEFT JOIN $ig_campaigns_table AS campaigns ON campaigns.id = queue.campaign_id";
-			$sql .= ' WHERE queue.timestamp <= ' . (int) $micro_time . " AND queue.sent_at = 0";
-			$sql .= " AND (campaigns.status = 1)";
+			$sql .= ' WHERE queue.timestamp <= ' . (int) $micro_time . ' AND queue.sent_at = 0';
+			$sql .= ' AND (campaigns.status = 1)';
 			$sql .= ' ORDER BY queue.priority DESC';
 
-			//ES()->logger->info( 'Process Queue:' );
-			//ES()->logger->info( 'SQL: ' . $sql );
+			// ES()->logger->info( 'Process Queue:' );
+			// ES()->logger->info( 'SQL: ' . $sql );
 
-			$notifications = $wpdb->get_results( $sql, ARRAY_A );
+			$notifications = $wpdb->get_results( 
+				$wpdb->prepare(
+					"SELECT queue.campaign_id, queue.contact_id, queue.count AS _count, queue.requeued AS _requeued, queue.options AS _options, queue.tags AS _tags, queue.priority AS _priority
+					 FROM {$wpdb->prefix}ig_queue AS queue
+					 LEFT JOIN {$wpdb->prefix}ig_campaigns AS campaigns ON campaigns.id = queue.campaign_id
+					 WHERE queue.timestamp <= %d AND queue.sent_at = 0
+					 AND (campaigns.status = 1)
+					 ORDER BY queue.priority DESC",
+					 (int) $micro_time
+				),
+				ARRAY_A
+			);
 
 			if ( is_array( $notifications ) && count( $notifications ) > 0 ) {
-				$campaigns_notifications = $contact_ids = array();
+				$campaigns_notifications = array(); 
+				$contact_ids 			 = array();
 				foreach ( $notifications as $notification ) {
 					$campaigns_notifications[ $notification['campaign_id'] ][] = $notification;
 
@@ -568,7 +593,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 									'guid'        => $hash,
 									'dbid'        => $contact_id,
 									'message_id'  => 0,
-									'campaign_id' => $campaign_id
+									'campaign_id' => $campaign_id,
 								);
 
 								$result = ES()->mailer->send( $subject, $content, $email, $merge_tags );
@@ -580,11 +605,8 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 							}
 						}
 					}
-
 				}
-
 			}
-
 
 		}
 
@@ -595,7 +617,6 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		 */
 		public function process_campaigns() {
 
-			
 			if ( ES()->cron->should_unlock() ) {
 				ES()->cron->unlock();
 			}
@@ -623,6 +644,16 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 				$campaign_id       = isset( $notification['campaign_id'] ) ? $notification['campaign_id'] : 0;
 
 				if ( ! is_null( $notification_guid ) ) {
+
+					$campaign_type = '';
+					if ( ! empty( $campaign_id ) ) {
+						$campaign_type = ES()->campaigns_db->get_campaign_type_by_id( $campaign_id );
+					}
+
+					if ( 'newsletter' === $campaign_type ) {
+						ES()->campaigns_db->update_status( $campaign_id, IG_ES_CAMPAIGN_STATUS_QUEUED );
+					}
+
 					ES_DB_Mailing_Queue::update_sent_status( $notification_guid, 'Sending' );
 
 					// Get subscribers from the sending_queue table based on fetched guid
@@ -630,7 +661,8 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 					$total_emails = count( $emails_data );
 					// Found Subscribers to send notification?
 					if ( $total_emails > 0 ) {
-						$ids = $emails = array();
+						$ids 	= array();
+						$emails = array();
 						foreach ( $emails_data as $email ) {
 							$ids[]    = $email['id'];
 							$emails[] = $email['email'];
@@ -652,14 +684,25 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 
 						// No emails left for the $notification_guid??? Send admin notification for the
 						// Completion of a job
-						if ( $total_remaining_emails == 0 ) {
+						if ( 0 == $total_remaining_emails ) {
 							ES_DB_Mailing_Queue::update_sent_status( $notification_guid, 'Sent' );
+
+							if ( 'newsletter' === $campaign_type ) {
+								ES()->campaigns_db->update_status( $campaign_id, IG_ES_CAMPAIGN_STATUS_FINISHED );
+							} elseif ( 'post_digest' === $campaign_type ) {
+								$campaign_meta = ES()->campaigns_db->get_campaign_meta_by_id( $campaign_id );
+								if ( ! empty( $campaign_meta['post_ids'] ) ) {
+									// Empty the post ids since they have already been sent in this campaign notification.
+									$campaign_meta['post_ids'] = array();
+									ES()->campaigns_db->update_campaign_meta( $campaign_id, $campaign_meta );
+								}
+							}
 
 							// Send Cron Email to admins
 							ES()->mailer->send_cron_admin_email( $notification_guid );
 						}
 
-						//TODO: Implement better solution
+						// TODO: Implement better solution
 						set_transient( 'ig_es_total_emails_sent', $total_emails, MINUTE_IN_SECONDS );
 						set_transient( 'ig_es_remaining_email_count', $remaining_emails_to_be_sent, MINUTE_IN_SECONDS );
 
@@ -669,6 +712,7 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 						$response['status']                   = 'SUCCESS';
 						// update last cron run time
 						update_option( 'ig_es_last_cron_run', time() );
+
 					} else {
 						$response['es_remaining_email_count'] = 0;
 						$response['message']                  = 'EMAILS_NOT_FOUND';
@@ -748,9 +792,9 @@ if ( ! class_exists( 'ES_Queue' ) ) {
 		/**
 		 * Set status in queue
 		 *
-		 * @param int $contact_id
-		 * @param int $campaign_id
-		 * @param int $message_id
+		 * @param int   $contact_id
+		 * @param int   $campaign_id
+		 * @param int   $message_id
 		 * @param array $response
 		 *
 		 * @since 4.3.3

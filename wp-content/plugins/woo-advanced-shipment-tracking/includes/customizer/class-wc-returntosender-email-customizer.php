@@ -112,7 +112,7 @@ class wcast_returntosender_customizer_email {
 	 * @return string
 	 */
 	public static function get_email_settings_page_url($return_tab) {
-		return admin_url( 'admin.php?page=woocommerce-advanced-shipment-tracking&tab='.$return_tab );
+		return admin_url( 'admin.php?page=trackship-for-woocommerce&tab='.$return_tab );
 	}
 	
 	/**
@@ -154,8 +154,8 @@ class wcast_returntosender_customizer_email {
 		);
 		$wp_customize->add_control( new WP_Customize_Heading_Control( $wp_customize, 'wcast_returntosender_email_settings[returntosender_order_email_heading]',
 			array(
-				'label' => __( 'Return To Sender shipment status email', 'woo-advanced-shipment-tracking' ),
-				'description' => __( 'This section lets you customize the Email Content.', 'woo-advanced-shipment-tracking' ),
+				'label' => __( 'Return To Sender email', 'woo-advanced-shipment-tracking' ),
+				'description' => '',
 				'section' => 'customer_returntosender_email'
 			)
 		) );		
@@ -170,7 +170,7 @@ class wcast_returntosender_customizer_email {
 		);
 		$wp_customize->add_control( 'wcast_returntosender_email_settings[wcast_enable_returntosender_email]',
 			array(
-				'label' => __( 'Enable Return To Sender shipment status email', 'woo-advanced-shipment-tracking' ),
+				'label' => __( 'Enable Return To Sender email', 'woo-advanced-shipment-tracking' ),
 				'description' => esc_html__( '', 'woo-advanced-shipment-tracking' ),
 				'section' => 'customer_returntosender_email',
 				'type' => 'checkbox'
@@ -209,7 +209,7 @@ class wcast_returntosender_customizer_email {
 		$wp_customize->add_control( 'wcast_returntosender_email_settings[wcast_returntosender_email_to]',
 			array(
 				'label' => __( 'Recipient(s)', 'woocommerce' ),
-				'description' => esc_html__( 'Enter emails here or use variables such as {customer_email}. Multiple emails can be separated by commas.', 'woocommerce' ),
+				'description' => esc_html__( 'Use the {customer_email} placeholder, you can add comma separated email addresses.', 'woocommerce' ),
 				'section' => 'customer_returntosender_email',
 				'type' => 'text',
 				'input_attrs' => array(
@@ -231,7 +231,7 @@ class wcast_returntosender_customizer_email {
 		);
 		$wp_customize->add_control( 'wcast_returntosender_email_settings[wcast_returntosender_email_subject]',
 			array(
-				'label' => __( 'Subject', 'woocommerce' ),
+				'label' => __( 'Email Subject', 'woocommerce' ),
 				'description' => esc_html__( 'Available variables:', 'woo-advanced-shipment-tracking' ).' {site_title}, {order_number}',
 				'section' => 'customer_returntosender_email',
 				'type' => 'text',
@@ -265,6 +265,43 @@ class wcast_returntosender_customizer_email {
 				),
 			)
 		);
+		
+		// Test of TinyMCE control
+		$wp_customize->add_setting( 'wcast_returntosender_email_settings[wcast_returntosender_email_content]',
+			array(
+				'default' => $this->defaults['wcast_returntosender_email_content'],
+				'transport' => 'refresh',
+				'type'  => 'option',
+				'sanitize_callback' => 'wp_kses_post'
+			)
+		);
+		$wp_customize->add_control( new Skyrocket_TinyMCE_Custom_control( $wp_customize, 'wcast_returntosender_email_settings[wcast_returntosender_email_content]',
+			array(
+				'label' => __( 'Email content', 'woo-advanced-shipment-tracking' ),
+				'description' => __( '', 'woo-advanced-shipment-tracking' ),
+				'section' => 'customer_returntosender_email',
+				'input_attrs' => array(
+					'toolbar1' => 'bold italic bullist numlist alignleft aligncenter alignright link',
+					'mediaButtons' => true,
+					'placeholder' => __( $this->defaults['wcast_returntosender_email_content'], 'woo-advanced-shipment-tracking' ),
+				)
+			)
+		) );
+		
+		$wp_customize->add_setting( 'wcast_returntosender_email_code_block',
+			array(
+				'default' => $this->defaults['wcast_returntosender_email_code_block'],
+				'transport' => 'postMessage',
+				'sanitize_callback' => ''
+			)
+		);
+		$wp_customize->add_control( new WP_Customize_codeinfoblock_Control( $wp_customize, 'wcast_returntosender_email_code_block',
+			array(
+				'label' => __( 'Available variables:', 'woo-advanced-shipment-tracking' ),
+				'description' => '<code>{site_title}<br>{customer_email}<br>{customer_first_name}<br>{customer_last_name}<br>{customer_company_name}<br>{customer_username}<br>{order_number}<br>{est_delivery_date}</code>',
+				'section' => 'customer_returntosender_email',				
+			)
+		) );	
 		
 		// Display Shipment Provider image/thumbnail
 		$wp_customize->add_setting( 'wcast_returntosender_email_settings[wcast_returntosender_show_tracking_details]',
@@ -356,45 +393,7 @@ class wcast_returntosender_customizer_email {
 					'placeholder' => __( '', 'woo-advanced-shipment-tracking' ),
 				),
 			)
-		);
-		
-		// Test of TinyMCE control
-		$wp_customize->add_setting( 'wcast_returntosender_email_settings[wcast_returntosender_email_content]',
-			array(
-				'default' => $this->defaults['wcast_returntosender_email_content'],
-				'transport' => 'refresh',
-				'type'  => 'option',
-				'sanitize_callback' => 'wp_kses_post'
-			)
-		);
-		$wp_customize->add_control( new Skyrocket_TinyMCE_Custom_control( $wp_customize, 'wcast_returntosender_email_settings[wcast_returntosender_email_content]',
-			array(
-				'label' => __( 'Email content', 'woo-advanced-shipment-tracking' ),
-				'description' => __( '', 'woo-advanced-shipment-tracking' ),
-				'section' => 'customer_returntosender_email',
-				'input_attrs' => array(
-					'toolbar1' => 'bold italic bullist numlist alignleft aligncenter alignright link',
-					'mediaButtons' => true,
-					'placeholder' => __( $this->defaults['wcast_returntosender_email_content'], 'woo-advanced-shipment-tracking' ),
-				)
-			)
-		) );
-		
-
-		$wp_customize->add_setting( 'wcast_returntosender_email_code_block',
-			array(
-				'default' => $this->defaults['wcast_returntosender_email_code_block'],
-				'transport' => 'postMessage',
-				'sanitize_callback' => ''
-			)
-		);
-		$wp_customize->add_control( new WP_Customize_codeinfoblock_Control( $wp_customize, 'wcast_returntosender_email_code_block',
-			array(
-				'label' => __( 'Available variables:', 'woo-advanced-shipment-tracking' ),
-				'description' => '<code>{site_title}<br>{customer_email}<br>{customer_first_name}<br>{customer_last_name}<br>{customer_company_name}<br>{customer_username}<br>{order_number}<br>{est_delivery_date}</code>',
-				'section' => 'customer_returntosender_email',				
-			)
-		) );	
+		);				
 	}	
 	
 	/**
@@ -462,7 +461,7 @@ class wcast_returntosender_customizer_email {
 		$email_heading = __( $email_heading, 'woo-advanced-shipment-tracking' );
 		//ob_start();
 		
-		$message = wc_advanced_shipment_tracking_email_class()->email_content($email_content,$preview_id,$order);
+		$message = wc_trackship_email_manager()->email_content($email_content,$preview_id,$order);
 		
 		$wcast_returntosender_analytics_link = $ast->get_option_value_from_array('wcast_returntosender_email_settings','wcast_returntosender_analytics_link','');	
 				

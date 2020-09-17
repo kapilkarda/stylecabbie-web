@@ -3,7 +3,7 @@
 * Plugin Name: PayKun Gateway (WooCommerce)
 * Plugin URI: https://github.com/paykun-code/Wordpress_v4.x_compatible
 * Description: PayKun payment integration for WooCommerce
-* Version: 1.7
+* Version: 1.8
 * Author: Paykun
 * Author URI: http://paykun.com/
 * Tags: PayKun, PayKun Payments, PayWithPayKun, PayKun WooCommerce, PayKun Plugin, PayKun Payment Gateway For WooCommerce
@@ -419,7 +419,7 @@ function woocommerce_paykun_payment_gateway_init() {
 
                 // Initializing Order
                 $obj->initOrder($orderDetail['orderId'], $orderDetail['purpose'], $orderDetail['amount'],
-                    $orderDetail['successUrl'], $orderDetail['failureUrl']);
+                    $orderDetail['successUrl'], $orderDetail['failureUrl'], $orderDetail['currency']);
 
                 // Add Customer
                 $obj->addCustomer($orderDetail['customerName'], $orderDetail['customerEmail'], $orderDetail['customerMoNo']);
@@ -522,7 +522,8 @@ function woocommerce_paykun_payment_gateway_init() {
                 "b_pinCode"     => $order->billing_postcode,
                 "b_addressString" => $order->billing_address_1.' '.$order->billing_address_2,
                 /*Billing detail over*/
-                "cancelOrderUrl"    => $order->get_cancel_order_url()
+                "cancelOrderUrl"    => $order->get_cancel_order_url(),
+                "currency" => $this->getOrderCurrency($order),
             );
 
         }
@@ -554,8 +555,15 @@ function woocommerce_paykun_payment_gateway_init() {
             return $page_list;
         }
 
+        private function getOrderCurrency($order)
+        {
+            if (version_compare(WOOCOMMERCE_VERSION, '2.7.0', '>='))
+            {
+                return $order->get_currency();
+            }
+            return $order->get_order_currency();
+        }
     }
-
 
     /**
      * Add the Gateway to WooCommerce

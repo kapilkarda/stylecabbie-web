@@ -4,12 +4,12 @@
 	 * Plugin URI: https://wordpress.org/plugins/woo-variation-gallery/
 	 * Description: Allows to insert multiple images for per variation to let visitors to see a different images when WooCommerce product variations are switched. Requires WooCommerce 3.2+
 	 * Author: Emran Ahmed
-	 * Version: 1.1.38
+	 * Version: 1.1.42
 	 * Domain Path: /languages
 	 * Requires at least: 4.8
-	 * Tested up to: 5.3
+	 * Tested up to: 5.5
 	 * WC requires at least: 3.2
-	 * WC tested up to: 4.0
+	 * WC tested up to: 4.5
 	 * Text Domain: woo-variation-gallery
 	 * Author URI: https://getwooplugins.com/
 	 */
@@ -20,7 +20,7 @@
 		
 		final class Woo_Variation_Gallery {
 			
-			protected        $_version  = '1.1.38';
+			protected        $_version  = '1.1.42';
 			protected static $_instance = null;
 			
 			public static function instance() {
@@ -346,13 +346,15 @@
 					wp_enqueue_style( 'gwp-feed', esc_url( $this->feed_css_uri() ), array( 'dashicons' ) );
 				}
 				
+				
+				/*
 				$screen    = get_current_screen();
 				$screen_id = $screen ? $screen->id : '';
 				
 				if ( in_array( $screen_id, array( 'product', 'edit-product' ) ) ) {
 					wp_deregister_script( 'wc-admin-variation-meta-boxes' );
 					wp_register_script( 'wc-admin-variation-meta-boxes', $this->assets_uri( '/js/meta-boxes-product-variation' . $suffix . '.js' ), array( 'wc-admin-meta-boxes', 'serializejson', 'media-models' ), $this->version() );
-				}
+				}*/
 				
 				// GWP Admin Helper
 				wp_enqueue_script( 'gwp-backbone-modal', $this->assets_uri( "/js/gwp-backbone-modal{$suffix}.js" ), array( 'jquery', 'underscore', 'backbone', 'wp-util' ), $this->version(), true );

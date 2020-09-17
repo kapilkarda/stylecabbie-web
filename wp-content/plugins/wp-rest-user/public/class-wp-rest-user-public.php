@@ -117,7 +117,7 @@ class Wp_Rest_User_Public {
 			}
 		} else {
 			if ($GLOBALS['wp_roles']->is_role($role)) {
-				if ($role == 'administrator' || $role == 'Editor' || $role == 'Author') {
+				if ($role == 'administrator' || $role == 'editor' || $role == 'author') {
 					$error->add(406, __("Role field 'role' is not a permitted. Only 'contributor', 'subscriber' and your custom roles are allowed.", 'wp_rest_user'), array('status' => 400));
 					return $error;
 				} else {
@@ -140,7 +140,8 @@ class Wp_Rest_User_Public {
 				do_action('wp_rest_user_user_register', $user);
 
 				// Ger User Data (Non-Sensitive, Pass to front end.)
-				$response['code'] = 200;
+                $response['code'] = 200;
+                $response['id'] = $user_id;
 				$response['message'] = __("User '" . $username . "' Registration was Successful", "wp-rest-user");
 			} else {
 				return $user_id;
@@ -214,7 +215,7 @@ class Wp_Rest_User_Public {
 
 		if ($email_successful) {
 			$response['code'] = 200;
-			$response['message'] = __("Reset Password link had been send to your email.", "wp-rest-user");
+			$response['message'] = __("Reset Password link has been sent to your email.", "wp-rest-user");
 		} else {
 			$error->add(402, __("Failed to send Reset Password email. Check your WordPress Hosting Email Settings.", 'wp-rest-user'), array('status' => 402));
 			return $error;

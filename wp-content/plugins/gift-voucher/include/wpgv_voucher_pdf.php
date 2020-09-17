@@ -66,13 +66,13 @@ function wpgv__doajax_voucher_pdf_save_func() {
 	if ($setting_options->is_style_choose_enable) {
 		$voucher_style = sanitize_text_field(base64_decode($_POST['style']));
 		$image_attributes = get_attached_file( $images[$voucher_style] );
-		$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
-        $stripeimage = (wp_get_attachment_image_src($images[$voucher_style])) ? wp_get_attachment_image_src($images[$voucher_style]) : get_option('wpgv_demoimageurl');
+		$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_voucher');
+        $stripeimage = (wp_get_attachment_image_src($images[$voucher_style])) ? wp_get_attachment_image_src($images[$voucher_style]) : get_option('wpgv_demoimageurl_voucher');
 	} else {
 		$voucher_style = 0;
 		$image_attributes = get_attached_file( $images[0] );
-		$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
-        $stripeimage = (wp_get_attachment_image_src($images[0])) ? wp_get_attachment_image_src($images[0]) : get_option('wpgv_demoimageurl');
+		$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_voucher');
+        $stripeimage = (wp_get_attachment_image_src($images[0])) ? wp_get_attachment_image_src($images[0]) : get_option('wpgv_demoimageurl_voucher');
 	}
 
 	switch ($voucher_style) {
@@ -127,6 +127,23 @@ function wpgv__doajax_voucher_pdf_save_func() {
 	$lastid = $wpdb->insert_id;
 	WPGV_Gift_Voucher_Activity::record( $lastid, 'create', '', 'Voucher ordered by '.$for.', Message: '.$message );
 
+	$shipping_charges = 0;
+
+	if($shipping != 'shipping_as_email') {
+	    $preshipping_methods = explode(',', $setting_options->shipping_method);
+    	foreach ($preshipping_methods as $method) {
+        	$preshipping_method = explode(':', $method);
+        	if(trim(stripslashes($preshipping_method[1])) == trim(stripslashes($shipping_method))) {
+	        	$value += trim($preshipping_method[0]);
+	        	$shipping_charges = trim($preshipping_method[0]);
+    	    	break;
+        	}
+        }
+    }
+
+    $value += $wpgv_add_extra_charges;
+
+
 	//Customer Receipt
 	if($wpgv_customer_receipt) {
 		$upload_dir = $upload['basedir'];
@@ -139,16 +156,6 @@ function wpgv__doajax_voucher_pdf_save_func() {
 		}
 	}
 
-	if($shipping != 'shipping_as_email') {
-	    $preshipping_methods = explode(',', $setting_options->shipping_method);
-    	foreach ($preshipping_methods as $method) {
-        	$preshipping_method = explode(':', $method);
-        	if(trim(stripslashes($preshipping_method[1])) == $shipping_method) {
-	        	$value += trim($preshipping_method[0]);
-    	    	break;
-        	}
-        }
-    }
 	$currency = wpgv_price_format($value);
 	update_post_meta($lastid, 'wpgv_total_payable_amount', $currency);
 

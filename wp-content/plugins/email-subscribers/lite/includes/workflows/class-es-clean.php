@@ -129,4 +129,18 @@ class ES_Clean {
 		return $data;
 	}
 
+	/**
+	 * Performs a basic sanitize for editor content permitting all HTML.
+	 *
+	 * @param string $content
+	 *
+	 * @return string $content
+	 * 
+	 * @since 4.5.3
+	 */
+	public static function editor_content( $content ) {
+		$content = wp_check_invalid_utf8( stripslashes( (string) $content ) );
+		return $content;
+	}
+
 }

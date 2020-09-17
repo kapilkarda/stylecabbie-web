@@ -74,7 +74,8 @@ function wpgv_voucher_shortcode()
         }
     }
 
-    $wpgv_hide_price = get_option('wpgv_hide_price') ? get_option('wpgv_hide_price') : 0;
+    $wpgv_hide_price = get_option('wpgv_hide_price_voucher') ? get_option('wpgv_hide_price_voucher') : 0;
+    $wpgv_leftside_notice = (get_option('wpgv_leftside_notice') != '') ? get_option('wpgv_leftside_notice') : __('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' );
 
     $voucher_value_html = (!$wpgv_hide_price) ? '<div class="voucherValueForm">
                         <label>'.__('Voucher Value', 'gift-voucher' ).'</label>
@@ -82,6 +83,7 @@ function wpgv_voucher_shortcode()
                         <input type="text" name="voucherValueCard" class="voucherValueCard" readonly>
                     </div>' : '';
 
+    $voucher_brcolor = get_option('wpgv_voucher_border_color') ? get_option('wpgv_voucher_border_color') : '81c6a9';
     $voucher_bgcolor = $setting_options->voucher_bgcolor;
     $voucher_color = $setting_options->voucher_color;
 
@@ -93,15 +95,19 @@ function wpgv_voucher_shortcode()
     $shipping_methods = explode(',', $setting_options->shipping_method);
     $shipping_methods_string = '';
     foreach ($shipping_methods as $method) {
-        $shipping_method = explode(':', $method);
-        $shipping_methods_string .= '<label data-value="'.trim($shipping_method[0]).'"><input type="radio" name="shipping_method" value="'.trim(stripslashes($shipping_method[1])).'" class="radio-field"> '.trim(stripslashes($shipping_method[1])).'</label>';
+        if($method != ''){
+            $shipping_method = explode(':', $method);
+            $shipping_methods_string .= '<label data-value="'.trim($shipping_method[0]).'"><input type="radio" name="shipping_method" value="'.trim(stripslashes($shipping_method[1])).'" class="radio-field"> '.trim(stripslashes($shipping_method[1])).'</label>';
+        }
     }
 
     $html .= '<style type="text/css">
+        #voucher-multistep-form .secondRightDiv .cardDiv{
+            background-color: #'.$voucher_bgcolor.'!important;
+        }
         #voucher-multistep-form.wizard>.steps .done a,
         #voucher-multistep-form.wizard>.steps .done a:hover,
         #voucher-multistep-form.wizard>.steps .done a:active,
-        #voucher-multistep-form .secondRightDiv .cardDiv,
         #voucher-multistep-form.wizard>.actions a,
         #voucher-multistep-form.wizard>.actions a:hover,
         #voucher-multistep-form.wizard>.actions a:active,
@@ -109,7 +115,7 @@ function wpgv_voucher_shortcode()
         #voucher-multistep-form #voucherPaymentButton,
         #voucher-multistep-form .sin-template input[type="radio"]:checked:before,
         .buying-options div.selected, .shipping-options div.selected {
-            background-color: #'.$voucher_bgcolor.'!important;
+            background-color: #'.$voucher_brcolor.'!important;
         }
         #voucher-multistep-form .content .voucherform .form-group input[type="text"],
         #voucher-multistep-form .content .form-group input[type="email"],
@@ -118,7 +124,7 @@ function wpgv_voucher_shortcode()
         #voucher-multistep-form .content .form-group select,
         #voucher-multistep-form .content .form-group textarea,
         #voucher-multistep-form .content .sin-template label.selectImage {
-            border-color: #'.$voucher_bgcolor.'!important;
+            border-color: #'.$voucher_brcolor.'!important;
         }
         #voucher-multistep-form .paymentUserInfo .full,
         #voucher-multistep-form .paymentUserInfo .half,
@@ -127,8 +133,7 @@ function wpgv_voucher_shortcode()
         #voucher-multistep-form .voucherBottomDiv .voucherSiteInfo a {
             color: #'.$voucher_color.'!important;
         }
-        #voucher-multistep-form.wizard>.content>.body .voucherBottomDiv label,
-        .buying-options div.selected, .shipping-options div.selected {
+        #voucher-multistep-form.wizard>.content>.body .voucherBottomDiv label{
             color:  #'.$voucher_color.'!important;
         }
         #voucher-multistep-form.wizard>.content>.body.loading.current:after {
@@ -170,7 +175,7 @@ function wpgv_voucher_shortcode()
     $voucherstyle1 = '<div class="sideview secondRight secondRightDiv voucherstyle1">
         <div class="cardDiv">
             <div class="cardImgTop">
-                <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl').'">
+                <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl_voucher').'">
             </div>
             <div class="voucherBottomDiv">
                 <h2>'.__('Gift Voucher', 'gift-voucher' ).'</h2>
@@ -198,7 +203,7 @@ function wpgv_voucher_shortcode()
                     </div>
                     <div class="clearfix"></div>
                     <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                    <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                    <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                 </div></div></div>
         </div>';
 
@@ -206,7 +211,7 @@ function wpgv_voucher_shortcode()
         <div class="cardDiv">
             <div class="voucherBottomDiv">
                 <div class="cardImgTop">
-                    <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl').'">
+                    <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl_voucher').'">
                 </div>
                 <div class="sidedetails">
                     <h2>'.__('Gift Voucher', 'gift-voucher' ).'</h2>
@@ -235,7 +240,7 @@ function wpgv_voucher_shortcode()
                     </div>
                     <div class="clearfix"></div>
                     <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                    <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                    <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                 </div></div></div>
         </div>';
 
@@ -244,7 +249,7 @@ function wpgv_voucher_shortcode()
             <div class="voucherBottomDiv">
                 <h2>'.__('Gift Voucher', 'gift-voucher' ).'</h2>
                 <div class="cardImgTop">
-                    <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl').'">
+                    <img class="uk-thumbnail" src="'.get_option('wpgv_demoimageurl_voucher').'">
                 </div>
                 <div class="sidedetails">
                     <div class="nameFormLeft">
@@ -272,7 +277,7 @@ function wpgv_voucher_shortcode()
                     </div>
                     <div class="clearfix"></div>
                     <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                    <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                    <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                 </div></div></div>
         </div>';
 
@@ -309,7 +314,7 @@ function wpgv_voucher_shortcode()
     foreach ($template_options as $key => $options) {
         $images = $options->image_style ? json_decode($options->image_style) : ['','',''];
         $image_attributes = wp_get_attachment_image_src( $images[0], 'voucher-thumb' );
-        $image = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl');
+        $image = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl_voucher');
         $html .= '<div class="vouchercol'.$setting_options->template_col.'"><div class="sin-template"><label for="template_id'.$options->id.'"><img src="'.$image.'" width="'.$image_attributes[1].'"/><span>'.$options->title.'</span></label><input type="radio" name="template_id" value="'.$options->id.'" id="template_id'.$options->id.'" class="required"></div></div>';
     }
 	$html .= '</div></fieldset>
@@ -519,7 +524,7 @@ function wpgv__doajax_front_template() {
     $image_styles = array();
     foreach ($images as $key => $value) {
         $image_attributes = wp_get_attachment_image_src( $value, 'voucher-medium' );
-        $image_styles[] = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl');
+        $image_styles[] = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl_voucher');
     }
 
 	echo wp_send_json(array('images' => $image_styles, 'title' => $template_options->title));

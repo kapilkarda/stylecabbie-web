@@ -1,8 +1,8 @@
 /*!
- * Additional Variation Images Gallery for WooCommerce v1.1.38 
+ * Additional Variation Images Gallery for WooCommerce v1.1.42 
  * 
  * Author: Emran Ahmed ( emran.bd.08@gmail.com ) 
- * Date: 3/16/2020, 3:35:33 PM
+ * Date: 9/14/2020, 5:55:14 PM
  * Released under the GPLv3 license.
  */
 /******/ (function(modules) { // webpackBootstrap
@@ -120,9 +120,6 @@ var WooVariationGalleryAdmin = function ($) {
         _createClass(WooVariationGalleryAdmin, null, [{
             key: 'GWPAdmin',
             value: function GWPAdmin() {
-                if ($().gwp_live_feed) {
-                    $().gwp_live_feed();
-                }
                 if ($().gwp_deactivate_popup) {
                     $().gwp_deactivate_popup('woo-variation-gallery');
                 }
@@ -136,10 +133,8 @@ var WooVariationGalleryAdmin = function ($) {
 
                 $('.woocommerce_variation').each(function () {
                     var optionsWrapper = $(this).find('.options:first');
-
-                    // console.log($(this).find('.options:first'));
-
                     var galleryWrapper = $(this).find('.woo-variation-gallery-wrapper');
+
                     galleryWrapper.insertBefore(optionsWrapper);
                 });
             }
@@ -151,20 +146,20 @@ var WooVariationGalleryAdmin = function ($) {
                 event.preventDefault();
                 event.stopPropagation();
 
-                var file_frame = void 0;
+                var frame = void 0;
                 var product_variation_id = $(this).data('product_variation_id');
                 var loop = $(this).data('product_variation_loop');
 
                 if (typeof wp !== 'undefined' && wp.media && wp.media.editor) {
 
                     // If the media frame already exists, reopen it.
-                    if (file_frame) {
-                        file_frame.open();
+                    if (frame) {
+                        frame.open();
                         return;
                     }
 
                     // Create the media frame.
-                    file_frame = wp.media.frames.select_image = wp.media({
+                    frame = wp.media({
                         title: woo_variation_gallery_admin.choose_image,
                         button: {
                             text: woo_variation_gallery_admin.add_image
@@ -184,9 +179,9 @@ var WooVariationGalleryAdmin = function ($) {
                     });
 
                     // When an image is selected, run a callback.
-                    file_frame.on('select', function () {
+                    frame.on('select', function () {
 
-                        var images = file_frame.state().get('selection').toJSON();
+                        var images = frame.state().get('selection').toJSON();
 
                         var html = images.map(function (image) {
                             if (image.type === 'image') {
@@ -215,7 +210,7 @@ var WooVariationGalleryAdmin = function ($) {
                     });
 
                     // Finally, open the modal.
-                    file_frame.open();
+                    frame.open();
                 }
             }
         }, {

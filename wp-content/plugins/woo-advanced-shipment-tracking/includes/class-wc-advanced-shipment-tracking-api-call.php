@@ -33,7 +33,9 @@ class WC_Advanced_Shipment_Tracking_Api_Call {
 			foreach( ( array )$tracking_items as $key => $val ){				
 				if(isset($shipment_status[$key]['status']) && $shipment_status[$key]['status'] == 'delivered')continue;
 				$tracking_number = trim($val['tracking_number']);
-				$tracking_provider = $val['tracking_provider'];
+				
+				$tracking_provider = isset( $val['tracking_provider'] ) ? $val['tracking_provider'] : $val['custom_tracking_provider'];
+				$tracking_provider = apply_filters('convert_provider_name_to_slug',$tracking_provider);
 				
 				if( isset($tracking_number) ){
 					
@@ -74,23 +76,24 @@ class WC_Advanced_Shipment_Tracking_Api_Call {
 							$shipment_status = get_post_meta( $order->get_id(), "shipment_status", true);
 							
 							if( is_string($shipment_status) )$shipment_status = array();
-							$shipment_status[$key]['status'] = $body['status_msg'];
+							
+							$shipment_status[$key]['pending_status'] = $body['status_msg'];
+														
+							
 							$shipment_status[$key]['status_date'] = date("Y-m-d H:i:s");
-							$shipment_status[$key]['est_delivery_date'] = '';
+							$shipment_status[$key]['est_delivery_date'] = '';														
 							
 							update_post_meta( $order->get_id(), "shipment_status", $shipment_status);
-							update_option('trackers_balance',$body['trackers_balance']);
 							
+							if(isset($body['trackers_balance'])){
+								update_option('trackers_balance',$body['trackers_balance']);
+							}														
 						} else {
-							//error like 403 500 502 
-							$timestamp = time() + 5*60;
-							$args = array( $order->get_id() );
-							$hook = 'wcast_retry_trackship_apicall';
-							wp_schedule_single_event( $timestamp, $hook, $args );
-							
+							//error like 400
+							$body = json_decode($response['body'], true);															
 							$shipment_status = get_post_meta( $order->get_id(), "shipment_status", true);
 							if( is_string($shipment_status) )$shipment_status = array();
-							$shipment_status[$key]['status'] = "Error code : ".$code;
+							$shipment_status[$key]['status'] = "Error message : ".$body['message'];
 							$shipment_status[$key]['status_date'] = date("Y-m-d H:i:s");
 							$shipment_status[$key]['est_delivery_date'] = '';
 							update_post_meta( $order->get_id(), "shipment_status", $shipment_status);
@@ -98,6 +101,7 @@ class WC_Advanced_Shipment_Tracking_Api_Call {
 							$logger = wc_get_logger();
 							$context = array( 'source' => 'Trackship_apicall_error' );
 							$logger->error( "Error code : ".$code. " For Order id :" .$order->get_id(), $context );
+							$logger->error( "Body : ".$response['body'], $context );
 						}						
 					}					
 				}
@@ -113,6 +117,13 @@ class WC_Advanced_Shipment_Tracking_Api_Call {
 		$user_key = get_option("wc_ast_api_key");
 		$domain = get_home_url();
 		$order_id = $order->get_id();
+		
+		$wast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
+		$custom_order_number = $wast->get_custom_order_number($order_id);
+		
+		if(empty($custom_order_number)){
+			$custom_order_number = $order_id;
+		}
 		
 		if($order->get_shipping_country() != null){
 			$shipping_country = $order->get_shipping_country();	
@@ -131,6 +142,7 @@ class WC_Advanced_Shipment_Tracking_Api_Call {
 		$args['body'] = array(
 			'user_key' => $user_key,
 			'order_id' => $order_id,
+			'custom_order_id' => $custom_order_number,
 			'domain' => $domain,
 			'tracking_number' => $tracking_number,
 			'tracking_provider' => $tracking_provider,

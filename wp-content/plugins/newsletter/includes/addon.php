@@ -23,7 +23,7 @@ class NewsletterAddon {
         }
         add_action('newsletter_init', array($this, 'init'));
         //Load translations from specific addon /languages/ directory
-	    load_plugin_textdomain( 'newsletter-' . $this->name, false, 'newsletter-' . $this->name . '/languages/' );
+        load_plugin_textdomain('newsletter-' . $this->name, false, 'newsletter-' . $this->name . '/languages/');
     }
 
     /**
@@ -32,7 +32,7 @@ class NewsletterAddon {
      * @param bool $first_install
      */
     function upgrade($first_install = false) {
-
+        
     }
 
     /**
@@ -40,7 +40,7 @@ class NewsletterAddon {
      * fires the <code>newsletter_init</code> event.
      */
     function init() {
-
+        
     }
 
     /**
@@ -112,6 +112,7 @@ class NewsletterAddon {
         }
         return $r;
     }
+
 }
 
 /**
@@ -175,21 +176,31 @@ class NewsletterMailerAddon extends NewsletterAddon {
      * @param string $subject
      * @return TNP_Mailer_Message
      */
-    static function get_test_message($to, $subject = '') {
+    static function get_test_message($to, $subject = '', $type = '') {
         $message = new TNP_Mailer_Message();
         $message->to = $to;
         $message->to_name = '';
-        $message->body = "<!DOCTYPE html>\n";
-        $message->body .= "This is the rich text (HTML) version of a test message.</p>\n";
-        $message->body .= "This is a <strong>bold text</strong></p>\n";
-        $message->body .= "This is a <a href='http://www.thenewsletterplugin.com'>link to www.thenewsletterplugin.com</a></p>\n";
-        $message->body_text = 'This is the TEXT version of a test message. You should see this message only if you email client does not support the rich text (HTML) version.';
+        if (empty($type) || $type == 'html') {
+            $message->body = file_get_contents(NEWSLETTER_DIR . '/includes/test-message.html');
+            $message->body = str_replace('{plugin_url}', NEWSLETTER_URL, $message->body);
+        }
+
+        if (empty($type) || $type == 'text') {
+            $message->body_text = 'This is the TEXT version of a test message. You should see this message only if you email client does not support the rich text (HTML) version.';
+        }
+
         $message->headers['X-Newsletter-Email-Id'] = '0';
+
         if (empty($subject)) {
             $message->subject = '[' . get_option('blogname') . '] Test message from Newsletter (' . date(DATE_ISO8601) . ')';
         } else {
             $message->subject = $subject;
         }
+
+        if ($type) {
+            $message->subject .= ' - ' . $type . ' only';
+        }
+        
         $message->from = Newsletter::instance()->options['sender_email'];
         $message->from_name = Newsletter::instance()->options['sender_name'];
         return $message;
@@ -203,14 +214,12 @@ class NewsletterMailerAddon extends NewsletterAddon {
      * @param int $count Number of message objects to create
      * @return TNP_Mailer_Message[]
      */
-    function get_test_messages($to, $count) {
+    function get_test_messages($to, $count, $type = '') {
         $messages = array();
         for ($i = 0; $i < $count; $i++) {
-            $messages[] = self::get_test_message($to, '[' . get_option('blogname') . '] Test message ' . ($i + 1) . ' from Newsletter (' . date(DATE_ISO8601) . ')');
+            $messages[] = self::get_test_message($to, '[' . get_option('blogname') . '] Test message ' . ($i + 1) . ' from Newsletter (' . date(DATE_ISO8601) . ')', $type);
         }
         return $messages;
     }
 
 }
-
-

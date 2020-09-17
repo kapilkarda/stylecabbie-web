@@ -28,7 +28,7 @@ class ES_Trigger_User_Updated extends ES_Workflow_Trigger {
 	 * Load trigger admin props.
 	 */
 	public function load_admin_details() {
-		$this->title       = __( 'User updated', 'email-subscribers' );
+		$this->title       = __( 'User Updated', 'email-subscribers' );
 		$this->description = __( 'Fires when a user is updated.', 'email-subscribers' );
 		$this->group       = __( 'User', 'email-subscribers' );
 	}

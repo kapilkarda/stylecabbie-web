@@ -27,6 +27,7 @@ function wpgv_voucher_successful_shortcode() {
 		if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) { 
 		} else {
 			$voucherrow = $wpdb->get_row( "SELECT * FROM `{$wpdb->prefix}giftvouchers_list` WHERE `id` = $voucheritem AND `pay_method` <> 'Per Invoice'" );
+
 			if($voucherrow) {
 				$wpdb->update(
 					$voucher_table,
@@ -40,7 +41,7 @@ function wpgv_voucher_successful_shortcode() {
 					), 
 					array( '%d' )
 				);
-				if(isset($_GET['paymentId'])) {
+				if(isset($_GET['paymentId']) && $voucherrow->payment_status != 'Paid') {
 					require_once( WPGIFT__PLUGIN_DIR .'/include/PayPalAuth.php');
 					
 					$paymentId = $_GET['paymentId'];
@@ -86,51 +87,18 @@ function wpgv_voucher_successful_shortcode() {
 			}
 		}
 
-		$emailsubject = get_option('wpgv_emailsubject') ? get_option('wpgv_emailsubject') : 'Order Confirmation - Your Order with {company_name} (Voucher Order No: {order_number} ) has been successfully placed!';
-		$recipientemailsubject = get_option('wpgv_recipientemailsubject') ? get_option('wpgv_recipientemailsubject') : 'Gift Voucher - Your have received voucher from {company_name}';
-		$recipientemailbody = get_option('wpgv_recipientemailbody') ? get_option('wpgv_recipientemailbody') : '<p>Dear <strong>{recipient_name}</strong>,</p><p>You have received gift voucher from <strong>{customer_name}</strong>.</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
-		if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) {
-			$emailbody = get_option('wpgv_emailbodyperinvoice') ? get_option('wpgv_emailbodyperinvoice') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>You will pay us directly into bank. Our bank details are below:</p><p><strong>Account Number: </strong>XXXXXXXXXXXX<br /><strong>Bank Code: </strong>XXXXXXXX</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
-		} else {
-			$emailbody = get_option('wpgv_emailbody') ? get_option('wpgv_emailbody') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
-		}
+		$wpgv_invoice_mail_enable = (get_option('wpgv_invoice_mail_enable') != '') ? get_option('wpgv_invoice_mail_enable') : 1;
 
-		$adminemailsubject = get_option('wpgv_adminemailsubject') ? get_option('wpgv_adminemailsubject') : 'New Voucher Order Received from {customer_name}  (Order No: {order_number})!';
-		$adminemailbody = get_option('wpgv_adminemailbody') ? get_option('wpgv_adminemailbody') : '<p>Hello, New Voucher Order received.</p><p><strong>Order Id:</strong> {order_number}</p><p><strong>Name:</strong> {customer_name}<br /><strong>Email:</strong> {customer_email}<br /><strong>Address:</strong> {customer_address}<br /><strong>Postcode:</strong> {customer_postcode}</p>';
+		if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1 && $wpgv_invoice_mail_enable == 0){
+			// Mail not send 
 
-		$upload = wp_upload_dir();
- 		$upload_dir = $upload['basedir'];
-		$attachments[0] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'.pdf';
-		$headers = 'Content-type: text/html;charset=utf-8' . "\r\n";
-		$headers .= 'From: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
-		$headers .= 'Reply-to: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+			$upload = wp_upload_dir();
+	 		$upload_dir = $upload['basedir'];
+			$attachments[0] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'.pdf';
+			$attachments[1] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'-receipt.pdf';
 
-		/* Recipient Mail */
-		if($voucher_options->shipping_type != 'shipping_as_post') {
-			$recipientsub = wpgv_mailvarstr($recipientemailsubject, $setting_options, $voucher_options);
-			$recipientmsg = wpgv_mailvarstr($recipientemailbody, $setting_options, $voucher_options);
-			$recipientto = $voucher_options->from_name .'<'.$voucher_options->shipping_email.'>';
-			if($voucher_options->buying_for == 'yourself') {
-				$recipientto = $voucher_options->from_name .'<'.$voucher_options->email.'>';
-			}
-			wp_mail( $recipientto, $recipientsub, $recipientmsg, $headers, $attachments );
-		}
-
-		$attachments[1] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'-receipt.pdf';
-
-		/* Buyer Mail */
-		$buyersub = wpgv_mailvarstr($emailsubject, $setting_options, $voucher_options);
-		$buyermsg = wpgv_mailvarstr($emailbody, $setting_options, $voucher_options);
-		$buyerto = $voucher_options->from_name .'<'.$voucher_options->email.'>';
-		$mail_sent = wp_mail( $buyerto, $buyersub, $buyermsg, $headers, $attachments );
-
-		if($mail_sent == true) {
-			$successpagemessage = get_option('wpgv_successpagemessage') ? get_option('wpgv_successpagemessage') : 'We have got your order! <br>E-Mail Sent Successfully to %s';
-			$return .= '<div class="success">'.sprintf(stripslashes($successpagemessage), $voucher_options->email).'</div>';
-
-			if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) {
-				$return .= $setting_options->bank_info;
-			}
+			$adminemailsubject = get_option('wpgv_adminemailsubject') ? get_option('wpgv_adminemailsubject') : 'New Voucher Order Received from {customer_name}  (Order No: {order_number})!';
+			$adminemailbody = get_option('wpgv_adminemailbody') ? get_option('wpgv_adminemailbody') : '<p>Hello, New Voucher Order received.</p><p><strong>Order Id:</strong> {order_number}</p><p><strong>Name:</strong> {customer_name}<br /><strong>Email:</strong> {customer_email}<br /><strong>Address:</strong> {customer_address}<br /><strong>Postcode:</strong> {customer_postcode}</p>';
 
 			$toadmin = $setting_options->sender_name.' <'.$setting_options->sender_email.'>';
 			$subadmin = wpgv_mailvarstr($adminemailsubject, $setting_options, $voucher_options);
@@ -140,10 +108,75 @@ function wpgv_voucher_successful_shortcode() {
 			$headersadmin .= 'Reply-to: '.$voucher_options->from_name.' <'.$voucher_options->email.'>' . "\r\n";
 
 			wp_mail( $toadmin, $subadmin, $bodyadmin, $headersadmin, $attachments );
+
+			$successpagemessage = get_option('wpgv_successpagemessage') ? get_option('wpgv_successpagemessage') : 'We have got your order! <br>Please complete payment process and contact us for further details';
+			$return .= '<div class="success">'.sprintf(stripslashes($successpagemessage), $voucher_options->email).'</div>';
+
+			if($setting_options->bank_info != ''){
+				$return .= $setting_options->bank_info;
+			}
 		}
-		else {
-			$return .= '<div class="error"><p>'.__('Some Error Occurred From Sending this Email! <br>(Reload and Retry Again!) or Contact Us', 'gift-voucher').'</p></div>';
+		else{
+			$emailsubject = get_option('wpgv_emailsubject') ? get_option('wpgv_emailsubject') : 'Order Confirmation - Your Order with {company_name} (Voucher Order No: {order_number} ) has been successfully placed!';
+			$recipientemailsubject = get_option('wpgv_recipientemailsubject') ? get_option('wpgv_recipientemailsubject') : 'Gift Voucher - Your have received voucher from {company_name}';
+			$recipientemailbody = get_option('wpgv_recipientemailbody') ? get_option('wpgv_recipientemailbody') : '<p>Dear <strong>{recipient_name}</strong>,</p><p>You have received gift voucher from <strong>{customer_name}</strong>.</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+			if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) {
+				$emailbody = get_option('wpgv_emailbodyperinvoice') ? get_option('wpgv_emailbodyperinvoice') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>You will pay us directly into bank. Our bank details are below:</p><p><strong>Account Number: </strong>XXXXXXXXXXXX<br /><strong>Bank Code: </strong>XXXXXXXX</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+			} else {
+				$emailbody = get_option('wpgv_emailbody') ? get_option('wpgv_emailbody') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+			}
+
+			$adminemailsubject = get_option('wpgv_adminemailsubject') ? get_option('wpgv_adminemailsubject') : 'New Voucher Order Received from {customer_name}  (Order No: {order_number})!';
+			$adminemailbody = get_option('wpgv_adminemailbody') ? get_option('wpgv_adminemailbody') : '<p>Hello, New Voucher Order received.</p><p><strong>Order Id:</strong> {order_number}</p><p><strong>Name:</strong> {customer_name}<br /><strong>Email:</strong> {customer_email}<br /><strong>Address:</strong> {customer_address}<br /><strong>Postcode:</strong> {customer_postcode}</p>';
+
+			$upload = wp_upload_dir();
+	 		$upload_dir = $upload['basedir'];
+			$attachments[0] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'.pdf';
+			$headers = 'Content-type: text/html;charset=utf-8' . "\r\n";
+			$headers .= 'From: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+			$headers .= 'Reply-to: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+
+			/* Recipient Mail */
+			if($voucher_options->shipping_type != 'shipping_as_post') {
+				$recipientsub = wpgv_mailvarstr($recipientemailsubject, $setting_options, $voucher_options);
+				$recipientmsg = wpgv_mailvarstr($recipientemailbody, $setting_options, $voucher_options);
+				$recipientto = $voucher_options->from_name .'<'.$voucher_options->shipping_email.'>';
+				if($voucher_options->buying_for == 'yourself') {
+					$recipientto = $voucher_options->from_name .'<'.$voucher_options->email.'>';
+				}
+				wp_mail( $recipientto, $recipientsub, $recipientmsg, $headers, $attachments );
+			}
+
+			$attachments[1] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'-receipt.pdf';
+
+			/* Buyer Mail */
+			$buyersub = wpgv_mailvarstr($emailsubject, $setting_options, $voucher_options);
+			$buyermsg = wpgv_mailvarstr($emailbody, $setting_options, $voucher_options);
+			$buyerto = $voucher_options->from_name .'<'.$voucher_options->email.'>';
+			$mail_sent = wp_mail( $buyerto, $buyersub, $buyermsg, $headers, $attachments );
+
+			if($mail_sent == true) {
+				$successpagemessage = get_option('wpgv_successpagemessage') ? get_option('wpgv_successpagemessage') : 'We have got your order! <br>E-Mail Sent Successfully to %s';
+				$return .= '<div class="success">'.sprintf(stripslashes($successpagemessage), $voucher_options->email).'</div>';
+
+				if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) {
+					$return .= $setting_options->bank_info;
+				}
+
+				$toadmin = $setting_options->sender_name.' <'.$setting_options->sender_email.'>';
+				$subadmin = wpgv_mailvarstr($adminemailsubject, $setting_options, $voucher_options);
+				$bodyadmin = wpgv_mailvarstr($adminemailbody, $setting_options, $voucher_options);
+				$headersadmin = 'Content-type: text/html;charset=utf-8' . "\r\n";
+				$headersadmin .= 'From: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+				$headersadmin .= 'Reply-to: '.$voucher_options->from_name.' <'.$voucher_options->email.'>' . "\r\n";
+
+				wp_mail( $toadmin, $subadmin, $bodyadmin, $headersadmin, $attachments );
+			}
+			else {
+				$return .= '<div class="error"><p>'.__('Some Error Occurred From Sending this Email! <br>(Reload and Retry Again!) or Contact Us', 'gift-voucher').'</p></div>';
+			}
 		}
+		
 	} else {
 		return '<div class="error"><p>'.__('This URL is invalid. You can not access this page directly.', 'gift-voucher').'</p></div>';
 	}
@@ -240,7 +273,7 @@ function wpgv_stripe_success_page_shortcode() {
 					array('%d', '%s')
 				);
 				update_post_meta( $orderid, 'wpgv_stripe_session_key', $_GET['sessionid'], true );
-				update_post_meta( $voucheritem, 'wpgv_stripe_mode_for_transaction', $setting_options->stripe_publishable_key, true );
+				update_post_meta( $orderid, 'wpgv_stripe_mode_for_transaction', $setting_options->stripe_publishable_key, true );
 
 				$voucherrow = $wpdb->get_row( "SELECT * FROM `{$wpdb->prefix}giftvouchers_list` WHERE `id` = $orderid" );
 				WPGV_Gift_Voucher_Activity::record( $orderid, 'firsttransact', $voucherrow->amount, 'Voucher payment recieved.' );

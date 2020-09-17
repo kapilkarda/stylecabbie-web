@@ -1,7 +1,9 @@
 <?php
     /** @var \SW_WAPF\Includes\Models\FieldGroup $field_group */
     /** @var array $data */
-    use \SW_WAPF\Includes\Classes\Html;
+    /** @var WC_Product $product */
+
+use \SW_WAPF\Includes\Classes\Html;
     use \SW_WAPF\Includes\Classes\Helper;
     $label_position = isset($field_group->layout['labels_position']) ? $field_group->layout['labels_position'] : 'above';
     $instructions_position = isset($field_group->layout['instructions_position']) ? $field_group->layout['instructions_position'] : 'field';
@@ -34,7 +36,7 @@
 
             if($prev_width > 100) {
 
-                $prev_width = 0;//100 - $info['width'];
+                $prev_width = $info['width']; // 0;//100 - $info['width'];
                 $info['end_row'] = true;
 
             }
@@ -59,14 +61,14 @@
                 echo sprintf(
                     '<div class="wapf-field-label wapf--%s"><label>%s</label></div>%s',
                     $label_position,
-                    Html::field_label($field,$mark_required),
+                    Html::field_label($field,$product,$mark_required),
                     $instructions_position === 'label' ? Html::field_description($field) : ''
                 );
             }
             ?>
 
             <div class="wapf-field-input">
-                <?php echo Html::field($field,$field_group->id); ?>
+                <?php echo Html::field($product,$field,$field_group->id); ?>
             </div>
 
             <?php
@@ -79,7 +81,7 @@
                     echo sprintf(
                         '<div class="wapf-field-label wapf--%s"><label>%s</label></div>%s',
                         $label_position,
-                        Html::field_label($field,$mark_required),
+                        Html::field_label($field,$product,$mark_required),
                         $instructions_position === 'label' ? Html::field_description($field) : ''
                     );
                 }

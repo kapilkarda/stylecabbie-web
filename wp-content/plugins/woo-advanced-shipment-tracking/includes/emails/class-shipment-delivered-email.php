@@ -136,14 +136,13 @@ if ( ! class_exists( 'WC_Email_Customer_Delivered_Order', false ) ) :
 				//ob_start();	
 				$woocommerce_customer_delivered_order_settings = get_option('woocommerce_customer_delivered_order_settings');
 				
+				
 				$email_content = $ast->get_option_value_from_array('woocommerce_customer_delivered_order_settings','wcast_delivered_email_content',$wcast_initialise_customizer_email->defaults['wcast_delivered_email_content']);
 				
 				$wcast_show_tracking_details  = $woocommerce_customer_delivered_order_settings['wcast_show_tracking_details'];	
 				$wcast_show_order_details     = $woocommerce_customer_delivered_order_settings['wcast_show_order_details'];		
 				$wcast_show_billing_address   = $woocommerce_customer_delivered_order_settings['wcast_show_billing_address'];	
-				$wcast_show_shipping_address  = $woocommerce_customer_delivered_order_settings['wcast_show_shipping_address'];	
-				
-				
+				$wcast_show_shipping_address  = $woocommerce_customer_delivered_order_settings['wcast_show_shipping_address'];
 				
 				$message = wc_advanced_shipment_tracking_email_class()->email_content($email_content,$order_id,$order);
 				
@@ -223,13 +222,13 @@ if ( ! class_exists( 'WC_Email_Customer_Delivered_Order', false ) ) :
 				ob_start();
 				do_action( 'wcast_email_after_email_content', $order, $sent_to_admin, $plain_text, $this );
 				$message .= ob_get_clean();	
+				
 				// create a new email
 				$email = new WC_Email();
 				$email->id = 'WC_Delivered_email';			
 				
 				// wrap the content with the email template and then add styles
-				$message = apply_filters( 'woocommerce_mail_content', $email->style_inline( $mailer->wrap_message( $email_heading, $message ) ) );		
-				
+				$message = apply_filters( 'woocommerce_mail_content', $email->style_inline( $mailer->wrap_message( $email_heading, $message ) ) );				
 				return $message;	
 			}			
 		}	

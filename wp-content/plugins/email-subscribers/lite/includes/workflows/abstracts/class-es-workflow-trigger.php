@@ -158,10 +158,17 @@ abstract class ES_Workflow_Trigger {
 	 * Field loader
 	 *
 	 * @since 4.4.1
+	 * 
+	 * @modified 4.5.3 Added new action trigger_name_load_extra_fields to allow loading of extra fields for given trigger.
 	 */
 	public function maybe_load_fields() {
 		if ( ! $this->has_loaded_fields ) {
+			// Load fields defined in trigger.
 			$this->load_fields();
+
+			// Load extra fields for given trigger.
+			do_action( $this->name . '_load_extra_fields', $this );
+
 			$this->has_loaded_fields = true;
 		}
 	}
@@ -179,6 +186,18 @@ abstract class ES_Workflow_Trigger {
 	}
 
 	/**
+	 * Add trigger option field
+	 *
+	 * @param object $option Option object.
+	 * 
+	 * @since 4.4.6
+	 */
+	public function add_field( $option ) {
+		$option->set_name_base( 'ig_es_workflow_data[trigger_options]' );
+		$this->fields[ $option->get_name() ] = $option;
+	}
+
+	/**
 	 * Get supplied data item from trigger
 	 *
 	 * @since 4.4.1
@@ -186,6 +205,36 @@ abstract class ES_Workflow_Trigger {
 	 */
 	public function get_supplied_data_items() {
 		return $this->supplied_data_items;
+	}
+
+	/**
+	 * Method to get trigger option field
+	 *
+	 * @param string $name Field name.
+	 *
+	 * @return ES_Field|false
+	 * 
+	 * @since 4.4.6
+	 */
+	public function get_field( $name ) {
+		$this->maybe_load_fields();
+
+		if ( ! isset( $this->fields[ $name ] ) ) {
+			return false;
+		}
+
+		return $this->fields[ $name ];
+	}
+
+
+	/**
+	 * Method to get trigger option fields
+	 *
+	 * @return ES_Field[]
+	 */
+	public function get_fields() {
+		$this->maybe_load_fields();
+		return $this->fields;
 	}
 
 	/**
@@ -261,17 +310,7 @@ abstract class ES_Workflow_Trigger {
 		}
 
 		if ( $process_immediately ) {
-			$admin_ajax_url = admin_url( 'admin-ajax.php' );
-			$admin_ajax_url = add_query_arg( 'action', 'ig_es_init_queue_runner', $admin_ajax_url );
-			$args           = array(
-				'timeout'   => 0.01,
-				'blocking'  => false,
-				'cookies'   => $_COOKIE,
-				'sslverify' => apply_filters( 'https_local_ssl_verify', false ),
-			);
-
-			// Make a asynchronous request to our ajax handler function which in turn calls Action Schedulers' queue runner to start immediate processing in background.
-			wp_remote_get( esc_url_raw( $admin_ajax_url ), $args );
+			ES()->init_action_scheduler_queue_runner();
 		}
 	}
 

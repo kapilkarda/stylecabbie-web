@@ -85,7 +85,7 @@ $receipt->SetXY(30, 260);
 $receipt->Cell(0,0,wpgv_em(__('Amount', 'gift-voucher')),0,1,'L',0);
 $receipt->SetFont('Arial','');
 $receipt->SetXY(250, 260);
-$receipt->Cell(0,0,' '.wpgv_em($currency),0,1,'L',0);
+$receipt->Cell(0,0,' '.wpgv_price_format($value),0,1,'L',0);
 
 //Coupon Code
 $receipt->SetFont('Arial','B');

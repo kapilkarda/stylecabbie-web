@@ -20,6 +20,98 @@
 	-webkit-font-feature-settings: 'liga';
 	-webkit-font-smoothing: antialiased;
 }
+.zorem-layout {
+    margin: 0;
+    padding: 0;
+}
+.zorem-layout__header {
+    background: #fff;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    box-sizing: border-box;
+    border-bottom: 1px solid #fff;
+    padding: 0;     
+    width: 100%;
+    top: 32px;
+    z-index: 1001;
+	align-items: center;
+}
+.zorem-layout__header .zorem-layout__header-breadcrumbs {
+    font-size: 13px;
+    font-weight: 400;
+    padding: 15px 0 15px 30px;
+	margin: 0;	
+    flex: 1 auto;    
+    line-height: 30px;    
+}
+.zorem-layout__header .zorem-layout__header-breadcrumbs span+span:before {
+    content: " / ";
+    color: #555d66;
+    margin: 0 2px;
+}
+.zorem-layout__logo-panel{
+	display: flex;
+    flex-direction: row;
+    align-items: center;    
+    right: 0;
+    height: 56px;
+	padding: 0 30px 0 0;
+}
+.shipment_tracking_admin_settings .zorem-layout__logo-panel .header-plugin-logo{
+    width: 80px;
+    display: flex;    
+    justify-content: flex-end;
+	margin-right: 10px;
+}
+.ast_dropdown {
+    position: relative;
+}
+.ast-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 220px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 100;
+    border: 1px solid #ccc;
+    padding: .5rem;
+    margin-top: 0;
+    text-align: left;
+    top: 35px;
+}
+.ast-dropdown-content:before {
+    content: '';
+    width: .75rem;
+    height: .75rem;
+    position: absolute;
+    z-index: 1;
+    top: -0.375rem;
+    right: 8px;
+    background-color: #fff;
+    transform: rotate(45deg);
+    border: 1px solid #aebacc;
+    border-width: 1px 0 0 1px;
+    margin-top: -1px;
+}
+.ast-dropdown-content li {
+    margin-bottom: 0;
+    border-bottom: 1px solid #ebeef2;
+    padding: .5rem;
+}
+.ast-dropdown-content li a {
+    color: black;
+    text-decoration: none;
+    display: block;
+}
+.ast-dropdown-menu {
+    cursor: pointer;
+    padding: 4px 5px 2px;
+	color: #005b9a;
+    font-size: 24px;
+    vertical-align: middle;
+}
 #woocommerce-advanced-shipment-tracking .inside {
 	padding: 12px;
 	margin: 0
@@ -86,8 +178,7 @@
 section.tab_section {
 	display: none;
 	padding: 0 30px 30px;
-	border-top: 1px solid #ddd;
-	background: #fff;
+	border-top: 1px solid #ddd;	
 }
 section.inner_tab_section {
 	display: none;
@@ -100,13 +191,16 @@ input.tab_input,input.inner_tab_input {
 }
 label.tab_label {
     text-decoration: none;
-    padding: 17px 0 15px;    
+    padding: 11px 0;    
     font-size: 14px;
     color: #005b9a;
     display: inline-block;
-    margin-right: 25px;
+    margin-left: 20px;
     line-height: 1;
     outline: none;
+}
+label.tab_label.first_label {
+    margin-left: 30px;
 }
 label.inner_tab_label {
     text-decoration: none;
@@ -118,14 +212,6 @@ label.inner_tab_label {
     line-height: 1;
     outline: none;
 }
-label.tab_label.first_label {
-    margin-left: 30px;
-}
-label.tab_label:before {
-	font-family: fontawesome;
-	font-weight: normal;
-	margin-right: 10px;
-}
 label.tab_label:hover {
 	color: #74C2E1;
 	cursor: pointer;
@@ -133,7 +219,7 @@ label.tab_label:hover {
 input.tab_input:checked + label,input.inner_tab_input:checked + label {	
 	color: #74C2E1;
 	border-bottom: 2px solid #74C2E1;	
-	margin-bottom: -1px;
+	margin-bottom: -2px;
 }
 input.tab_input_1 {
 	display: none;
@@ -152,20 +238,17 @@ input.tab_input_1:checked + label{
 	display: table-cell;
     vertical-align: top;	
 }
+.addons_page_dtable{
+	max-width: 930px;
+}
 #wc_ast_trackship_form {
     border-top: 1px solid #eee;
-}
-#content1 .tab_inner_container{
-	display: block;
 }
 .tab_inner_container h4 {
 	margin-top: 0;
 }
-.ast_nav_div {
-    background: #fafeff;
-}
-#tab1:checked ~ #content1, #tab2:checked ~ #content2, #tab3:checked ~ #content3, #tab4:checked ~ #content4, #tab5:checked ~ #content5, #tab6:checked ~ #content6, #tab7:checked ~ #content7, #tab8:checked ~ #content8, #tab9:checked ~ #content9, #tab10:checked ~ #content10,#tab_trackship_dashboard:checked ~ #wc_ast_trackship_form #content_trackship_dashboard,#tab_tracking_page:checked ~ #wc_ast_trackship_form #content_tracking_page,#tab_status_notifications:checked ~ #wc_ast_trackship_form #content_status_notifications,#tab_tools:checked ~ #wc_ast_trackship_form #content_tools {
-	display: block;
+#tab1:checked ~ #content1, #tab2:checked ~ #content2, #tab3:checked ~ #content3, #tab4:checked ~ #content4, #tab5:checked ~ #content5, #tab6:checked ~ #content6, #tab7:checked ~ #content7, #tab8:checked ~ #content8, #tab9:checked ~ #content9, #tab10:checked ~ #content10,#tab_trackship_dashboard:checked ~ #wc_ast_trackship_form #content_trackship_dashboard,#tab_tracking_page:checked ~ #wc_ast_trackship_form #content_tracking_page,#tab_status_notifications:checked ~ #wc_ast_trackship_form #content_status_notifications,#tab_tools:checked ~ #wc_ast_trackship_form #content_tools, #tab_license:checked ~ #content_tab_license, #tab_addons:checked ~ #content_tab_addons, #tab_osm:checked ~ #content_osm {
+	display: block !important;
 }
 .shipping_add_field {
 	width: 300px;
@@ -174,31 +257,46 @@ input.tab_input_1:checked + label{
 .ast_admin_content {
 	width: 100%;	
 	vertical-align: top;	
-	border-top: 1px solid #ddd;	
-	background: #fff;
+	border-top: 1px solid #ddd;		
 }
 .zorem_admin_sidebar {
 	width: 280px;
+	min-width: 280px;
     display: table-cell;
     vertical-align: top;
     padding: 25px 0px 25px 20px;
 }
+.zorem-sidebar__section{	    
+    background: #fff;
+	border: 1px solid #e0e0e0;
+    border-radius: 3px;
+	padding: 15px;	
+	margin-bottom: 15px;
+}
 .zorem_admin_sidebar_inner {
-    border-left: 1px solid #eee;
+    border-left: 1px solid #ccc;
     padding-left: 20px;
 }
+.zorem_admin_sidebar img{
+	width: 100%;
+	border-radius: 3px;
+}
 .zorem_admin_layout .zorem_admin_sidebar h3{
-	margin: 0 0 5px 0;    
-    color: #005B9A;    
-    border-bottom: 1px solid #eee;
+	color: #005B9A;    
+	margin: 0;    
     padding: 0 0 10px;
+    font-size: 16px;
 }
-.zorem_admin_layout .zorem_admin_sidebar h3.top-border{
-	padding: 10px 0 10px;
-    border-top: 1px solid #eee;
-}
-.zorem_admin_layout .zorem_admin_sidebar p,.zorem_admin_layout .zorem_admin_sidebar a{
-	margin: 0px 10px 0 0;
+.wp-core-ui .button-primary.btn_ast_sidebar{
+	background: transparent;
+    color: #005b9a;
+    border-color: #74c2e1;
+    text-transform: uppercase;
+    padding: 0 11px;
+    font-size: 12px;
+    height: 30px;
+    line-height: 28px;
+	margin-top: 10px;
 }
 .zorem-sidebar-title {
 	padding: 10px 0;
@@ -206,28 +304,25 @@ input.tab_input_1:checked + label{
 	color: #1ead94;
 	line-height: 15px;
 }
-.zorem-sidebar__section {	
-    margin-bottom: 20px;
-}
-..zorem-sidebar__section li:before {
+.zorem-sidebar__section li:before {
  position: absolute;
  left: 0;
  font-weight: 700;
 }
 .zorem-sidebar__section ul {
 	position: relative;
-	margin: 10px 0 10px 0;
+	margin: 0;
 }
 .zorem-sidebar__section li {
 	list-style: none;
-	margin-bottom: 10px;
+	margin-bottom: 0;
 }
 .zorem-sidebar__section li img.plugin_thumbnail {
 	width: 60px;
 	display: inline-block;
 }
 .zorem-sidebar__section li a.plugin_url {
-	width: 70%;
+	width: 67%;
 	vertical-align: middle;
 	display: inline-block;
 	margin-left: 10px;
@@ -274,6 +369,28 @@ input.tab_input_1:checked + label{
 .ast_admin_content .form-table th.titledesc {
 	width: 40%;
 }
+.ast_admin_content .get_shipment_status_tool .form-table th.titledesc{
+	width: 70%;
+}
+.ast_admin_content table.form-table.upload_csv_table th{
+	width: 40%;
+}
+.ast_admin_content .form-table.table-layout-2 th.titledesc {
+	width: 2.5%;	
+	vertical-align:middle;
+}
+.ast_admin_content .form-table.table-layout-2 .html2_title1{
+	display: block;
+    font-weight: 400;
+    margin-top: 5px;
+}
+.ast_admin_content .trackship_status_section .form-table th.titledesc{
+	width: 20%;
+	padding: 10px 24px 10px 15px;
+}
+.woocommerce.zorem_admin_layout .trackship_status_section table.form-table td {
+    padding: 10px 15px;
+}
 .woocommerce .ast_admin_content table.form-table th label .woocommerce-help-tip{
 	margin: -4px 0 0 5px;
     position: relative;
@@ -293,7 +410,7 @@ input.tab_input_1:checked + label{
 .ast_admin_content .form-table .wp-color-result.button {
 	margin: 0 6px 0px 0;
 }
-#wc_ast_status_label_color,#wc_ast_status_partial_shipped_label_color,#wc_ast_status_updated_tracking_label_color,#wc_ast_select_primary_color,#wc_ast_select_border_color {
+#wc_ast_status_label_color,#wc_ast_status_partial_shipped_label_color,#wc_ast_status_updated_tracking_label_color,#wc_ast_select_primary_color,#wc_ast_select_border_color,#wc_ast_shipped_status_label_color {
 	width: 80px;
 }
 .color_field input[type=text] {
@@ -329,9 +446,9 @@ thead .mdl-list__item-secondary-action {
 	padding: 0 20px;
 }
 .wp-core-ui .btn_green2 {
-	background: #83bd31;
+	background: #59c889;
 	text-shadow: none;
-	border-color: #83bd31;
+	border-color: #59c889;
 	box-shadow: none;
 	font-size: 14px;
 	line-height: 32px;
@@ -406,8 +523,8 @@ thead .mdl-list__item-secondary-action {
 	box-shadow: inset 0 0 0 100px rgba(0,0,0,0.2);
 }
 .wp-core-ui .btn_green2:hover, .wp-core-ui .btn_green2:focus {
-	background: rgba(131, 189, 49, 0.8);
-	border-color: rgba(131, 189, 49, 0.8);
+	background: #3c4858;
+	border-color: #3c4858;
 	color: #fff;
 	text-shadow: none;
 	box-shadow: inset 0 0 0 100px rgba(0,0,0,0.2);
@@ -422,6 +539,7 @@ thead .mdl-list__item-secondary-action {
 #wc_ast_upload_csv_form .mdl-progress {
 	width: 100%;
 	margin-top: 10px;
+	height: 20px;
 }
 .csv_upload_status {
 	margin-left: 1em;
@@ -435,11 +553,15 @@ thead .mdl-list__item-secondary-action {
 .form-table td p{
 	margin: 0;
 }
-#wc_ast_settings_form .form-table tr,#wc_ast_trackship_form .form-table tr,#wc_ast_upload_csv_form .form-table tr,#wc_ast_addons_form .form-table tr{
-	border-bottom: 1px solid #eee;
+
+#wc_ast_addons_form .license_div .form-table tr:first-child{
+	border-top: 0;
 }
-#wc_ast_settings_form .form-table tr:first-child,#wc_ast_trackship_form .form-table tr:first-child,#wc_ast_upload_csv_form .form-table tr:first-child,#wc_ast_addons_form .form-table tr:first-child{
-	border-top: 1px solid #eee;
+ #wc_ast_trackship_form .trackship_status_section .form-table tr{
+	border-bottom: 0; 
+}
+ #wc_ast_trackship_form .trackship_status_section .form-table tr:nth-last-child(2) {
+	border-bottom: 1px solid #eee; 
 }
 #wc_ast_settings_form .form-table tr.multiple_checkbox_title_tr{
 	border-bottom: 0;
@@ -450,27 +572,16 @@ thead .mdl-list__item-secondary-action {
 input#wc_ast_api_key {
 	width: 260px;
 }
-span.api_connected {
-	color: #fff;
-    line-height: 33px;
-    background: #83bd31;
-    padding: 12px 26px;
-    font-size: 15px;
-    border-radius: 5px;
-}
-span.api_connected .dashicons.dashicons-yes {
-	font-size: 30px;
-	line-height: 33px;
-}
+
 .ac-container {
-	margin: 0 auto 30px auto;
+	margin: 0 auto 0 auto;
 	text-align: left;	
 	display: table;
     width: 100%;
     table-layout: fixed;
 }
 .ac-container .headig_label {
-	padding: 15px 20px 15px 60px;
+	padding: 15px 20px 15px 20px;
 	margin-bottom: 0;    
 	position: relative;	
 	display: block;
@@ -547,15 +658,39 @@ span.api_connected .dashicons.dashicons-yes {
 	padding-left: 24px;
 }
 
-.mdl-switch.is-checked .mdl-switch__track {
+.zorem_admin_layout .mdl-switch{
+	border: 1px solid #ccc;
+    border-radius: 14px;
+	width: 36px;
+    height: 18px;
+}
+.zorem_admin_layout .mdl-switch__track{
+	left: 1px;
+    top: 1px;
+    height: 14px;
+    width: 32px;
+    right: 1px;
+}
+.zorem_admin_layout .mdl-switch.is-checked .mdl-switch__track {
 	background: #74C2E1 !important;
 }
-.mdl-switch__ripple-container .mdl-ripple {
+.zorem_admin_layout .mdl-switch__ripple-container .mdl-ripple {
 	background: #005B9A !important;
 }
-.mdl-switch.is-checked .mdl-switch__thumb {
-	background: #005B9A !important;
+.zorem_admin_layout .mdl-switch .mdl-switch__thumb{
+	left: 3px;
+    top: 2px;
+    height: 12px;
+    width: 12px;
 }
+.zorem_admin_layout .mdl-switch.is-checked .mdl-switch__thumb {
+	background: #005B9A !important;
+	left: 20px;
+	top: 1px;
+    height: 12px;
+    width: 12px;
+}
+
 span.email_status_span i {
 	vertical-align: middle;	
 	cursor:default;
@@ -724,162 +859,64 @@ span.email_status_span i.enable {
     display: inline-block;
     vertical-align: middle;
 }
+.ast-shipment-status .shipment-icon:before{
+	content: ' ';    
+    width: 16px;
+    height: 16px;
+    background-size: cover;
+    display: inline-block;
+    vertical-align: text-bottom; 	
+}
 .ast-shipment-status .icon-default:before{
-	content: ' ';
-    background-image: url(icons/invalid-v3.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+	background-image: url(icons/invalid-v3.png);	
 }
-.ast-shipment-status .icon-INVALID_TRACKING_NUM:before{
-	content: ' ';
-    background-image: url(icons/invalid-v3.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-INVALID_TRACKING_NUM:before{	
+    background-image: url(icons/invalid-v3.png);   
 }
-.ast-shipment-status .icon-wrong_shipping_provider:before{
-	content: ' ';
-    background-image: url(icons/invalid-v3.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-wrong_shipping_provider:before{	
+    background-image: url(icons/failure-v4.png);    
 }
-.ast-shipment-status .icon-delivered:before{
-	content: ' ';
-    background-image: url(icons/delivered-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-carrier_unsupported:before{	
+    background-image: url(icons/Carrier-unsupported-v3.png);    
 }
-.ast-shipment-status .icon-in_transit:before{
-	content: ' ';
-    background-image: url(icons/in-transit-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-delivered:before{	
+    background-image: url(icons/delivered-v4.png);    
 }
-.ast-shipment-status .icon-on_hold:before{
-	content: ' ';
-    background-image: url(icons/On-hold-v3.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-in_transit:before{	
+    background-image: url(icons/in-transit-v4.png);    
 }
-.ast-shipment-status .icon-pre_transit:before{
-	content: ' ';
-    background-image: url(icons/pre-transit-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-on_hold:before{	
+    background-image: url(icons/On-hold-v3.png);    
 }
-.ast-shipment-status .icon-out_for_delivery:before{
-	content: ' ';
-    background-image: url(icons/out-for-delivery-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-pre_transit:before{	
+    background-image: url(icons/pre-transit-v4.png);    
 }
-.ast-shipment-status .icon-available_for_pickup:before{
-	content: ' ';
-    background-image: url(icons/available-for-picup-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-out_for_delivery:before{	
+    background-image: url(icons/out-for-delivery-v4.png);    
 }
-.ast-shipment-status .icon-return_to_sender:before{
-	content: ' ';
-    background-image: url(icons/return-to-sender-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-available_for_pickup:before{	
+    background-image: url(icons/available-for-picup-v4.png);    
+}
+.ast-shipment-status .icon-return_to_sender:before{	
+    background-image: url(icons/return-to-sender-v4.png);    
 }
 .ast-shipment-status .icon-failure:before{
-	content: ' ';
-    background-image: url(icons/failure-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+    background-image: url(icons/failure-v4.png);    
 }
-.ast-shipment-status .icon-unknown:before{
-	content: ' ';
-    background-image: url(icons/unknown-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-unknown:before{	
+    background-image: url(icons/unknown-v4.png);    
 }
-.ast-shipment-status .icon-pending_trackship:before{
-	content: ' ';
-    background-image: url(icons/pending-trackship-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-pending_trackship:before{	
+    background-image: url(icons/pending-trackship-v4.png);    
 }
-.ast-shipment-status .icon-invalid_user_key:before{
-	content: ' ';
-    background-image: url(icons/invalid-user-key-v4.png);
-    width: 16px;
-    height: 16px;
-    background-size: cover;
-    display: inline-block;
-    vertical-align: sub;
-	margin-right: 5px;
+.ast-shipment-status .icon-invalid_user_key:before{	
+    background-image: url(icons/invalid-user-key-v4.png);    
 }
+
 
 .wcast-shipment-status-icon i {
 	font-size: 25px;
 	margin-top: 7px;
-}
-.icon-delivered {
-	color: #4cae51;
-}
-.icon-in_transit {
-	color: #01a9f4;
-}
-.icon-return_to_sender {
-	color: #f44336;
-}
-.icon-pending_trackship {
-	color: #CCCC00;
 }
 .wcast-shipment-status-list .wcast-shipment-est-delivery {
 	display: block;
@@ -908,12 +945,10 @@ span.email_status_span i.enable {
 	font-size: 11px;
 }
 .wcast-tracking-number-list li, .wcast-shipment-status-list li {
-	position: relative;
-    border: 1px solid #eee;
+	position: relative;    
     padding: 10px;
     min-height: 50px;
-    box-sizing: border-box;
-    background-color: #fff;
+    box-sizing: border-box;    
 }
 a.inline_tracking_delete{
 	display:none;
@@ -940,15 +975,13 @@ ul.wcast-tracking-number-list, ul.wcast-shipment-status-list {
 .select2-results .select2-results__group, .select2-results .select2-results__option{
 	padding: 4px;
 }
-.email_status_span{
-	float: right;
-	padding-top: 7px;	
+.email_status_span{	
+	display: inline-block;
 }
 .edit_customizer_a{	   
     margin-left: 10px;
     line-height: 20px;
-	font-size: 13px;
-	text-decoration: none
+	font-size: 13px;	
 }
 .edit_customizer_a:focus,.edit_customizer_a:hover{
 	outline:none;
@@ -966,17 +999,13 @@ ul.wcast-tracking-number-list, ul.wcast-shipment-status-list {
 	display:inline-block;
 }
 .woocommerce_page_woocommerce-advanced-shipment-tracking #wpcontent{
-	background: rgb(245, 248, 250);
 	padding-left: 0;
 }
 .woocommerce_page_woocommerce-advanced-shipment-tracking #wpbody-content{
 	padding-bottom: 40px;
 }
-.woocommerce_page_woocommerce-advanced-shipment-tracking #wpfooter{
-	background: #f7fafc;
-}
 .woocommerce_page_woocommerce-advanced-shipment-tracking .white-bg{
-	background: #fafeff;
+	background: #fff;
 }
 .trackship_logo{
 	width: 200px;
@@ -1005,6 +1034,10 @@ ul.wcast-tracking-number-list, ul.wcast-shipment-status-list {
 	.zorem_admin_sidebar {
 		width: auto;
 		display: block;
+		padding: 25px 0px 25px 0;
+	}
+	#content1 .tab_inner_container{
+		display: block;
 	}
 }
 
@@ -1012,12 +1045,6 @@ ul.wcast-tracking-number-list, ul.wcast-shipment-status-list {
 	label.tab_label:before {
 		margin: 0;
 		font-size: 18px;
-	}
-}
-
-@media screen and (max-width: 400px) {
-	label.tab_label {
-		padding: 15px;
 	}
 }
 .widefat .column-wc_actions a.delivered_icon.button::after { font-family: woocommerce; content: "\e01a"; }
@@ -1042,15 +1069,17 @@ ul.wcast-tracking-number-list, ul.wcast-shipment-status-list {
     min-height: 105px;
 	padding: 10px 5px 0px 10px;
 }
+table.wp-list-table img.provider-thumb{
+	margin: 1px 0 1px 0;
+}
 .provider-thumb{
-    height: 50px;    
+    height: 35px;    
 }
 .left-div {    
     box-sizing: border-box;
     display: block;    
 }
-.right-div {       
-    margin-left: 15px;
+.right-div {           
     width: 100%;    
     display: block;    
 }
@@ -1100,25 +1129,39 @@ span.provider_name {
 .status_filter {
     margin: 10px 8px 10px 0;
 	display:inline-block;	
+	float: left;
 }
 .status_filter a{
-	font-size: 1.1em;
-	padding: 0 5px;
 	text-decoration: none;
+    color: #32373c;
+    font-weight: 500;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    background: #fafeff;
+    padding: 5px 12px;
+    line-height: 1;
+    margin-right: 4px;
+    border-radius: 34px;
+    text-transform: lowercase;
 }
 .status_filter a:focus{
 	outline: none;
     box-shadow: none;
 }
-a.active{
-	color:#74C2E1;
+.status_filter a.active{
+	background-color: #74C2E1;
+    color: #fafeff;
+    border: 1px solid #ccc;
 }
 .search_section {
    display: inline-block;    
+   margin: 5px 0px 5px 0;
+   float: right;
 }
 #search_provider{
-	width: 264px;        
-	min-width: 280px;
+	width: 200px;        
+	min-width: 200px;
+	font-size: 12px;
     border: 1px solid #ccc;
 	border-radius: 3px;
     padding: 0 0 0 30px;
@@ -1134,7 +1177,7 @@ a.active{
     display: inline-block;
     float: right; 
     margin-top: 5px;
-    margin-left: 5px;	
+    margin-left: 15px;		
 }
 
 .provider_top:after{
@@ -1144,9 +1187,7 @@ a.active{
 }
 .provider_top {
     position: relative;		
-	margin: 5px 0 10px 0;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #e9e9e9;
+	margin: 15px auto 0;
 }
 /* Tooltip container */
 .provider_settings .tooltip {
@@ -1185,10 +1226,7 @@ a.active{
 .provider_settings .tooltip:hover .tooltiptext {
   visibility: visible;
 }
-.dropdown_menu{
-	cursor: pointer;
-	padding: 0 5px 10px;
-}
+
 ul.provider_settings_ul {
     margin: 5px 0 0;
 }
@@ -1199,6 +1237,67 @@ ul.provider_settings_ul {
 .provider_settings_ul li a {
     text-decoration: none;
 }
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+	display: none;
+	position: absolute;
+	right: 0;	
+	background-color: #f9f9f9;
+	min-width: 220px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 100;  
+	border: 1px solid #ccc;
+	padding: .5rem;
+	margin-top: 0;
+	text-align: left;
+	top: 45px;
+}
+.dropdown-content li {
+    margin-bottom: 0;
+	border-bottom: 1px solid #ebeef2;
+	padding: .5rem;
+}
+.dropdown-content li a {
+	color: black;	
+	text-decoration: none;
+	display: block;
+	
+}
+.dropdown-content li a.reset_active,.dropdown-content li a.reset_inactive{
+	display: inline-block;
+	color: #0073aa;
+}
+.dropdown-content li:last-child{
+	border-bottom: none;
+}
+.dropdown-content li:hover {background-color: #f1f1f1;}
+
+.dropdown_menu{
+	cursor: pointer;
+	padding: 4px 5px 10px;
+	color: #005b9a;
+}
+.dropdown-content:before{
+	content: '';
+    width: .75rem;
+    height: .75rem;
+    position: absolute;
+    z-index: 1;
+    top: -0.375rem;
+    right: 8px;
+    background-color: #fff;
+    transform: rotate(45deg);
+    /* box-shadow: -1px -1px 1px rgba(0,0,0,0.125); */
+    border: 1px solid #aebacc;
+    border-width: 1px 0 0 1px;
+    margin-top: -1px;
+}
+
 .mdl-dialog.add_custom_dialog{
 	width: 600px;
 }
@@ -1210,19 +1309,21 @@ ul.provider_settings_ul {
 	position: fixed;
 	top: 0;
 	left: 0;
-	background: rgba(0, 0, 0, 0.4);
-	z-index: 10;
+	background: rgba(116, 194, 225, 0.44);
+	z-index: 100000;
 	width: 100%;
 	height: 100%;
 	text-align: center;
 }
-
+.popupwrapper.ts_video_popup{
+	background: rgb(255 255 255 / 0.95);
+}
 .trackingpopup_wrapper {
 	position: fixed;
 	top: 0;
 	left: 0;
-	background: rgba(0, 0, 0, 0.4);
-	z-index: 10;
+	background: rgba(116, 194, 225, 0.44);
+	z-index: 100000;
 	width: 100%;
 	height: 100%;
 	text-align: center;
@@ -1242,20 +1343,40 @@ ul.provider_settings_ul {
 }
 .popuprow {
 	display: inline-block;
-	vertical-align: middle;
-	max-width: 310px;
-	background: #f9f9f9;
-	padding: 15px 30px;
-	position: relative;
-	z-index: 10;
-	border-radius: 2px;
-	width: 97%;
-	width: calc(100% - 5px);
-	max-height: 90%;
-	overflow-y: overlay;
-	text-align: left;
+    vertical-align: middle;
+    max-width: 310px;
+    background: #fff;
+    padding: 20px 40px;
+    position: relative;
+    z-index: 10;
+    border-radius: 5px;
+    width: 97%;
+    width: calc(100% - 5px);
+    max-height: 90%;
+    overflow-y: overlay;
+    text-align: left;
+    border: 1px solid #ccc;
 }
-.how_to_video_popup .popuprow,.ts_video_popup .popuprow,.tracking_item_video_popup .popuprow{
+.sync_provider_popup .popuprow{
+	max-width: 400px;
+	padding: 25px 30px;
+}
+.tracking_details_popup .popuprow{
+	max-width: 700px;	
+	margin-top: 90px;
+	max-height: 80%;
+}
+.zorem_admin_layout .sync_provider_popup h3.popup_title{
+	margin: 0 0 1em;
+}
+.reset_db_fieldset{
+	margin-bottom:10px;
+}
+.reset_db_message {
+    color: green;
+    font-size: 16px;
+}
+.how_to_video_popup .popuprow,.ts_video_popup .popuprow,.import_tracking_video_popup .popuprow{
 	max-width: 700px;
 	padding: 0;
 }
@@ -1264,11 +1385,11 @@ ul.provider_settings_ul {
 	vertical-align: middle;
 	max-width: 310px;
 	text-align:left;
-	background: #f9f9f9;
-	padding: 15px 30px;
+	background: #fff;
+	padding: 20px 40px;
 	position: relative;
 	z-index: 10;
-	border-radius: 2px;
+	border-radius: 5px;
 	width: 97%;
 	width: calc(100% - 5px);
 	max-height: 90%;
@@ -1282,32 +1403,69 @@ ul.provider_settings_ul {
 	top: 0;
 	left: 0;
 }
-.popupwrapper input[type=text],.trackingpopup_wrapper input[type=text]{		
+.popupclose_btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    border: 1px solid #7e8993;
+    color: #7e8993;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.popupwrapper input[type=text]{		
 	line-height: 24px;	
 	color: #0d0d0d;		
 	width: 100%;
 	margin-bottom: 10px;	
 }
-.popupwrapper input[type=text].image_path,.trackingpopup_wrapper input[type=text].image_path{
-	width: 77.5%;
+.trackingpopup_wrapper input[type=text]{
+	line-height: 24px;	
+	color: #0d0d0d;		
+	width: 100%;
+	margin-bottom: 10px;	
 }
-.popupwrapper select,.popupwrapper .select2,.trackingpopup_wrapper select,.trackingpopup_wrapper .select2{	
+.popupwrapper input[type=text].image_path{
+	width: calc(100% - 71px);
+}
+.trackingpopup_wrapper input[type=text].image_path{
+	width: 100%;
+}
+.popupwrapper select,.popupwrapper .select2{	
     line-height: 24px;
     color: #0d0d0d;    
     width: 100%;
+	max-width: 100%;
     margin-bottom: 10px;
     height: 32px;	
+}
+.popupwrapper.uninstall_popup select{
+	width: auto;
+	margin-bottom: 0px;
+}
+.trackingpopup_wrapper select,.trackingpopup_wrapper .select2{
+	line-height: 24px;
+    color: #0d0d0d;    
+    width: 100%;
+	max-width: 100%;
+    margin-bottom: 10px;
+    height: 32px;	
+}
+.popupwrapper .popuprow .popup_title,.trackingpopup_wrapper .trackingpopup_row .popup_title{
+	color: #005B9A;
 }
 .custom_provider_instruction{
 	text-align:left;
 	margin-bottom: 10px;
 }
-.add_provider_popup .popuprow{
-	max-width: 310px;
-	text-align: left;
-}
 .popupwrapper #upload_image_button{
 	min-height: 30px;
+}
+.edit_provider_msg{
+	vertical-align: baseline !important;
+    margin-left: 5px;
+}
+a.reset_default_provider {
+    margin-left: 10px;
 }
 .close-button{	  
 	background: #000 none repeat scroll 0 0;
@@ -1401,27 +1559,35 @@ p.delivered_message {
 	top: 17px;
     width: 35px;
 }
-.woocommerce.zorem_admin_layout table.form-table{
-	background: #fff;
+.woocommerce.zorem_admin_layout table.form-table{	
     border: 0;    
     margin-top: 0;
 	margin-bottom: 0px;
 }
+.woocommerce.zorem_admin_layout table.form-table.upload_csv_table{
+	table-layout: auto;
+}
+.woocommerce.zorem_admin_layout table.form-table.upload_csv_table{
+	border: 1px solid #eee;
+    border-radius: 3px;
+}
 .woocommerce.zorem_admin_layout table.form-table.heading-table{	
 	margin: 0;
-	border: 0;
-	background: #fafeff;
+	border: 0;	
 }
-#wc_ast_settings_form table.form-table.heading-table tr,#wc_ast_trackship_form table.form-table.heading-table tr,#wc_ast_upload_csv_form table.form-table.heading-table tr{
+#wc_ast_upload_csv_form table.form-table.heading-table tr{
 	border-bottom: 0;
 }
 .woocommerce.zorem_admin_layout table.form-table.heading-table td{
 	padding: 12px 15px;	
 }
+.woocommerce.zorem_admin_layout .border_0 table.form-table.heading-table td{
+	padding: 0 0 5px;
+}
 .woocommerce.zorem_admin_layout table.form-table.heading-table td h3{
 	margin: 0;
 	color:#005B9A;
-	font-weight: 400;
+	font-weight: 500;
 }
 .woocommerce.zorem_admin_layout table.form-table.heading-table td.button-column{
 	text-align:right;
@@ -1439,22 +1605,43 @@ p.delivered_message {
 	clear:both;
 }
 .ast_admin_content div.submit{
-	padding: 0;	
+	padding: 0;    
+    margin: 10px 0 0;	
 }
 .woocommerce.zorem_admin_layout table.form-table th{
 	padding: 20px 24px 20px 15px;	
 }
+.woocommerce.zorem_admin_layout table.form-table.table-layout-2 th.titledesc{
+	padding: 20px 15px 20px 15px;
+}
+.woocommerce.zorem_admin_layout table.form-table.table-single-column td fieldset{
+    margin-top: 10px;
+}
 .woocommerce.zorem_admin_layout table.form-table td{
 	padding: 15px 15px;
 }
+.woocommerce.zorem_admin_layout .border_0 table.form-table td {
+    padding: 15px 15px 15px 0;
+}
 .woocommerce.zorem_admin_layout table.form-table td.button-column{
-	padding: 5px 15px;
+	padding: 0px 15px 15px;
+}
+.woocommerce.zorem_admin_layout .border_0 table.form-table td.button-column{
+	padding: 5px 0;
 }
 .woocommerce.zorem_admin_layout table.form-table td.multiple_checkbox_td{
 	padding: 10px 15px 15px;
 }
 .woocommerce.zorem_admin_layout table.form-table.order-status-table td{
-	 padding: 20px 15px;
+	 padding: 15px;
+}
+.woocommerce.zorem_admin_layout table.form-table.order-status-table td:first-child{
+	padding:20px 15px 20px 15px;
+	width: 37px;
+    border-right: 1px solid #ccc;
+}
+.woocommerce.zorem_admin_layout table.form-table.order-status-table td{
+	border-bottom: 1px solid #ccc;
 }
 .woocommerce.zorem_admin_layout table.form-table th label{
 	font-weight: 500;
@@ -1463,6 +1650,31 @@ p.delivered_message {
 }
 .woocommerce.zorem_admin_layout table.form-table p.description{
 	font-size: 0.9em;
+}
+.settings_ul{
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.settings_ul .setting_ul_checkbox_label{
+	margin-left: 10px;
+}
+.settings_ul li{
+	padding: 15px 0;
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+	min-height: 25px;
+}
+.settings_ul li:last-child {
+    border-bottom: 0;
+}
+.settings_ul .settings_radio_li .radio_section{
+	display: inline-block;
+	padding: 0 10px;
+}
+.multiple_checkbox_parent {
+    display: inline-block;
+    vertical-align: top;
+	margin: 15px 30px 0 0;
 }
 p.tracking-preview-desc {
     font-style: italic;
@@ -1525,11 +1737,10 @@ p.tracking-preview-desc {
 	width: 80%;
     margin: 1em auto;
 }
-.description-below-table{
-	background: #fff;    
+.description-below-table{	   
     margin-top: 0;
     margin-bottom: 0;
-    padding: 20px 24px 20px 15px;
+    padding: 5px 0;
     border-top: 0;
 }
 .ast_admin_content div.submit .spinner{
@@ -1577,14 +1788,11 @@ p.tracking-preview-desc {
     margin-right: 20px;
 	margin-bottom: 20px;
 }
-
-
 .nav_doc_section {
     float: right;
-    padding: 15px 0 15px;
+    padding: 9px 0;
     margin-right: 30px;
 }
-
 .nav_doc_section a {    
     color: #005b9a;
     text-decoration: none;
@@ -1624,6 +1832,13 @@ p.tracking-preview-desc {
 }
 .woocommerce.zorem_admin_layout .ast_admin_content .wp-picker-container .wp-picker-input-wrap .input-text{
 	line-height: 15px;
+}
+
+span.dashicons.dashicons-edit.edit_provider {
+    cursor: pointer;
+}
+span.dashicons.dashicons-trash.remove {
+    cursor: pointer;
 }
 @media (max-width: 767px) {
 	.notice.ast-admin-notice {
@@ -1759,11 +1974,6 @@ section.widget_tab_section {
     overflow-y: auto;
 }
 /**** -------- ****/
-
-.bulk_shipment_status_success{
-	color:#83bd31;
-	margin-top:10px;
-}
 .woocommerce_page_woocommerce-advanced-shipment-tracking .woocommerce-help-tip{
 	color: #005B9A;
 }
@@ -1778,10 +1988,7 @@ section.widget_tab_section {
 .woocommerce_page_woocommerce-advanced-shipment-tracking #tiptip_holder.tip_bottom #tiptip_arrow_inner{
 	border-bottom-color: #005B9A;	
 }
-.trackship_section{
-	background-image: url(../images/ts_bg.png);
-	min-height: 100vh;
-}
+
 .doc_link{
 	margin-right: 25px;
 }
@@ -1807,13 +2014,11 @@ span.tracking_product_list {
     -ms-flex-pack: justify;
     justify-content: space-between;    
 }
-.addons_inner_container .ast_addons_section{
-	width: calc(50% - 12.5px);    
-    position: relative;    
-    padding: 0 0 0;    
-}
 .ast_admin_content .ast_addons_section .form-table th.titledesc{
-	width: 35%;
+	width: 25%;
+}
+.ast_admin_content .ast_addons_section .license_div {
+    margin-bottom: 20px;
 }
 .ast_admin_content .ast_addons_section span.api_connected{
 	line-height: 36px;
@@ -1832,11 +2037,10 @@ span.tracking_product_list {
 	float: none;
 }
 .ast_addons_section .submit .pesan{
-	width: 65%;
-    /*display: inline-block;*/
-    vertical-align: bottom;    
-    margin-left: 5px;
-    line-height: 15px;
+	width: 65%;    
+    vertical-align: bottom;        
+    line-height: 25px;
+	position: absolute;
 }
 .ast_addons_section .submit{
 	margin: 0;
@@ -1863,30 +2067,17 @@ span.tracking_product_list {
     left: 50%;
     transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
-    content: "\f01d";
-    font-family: FontAwesome;
-    font-size: 100px;
+    content: "\f236";
+    font-family: dashicons;
+    font-size: 70px;
     color: #fff;
     opacity: .8;
     text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5);
-}
-.woocommerce.zorem_admin_layout .license_div{
-    /*height: 118px;*/
-    background: #fff;
-    border: 1px solid #eee;
-    margin-top: 0;
-    margin-bottom: 0px;
-    vertical-align: middle;
-    padding-top: 20px;
-	padding-bottom: 20px;
 }
 .woocommerce.zorem_admin_layout .license_div table.form-table{
 	background: 0;
     border: 0;
 }
-/*.woocommerce.zorem_admin_layout .license_div table.form-table tr{
-	height:50px;
-}*/
 .ast_admin_content .ast_addons_section .license_div .form-table th.titledesc {    
     padding: 0px 24px 0px 15px;
 	vertical-align: middle;
@@ -1901,8 +2092,11 @@ span.tracking_product_list {
 	background: #f9f9f9;
 }
 
+.order-status-table tr{
+	background: #fff;
+}
 .order-status-table tr.disable_row{
-	background: #eee;
+	background: transparent;
 	opacity: 0.7;
 }
 .order-status-table tr.disable_row td{
@@ -1931,10 +2125,6 @@ span.tracking_product_list {
 }
 .order-status-table tr td.status-label-column{
 	width:130px;
-}
-.form-table .multiple_checkbox {
-    display: inline-block;
-    padding-right: 20px;	
 }
 .order-status-table .wp-picker-container,.tracking_page_table .wp-picker-container {
     display: inline-block;
@@ -1969,47 +2159,11 @@ span.tracking_product_list {
 .ast_admin_content .tracking-layout-table.form-table th.titledesc{
 	width: 50%;
 }
-.tracking_color_label{
-	line-height:30px;
-}
-.tracking_layout_options_div label{
-	margin-bottom: 5px;
-    display: block;
-}
-span.select_t_layout_section {
-    display: inline-block;
-    width: 45%;
-    margin-right: 10px;
-    margin-top: 5px;
-}
-.tracking-layout-table .radio-img {
-	position: absolute;
-	left: -9999px;
-}
 
-.tracking-layout-table .radio-img:checked + label>img {
-	border: 1px solid #74C2E1;  
-}
 .wp-core-ui .btn_large.launch_customizer_btn{
 	margin-top: 10px;
 }
-/* Stuff after this is only to make things more pretty */
-.tracking-layout-table .radio-img + label>img {
-    border: 1px solid #bdbdbd;
-    width: 100%;    
-    border-radius: 5px;
-}
-.tracking_layout_preview_1,.tracking_layout_preview_2{
-	text-align:center;
-}
-table.form-table.heading-table.disable_tracking_page {
-    background: #f5f8fa;
-    color: #222629;
-}
-.tracking_preview_iframe{
-	width:100%;	
-	display:none;
-}
+
 .ast_radio_label {
     min-width: 125px;
     display: inline-block;
@@ -2017,16 +2171,326 @@ table.form-table.heading-table.disable_tracking_page {
 .tracking_product_code_field{
 	display:none;
 }
-.outer_form_table {
-    -webkit-box-shadow: 0 1px 3px -2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
-    -moz-box-shadow: 0 1px 3px -2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);    
-	box-shadow: 0 1px 3px -2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+.outer_form_table{
+    border: 1px solid #ccc;
 	margin-top: 25px;
+	border-radius: 3px;
 }
-.border-top{
+.upload_csv_div .outer_form_table{
+	margin-top: 20px;
+    background-color: #fff;
+	border-radius: 3px;
+}
+.outer_form_table.border_0{
+	border: 0;	
+}
+.tab_inner_container hr{
+	margin: 25px 0 0;
+    border-color: #ccc;
+}
+.provider_list .pagination{	
+    display: inline-block;
+    padding-left: 0;
+    margin: 0;
+    border-radius: 4px;
+}
+.provider_list .pagination>li {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.provider_list .pagination>li>a, .provider_list .pagination>li>span {
+    position: relative;
+    float: left;
+    padding: 4px 8px;
+    margin-left: -1px;
+    line-height: 1.42857143;
+    color: #005B9A;
+    text-decoration: none;
+    background-color: #fff;
+    border: 1px solid #ddd;
+	cursor: pointer;
+}
+.provider_list .pagination>.active>a, .provider_list .pagination>.active>a:focus, .provider_list .pagination>.active>a:hover, .provider_list .pagination>.active>span, .provider_list .pagination>.active>span:focus, .provider_list .pagination>.active>span:hover {
+    z-index: 2;
+    color: #fff;
+    cursor: default;
+    background-color: #74C2E1;
+    border-color: #74C2E1;
+}
+table.provder_table{
+	border: 1px solid #ddd;
+}
+table.provder_table thead{
+	background: #f9f9f9;
+}
+table.provder_table tbody tr:hover{
+	background: #f9f9f9;
+} 
+table.provder_table th{	
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	background: #fafeff;
+	font-weight: 500;
+}
+table.provder_table th:last-child{
+	border-right: 0;
+}	
+table.provder_table td{
+	vertical-align: middle;
+	border-bottom: 1px solid #eee;
+	padding: 5px 10px;	
+}
+table.provder_table td:first-child{
+	width: 30px;
+}
+table.provder_table th.provider_actions_th{
+	text-align:right;
+}
+table.provder_table td:nth-last-child(2){
+	text-align:right;
+}
+table.provder_table .provider_actions_btn{
+    border: 1px solid #ccc;
+    padding: 5px;
+    color: #005b9a;
+    border-radius: 3px;
+    font-size: 18px;
+    vertical-align: middle;
+    height: 18px;
+    width: 18px;
+    background-color: #eaf8fb;
+}
+.provider_table_hc {
+    margin: 10px 0 5px;
+}
+.shipping_provider_counter {
+    display: inline-block;    
+    line-height: 32px;
+}
+.paging.shipping_provider_paging{    
+    float: right;    
+}
+.shipping_provider_paging::after {
+  content: "";
+  clear: both;
+  display: block;
+}
+.csv_import_done .outer_form_table .completed_icon::before{
+	font-family: WooCommerce;
+    speak: none;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    margin: 0;
+    text-indent: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;    
+    content: "";
+    color: #005B9A;
+    position: static;
+    font-size: 70px;
+    display: block;
+    float: none;
+    margin: 0 0 10px;
+	padding-top:10px;
+	text-align:center;
 	border-top: 1px solid #eee;
 }
+.ast_admin_content .border-bottom-0{
+	border-bottom:0 !important;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps li{
+	width: 33.33%;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps{
+	padding-bottom: 5px;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps li.active, .ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps li.done{
+	border-color: #005b9a;
+    color: #005b9a;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps li.active::before{
+	border-color: #005b9a;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper .wc-progress-steps li.done::before{
+	border-color: #005b9a;
+    background: #005b9a;
+}
+.ast_admin_content .woocommerce-progress-form-wrapper{
+	margin: 25px 10px;
+    max-width: 100%;
+}
+.provder_table_mobile{
+	display:none;
+}
+.bulk_upload_documentation_ul li {
+    padding: 5px 0;
+}
+.woocommerce.zorem_admin_layout table.form-table td.bulk_upload_status_td {
+    text-align: center;    
+}
+#wc_ast_upload_csv_form .csv_import_done .form-table tr.bulk_upload_status_heading_tr{
+	border-top: 0;
+}
+.woocommerce-help-tip.dashicons::after{
+	content:none;
+}
+.woocommerce_page_woocommerce-advanced-shipment-tracking .woocommerce-help-tip.dashicons{
+	font-size: 20px;
+}
+.wp-list-table.admin_tracking_details_table{
+	border: 1px solid #eee
+}
+.post-type-shop_order .wp-list-table.admin_tracking_details_table tbody tr td{
+	padding: 5px !important;
+    border-bottom: 1px solid #eee;
+}
+.open_tracking_details{
+	cursor:pointer;
+}
+.add_custom_provider_h3{
+	color: #005b9a;
+}
+.add_custom_provider_h3 a{
+    color: #005b9a;
+	text-decoration:none;
+}
+
+/** New Addons Page Design **/
+img.zorem_logo {
+    width: 150px;
+	margin-top: 20px;
+}
+p.zorem_description {
+    color: #3c4858;
+    font-size: 16px;
+}
+.plugins_section.pro_plugin_section,.plugins_section.free_plugin_section {
+    display: flex;
+    flex-wrap: wrap;
+}
+.single_plugin {         
+    flex-grow: 1;
+    width: 33%;
+    max-width: 33%;
+    padding: 10px 10px 0 0;    
+    box-sizing: border-box;
+}
+.plugins_section.free_plugin_section .single_plugin{
+	width: 50%;
+    max-width: 50%;
+}
+.plugins_section.pro_plugin_section .plugin_image {
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+}
+.plugins_section.pro_plugin_section .plugin_image img {
+    width: 100%;
+	border-radius: 3px;
+}
+.plugins_section.free_plugin_section .plugin_image{
+	max-width: 128px;
+	display: inline-block;
+    margin: 0 4% 0 0;
+    vertical-align: top;
+}
+.plugins_section.free_plugin_section .plugin_image img{
+	width: 100%;
+}
+.plugins_section.free_plugin_section .plugin_description{
+	width: -webkit-calc(95% - 130px);
+    width: calc(95% - 130px);    
+    margin: auto;
+    vertical-align: top;
+    display: -webkit-inline-box;    
+    -webkit-box-orient: vertical;    
+}
+.plugins_section.free_plugin_section .plugin_description h3{
+	margin: 0;
+}
+.plugins_section.free_plugin_section .plugin_description p{
+	display: -webkit-inline-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.plugins_section.free_plugin_section .single_plugin .free_plugin_inner{
+	border: 1px solid #e0e0e0;
+	border-radius: 3px;
+	background: #fff;
+	padding: 15px;
+}
+.addons_page_title{
+	color: #005b9a;
+    font-weight: 500;
+    line-height: 24px;
+    margin-bottom: 0;
+    font-size: 18px;
+}
+.addons_title_divider{
+	background-color: #005B9A;
+    height: 3px;
+    display: block;
+    margin: 0 0 30px;
+    width: 100%;
+    max-width: 30px;
+}
+.zorem_admin_layout h3.border0_heading{
+	color: #005b9a;
+	margin: 25px 0 -15px;
+}
+.zorem_admin_layout .csv_heading_section{
+	text-align:left;
+	margin-bottom: 25px;
+}
+.zorem_admin_layout .csv_heading_section .border0_heading{
+	 margin: 10px 0 0;
+}
+.border-bottom-1{
+	border-bottom:1px solid #eee;
+}
+.import_tracking_sidebar{
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
+.import_tracking_sidebar:after{
+	position: absolute;
+    top: 52%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    content: "\f236";
+    font-family: dashicons;
+    font-size: 20px;
+    color: #444444;
+}
+
 /*** RTL CSS ***/
+.rtl .zorem-layout__header .zorem-layout__header-breadcrumbs{
+	padding: 0 30px 0 0;
+}
+.rtl .zorem-layout__logo-panel{
+	padding: 0 0 0 30px;
+}
+.rtl.shipment_tracking_admin_settings .zorem-layout__logo-panel .header-plugin-logo{
+	margin-left: 20px;
+	margin-right: 0;
+}
+.rtl .ast-dropdown-content{
+	left: 0;
+	right: auto;	
+}
+.rtl .ast-dropdown-content:before{
+	left: 8px;
+	right: auto;
+}
 .rtl.shipment_tracking_admin_settings #wpcontent {
     padding-right: 0;
     background: rgb(245, 248, 250);    
@@ -2050,8 +2514,7 @@ table.form-table.heading-table.disable_tracking_page {
 	margin-left: 0;
 }
 .rtl label.tab_label.first_label{
-	margin-right: 30px;
-	margin-left: 0;
+	margin-right: 30px;	
 }
 .rtl .zorem_admin_sidebar{
 	padding: 25px 30px 25px 0px;
@@ -2083,6 +2546,10 @@ table.form-table.heading-table.disable_tracking_page {
 .rtl .search_section{
 	float:left;
 }
+.rtl .status_filter{
+	float: right;
+	margin: 10px 0 10px 0;
+}
 .rtl #search_provider{
 	padding-left:0;
 	padding-right: 30px;
@@ -2096,6 +2563,7 @@ table.form-table.heading-table.disable_tracking_page {
 .rtl .provider_settings{
 	margin-left:0;
 	margin-right: 5px;
+	margin-top: 10px;
 }
 .rtl .right-div{
 	margin-right: 15px;
@@ -2123,7 +2591,68 @@ table.form-table.heading-table.disable_tracking_page {
 	right: 15px;
 	left: auto;
 }
-
+.rtl .paging.shipping_provider_paging {
+    float: left;
+}
+.rtl table.wp-list-table img.provider-thumb {
+    margin: 1px 1px 1px 10px;
+}
+.rtl .ast_admin_content table.form-table.upload_csv_table tr td{
+	text-align: right;
+}
+.rtl.shipment_tracking_admin_settings .mdl-progress > .progressbar{
+	left: auto;
+    right: 0;
+}
+.rtl .popupwrapper .popuprow .popup_title, .rtl .trackingpopup_wrapper .trackingpopup_row .popup_title{
+	text-align: right;
+}
+.rtl .popupclose_btn{
+	right: auto;
+	left: 20px;
+}
+.rtl .popupwrapper .popuprow .button-primary, .rtl .trackingpopup_wrapper .trackingpopup_row .button-primary{
+	float: right;
+}
+.rtl a.reset_default_provider{
+	float: right;
+    margin-right: 10px;    
+    line-height: 37px;
+}
+.rtl .popupwrapper .popuprow p{
+	text-align: right;
+}
+.rtl .popupwrapper .popuprow .reset_db_fieldset{
+	text-align: right;
+}
+.rtl .trackingpopup_wrapper .trackingpopup_row p{
+	text-align: right;
+}
+.rtl .trackingpopup_wrapper .trackingpopup_row .ast_tracking_item_div{
+	text-align:right;
+}
+.rtl .trackingpopup_wrapper .trackingpopup_row .add_tracking_number_form .form-field{
+	text-align: right;
+}
+.rtl .trackingpopup_wrapper .trackingpopup_row .add_tracking_number_form input[type=checkbox] {
+    margin: 0px 0 0 4px;
+}
+.rtl input.tab_input:checked + label, .rtl input.inner_tab_input:checked + label{
+	margin-bottom: 0px;
+}
+.rtl .order-status-table td:last-child{
+	text-align: left;
+}
+.rtl #content_tab_addons .single_plugin{
+	text-align: left;
+}
+.rtl .zorem_admin_layout .csv_heading_section{
+	text-align: right;
+}
+.rtl .select_t_layout_section{
+	margin-right: 0;    
+    margin-left: 10px;
+}
 
 @media screen and (min-width: 1270px) and (max-width: 1465px) {
 	.provider {
@@ -2144,6 +2673,9 @@ table.form-table.heading-table.disable_tracking_page {
 	.right-div{
 		 width: 60%;
 	}
+	span.provider_name {		
+		font-size: 12px;	
+	}	
 }
 @media screen and (max-width: 820px) {
 	.nav_doc_section{
@@ -2152,13 +2684,22 @@ table.form-table.heading-table.disable_tracking_page {
 		margin-right: 0;
 	}
 }
+@media screen and (max-width: 650px) {
+	.search_section {    
+		margin: 10px 0px 5px 0;
+		float: none;
+	}
+	.dropdown-content{
+		top: 40px;
+	}
+}
 @media screen and (max-width: 750px) {
 	.d_table{
 		display:block;
 		width: 100%;
 	}
 }
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
 	.provider{
 		width: 33.3%;
 	}
@@ -2171,31 +2712,78 @@ table.form-table.heading-table.disable_tracking_page {
 	.nav_doc_section{
 		float: none;
 		padding: 15px 0 15px;
-		margin-left: 30px;
+		margin-left: 20px;
 	}
 	.status_filter{
 		width: auto;
 	}
-	.provider_settings{
-		float: none;
+	.provder_table_mobile{
+		display:table;
+	}
+	.provder_table_desktop{
+		display:none;
+	}
+	table.provder_table td:nth-last-child(2) {
+		text-align: left;
+	}	
+	ul.trackship_dashboard_ul li{
+		width: 100%;
+		margin: 0 0 5px;
+	}
+	.single_plugin{
+		width: 100%;
+		max-width: 100%
+	}
+	.plugins_section.free_plugin_section .single_plugin{
+		width: 100%;
+		max-width: 100%
+	}
+	.zorem-layout__logo-panel{		
+		padding: 0 10px 0 0;
+	}
+	.shipment_tracking_admin_settings .zorem-layout__logo-panel .header-plugin-logo{
+		width: 55px;
+		margin-right: 5px;
+	}
+	.zorem-layout__header .zorem-layout__header-breadcrumbs{
+		padding: 0 0 0 20px;
+	}
+	label.tab_label.first_label{
+		margin-left: 20px;
+	}
+	.settings_ul .settings_radio_li .radio_section{
+		padding: 0;
+		margin-top: 10px;
+		display: block;
+	}
+	.zorem-layout__logo-panel .header-plugin-logo{
+		margin-right: 0;
+	}
+	.settings_ul .checkbox_span label{
+		width: 45px !important;
+	}
+	.ast_admin_content table.form-table.upload_csv_table th{
+		width: 100%;
 	}
 }
 @media screen and (max-width: 500px) {
 	.provider{
 		width: 50%;
 	}
-	.search_section{
-		display: block;
-		float: none;
-		margin-bottom: 10px;
-	}
-	.search_section .search-icon{
-		padding: 10px 5px;
-	}
 	#search_provider{
 		width: 100%;
 	}
 	.plugin-logo{
 		max-width: 300px;
+	}
+}
+@media screen and (min-width: 768px) and (max-width: 1050px) {
+	.provider{
+		width: 33.3%;
+	}	
+}
+@media screen and (min-width: 1300px){
+	content .woocommerce-progress-form-wrapper {
+		max-width: 60%;
 	}
 }

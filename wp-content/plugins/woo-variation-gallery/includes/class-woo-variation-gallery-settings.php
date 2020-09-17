@@ -67,7 +67,7 @@
 						array(
 							'title'   => esc_html__( 'Reset Variation Gallery', 'woo-variation-gallery' ),
 							'type'    => 'checkbox',
-							'default' => 'yes',
+							'default' => 'no',
 							'desc'    => esc_html__( 'Always Reset Gallery After Variation Select', 'woo-variation-gallery' ),
 							'id'      => 'woo_variation_gallery_reset_on_variation_change'
 						),

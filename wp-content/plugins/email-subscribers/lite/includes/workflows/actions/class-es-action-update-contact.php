@@ -45,6 +45,7 @@ class ES_Action_Update_Contact extends ES_Workflow_Action {
 				if ( ! $data_type || ! $data_type->validate( $data_item ) ) {
 					continue;
 				}
+
 				$data = $data_type->get_data( $data_item );
 
 				$user_id = ! empty( $data['wp_user_id'] ) ? $data['wp_user_id'] : 0;
@@ -73,12 +74,35 @@ class ES_Action_Update_Contact extends ES_Workflow_Action {
 								'email'      => $user->user_email,
 								'first_name' => $first_name,
 								'last_name'  => $last_name,
-								'wp_user_id' => $user->ID
+								'wp_user_id' => $user->ID,
 							);
 
 							ES()->contacts_db->update_contact( $es_contact_id, $contact );
 						}
+					}
+				} else {
 
+					$email         = ! empty( $data['email'] ) ? $data['email'] : '';
+					$es_contact_id = ES()->contacts_db->get_contact_id_by_email( $email );
+					if ( ! empty( $es_contact_id ) ) {
+						$first_name = ! empty( $data['first_name'] ) ? $data['first_name'] : '';
+						$last_name  = ! empty( $data['last_name'] ) ? $data['last_name'] : '';
+
+						// Check if we are getting the name field.
+						if ( empty( $first_name ) && empty( $last_name ) && ! empty( $data['name'] ) ) {
+							$name       = explode( ' ', $data['name'] );
+							$first_name = $name[0];
+							if ( isset( $name[1] ) ) {
+								$last_name = $name[1];
+							}
+						}
+						$contact = array(
+							'email'      => $email,
+							'first_name' => $first_name,
+							'last_name'  => $last_name,
+						);
+
+						ES()->contacts_db->update_contact( $es_contact_id, $contact );
 					}
 				}
 			}

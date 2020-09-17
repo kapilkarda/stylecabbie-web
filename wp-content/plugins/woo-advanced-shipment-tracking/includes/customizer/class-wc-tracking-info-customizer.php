@@ -48,6 +48,7 @@ class wcast_initialise_customizer_settings {
 		add_action( 'customize_preview_init', array( $this, 'enqueue_preview_scripts' ) );			
 	}
 	
+	
 	/**
 	 * add css and js for preview
 	*/	
@@ -126,7 +127,7 @@ class wcast_initialise_customizer_settings {
 			'remove_date_from_tracking' => '',
 			'header_text_change' => '',
 			'additional_header_text' => '',
-			'table_bg_color' => '#ddd',
+			'table_bg_color' => '#f5f5f5',
 			'table_border_color' => '#e4e4e4',
 			'table_border_size' => '1',
 			'table_header_font_size' => '',
@@ -239,6 +240,24 @@ class wcast_initialise_customizer_settings {
 			)
 		);
 		
+		// Show track label
+		$wp_customize->add_setting( 'tracking_info_settings[hide_trackig_header]',
+			array(
+				'default' => '',
+				'transport' => 'postMessage',
+				'sanitize_callback' => '',
+				'type' => 'option',
+			)
+		);
+		$wp_customize->add_control( 'tracking_info_settings[hide_trackig_header]',
+			array(
+				'label' => __( 'Hide Tracking Header', 'woo-advanced-shipment-tracking' ),
+				'description' => esc_html__( '', 'woo-advanced-shipment-tracking' ),
+				'section' => 'ast_tracking_general_section',
+				'type' => 'checkbox'
+			)
+		);
+			
 		// Header Text		
 		$wp_customize->add_setting( 'tracking_info_settings[header_text_change]',
 			array(

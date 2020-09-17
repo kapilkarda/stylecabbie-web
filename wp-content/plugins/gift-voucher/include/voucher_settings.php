@@ -32,6 +32,7 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
       		$stripe_webhook_key 	= sanitize_text_field( $_POST['stripe_webhook_key'] );
       		$stripe_secret_key 		= sanitize_text_field( $_POST['stripe_secret_key'] );
       		$voucher_bgcolor 		= sanitize_text_field( substr($_POST['voucher_bgcolor'],1) );
+      		$voucher_brcolor 		= sanitize_text_field( substr($_POST['voucher_brcolor'],1) );
       		$voucher_color 			= sanitize_text_field( substr($_POST['voucher_color'],1) );
       		$template_col 			= sanitize_text_field( $_POST['template_col'] );
       		$voucher_min_value		= sanitize_text_field( $_POST['voucher_min_value'] );
@@ -44,7 +45,8 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
       		$per_invoice 		 	= sanitize_text_field( $_POST['per_invoice'] );
       		$custom_loader 		 	= sanitize_text_field( $_POST['custom_loader'] );
       		$buying_for 			= sanitize_text_field( $_POST['buying_for'] );
-      		$hide_price 			= sanitize_text_field( $_POST['hide_price'] );
+      		$hide_price_voucher 	= sanitize_text_field( $_POST['hide_price_voucher'] );
+      		$hide_price_item 		= sanitize_text_field( $_POST['hide_price_item'] );
       		$hide_expiry 			= sanitize_text_field( $_POST['hide_expiry'] );
       		$expiry_date_format 	= sanitize_text_field( $_POST['expiry_date_format'] );
       		$post_shipping 			= sanitize_text_field( $_POST['post_shipping'] );
@@ -60,14 +62,17 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
       		$recipient_email_body   = $_POST['recipient_email_body'];
       		$admin_email_subject 	= $_POST['admin_email_subject'];
       		$admin_email_body 		= $_POST['admin_email_body'];
-      		$demo_image 			= $_POST['demo_image'];
+      		$demo_image_voucher 	= $_POST['demo_image_voucher'];
+      		$demo_image_item 		= $_POST['demo_image_item'];
       		$cancelpagemessage		= $_POST['cancelpagemessage'];
       		$successpagemessage		= $_POST['successpagemessage'];
       		$wpgv_custom_css		= $_POST['wpgv_custom_css'];
       		$pdf_footer_url			= $_POST['pdf_footer_url'];
       		$pdf_footer_email		= $_POST['pdf_footer_email'];
+      		$leftside_notice		= $_POST['leftside_notice'];
       		$stripe_alternative_text = $_POST['stripe_alternative_text'];
       		$customer_receipt 		= $_POST['customer_receipt'];
+      		$invoice_mail_enable     = $_POST['invoice_mail_enable'];
 
 			$voucher_styles = array();
 			foreach ($_POST['voucher_style'] as $value) {
@@ -118,7 +123,11 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
     		update_option('wpgv_stripe_webhook_key', $stripe_webhook_key);
     		update_option('wpgv_termstext', $wpgvtermstext);
     		update_option('wpgv_buying_for', $buying_for);
-    		update_option('wpgv_hide_price', $hide_price);
+ 
+    		update_option('wpgv_hide_price_voucher', $hide_price_voucher);
+    		update_option('wpgv_hide_price_item', $hide_price_item);
+    		update_option('wpgv_voucher_border_color', $voucher_brcolor);
+
     		update_option('wpgv_hide_expiry', $hide_expiry);
     		update_option('wpgv_expiry_date_format', $expiry_date_format);
     		update_option('wpgv_emailsubject', $email_subject);
@@ -128,13 +137,17 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
     		update_option('wpgv_recipientemailbody', stripslashes(wp_filter_post_kses(addslashes($recipient_email_body))));
     		update_option('wpgv_adminemailsubject', $admin_email_subject);
     		update_option('wpgv_adminemailbody', stripslashes(wp_filter_post_kses(addslashes($admin_email_body))));
-    		update_option('wpgv_demoimageurl', $demo_image);
+    		update_option('wpgv_demoimageurl_voucher', $demo_image_voucher);
+    		update_option('wpgv_demoimageurl_item', $demo_image_item);
     		update_option('wpgv_successpagemessage', $successpagemessage);
     		update_option('wpgv_cancelpagemessage', $cancelpagemessage);
     		update_option('wpgv_enable_pdf_saving', $enable_pdf_saving);
     		update_option('wpgv_custom_css', $wpgv_custom_css);
     		update_option('wpgv_stripe_alternative_text', $stripe_alternative_text);
     		update_option('wpgv_customer_receipt', $customer_receipt);
+    		update_option('wpgv_invoice_mail_enable', $invoice_mail_enable);
+    		update_option('wpgv_leftside_notice', $leftside_notice);
+
 			if($stripe && !get_option('wpgv_stripesuccesspage')) {
 				$stripeSuccessPage = array(
       				'post_title'    => 'Stripe Payment Success Page',
@@ -158,9 +171,14 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 	    	);
    		}
 		$wpgv_buying_for = get_option('wpgv_buying_for') ? get_option('wpgv_buying_for') : 'both';
-		$wpgv_hide_price = get_option('wpgv_hide_price') ? get_option('wpgv_hide_price') : 0;
+		$wpgv_hide_price_voucher = get_option('wpgv_hide_price_voucher') ? get_option('wpgv_hide_price_voucher') : 0;
+		$wpgv_hide_price_item = get_option('wpgv_hide_price_item') ? get_option('wpgv_hide_price_item') : 0;
+		$voucher_brcolor = get_option('wpgv_voucher_border_color') ? get_option('wpgv_voucher_border_color') : '81c6a9';
+
 		$wpgv_enable_pdf_saving = get_option('wpgv_enable_pdf_saving') ? get_option('wpgv_enable_pdf_saving') : 0;
 		$wpgv_customer_receipt = get_option('wpgv_customer_receipt') ? get_option('wpgv_customer_receipt') : 0;
+		$wpgv_invoice_mail_enable = (get_option('wpgv_invoice_mail_enable') != '') ? get_option('wpgv_invoice_mail_enable') : 1;
+		$wpgv_leftside_notice = (get_option('wpgv_leftside_notice') != '') ? get_option('wpgv_leftside_notice') : __('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' );
 		$wpgv_hide_expiry = get_option('wpgv_hide_expiry') ? get_option('wpgv_hide_expiry') : 'yes';
 		$wpgv_expiry_date_format = get_option('wpgv_expiry_date_format') ? get_option('wpgv_expiry_date_format') : 'd.m.Y';
 		$wpgv_termstext = get_option('wpgv_termstext') ? get_option('wpgv_termstext') : 'I hereby accept the terms and conditions, the revocation of the privacy policy and confirm that all information is correct.';
@@ -173,7 +191,8 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 		$recipientemailbody = get_option('wpgv_recipientemailbody') ? get_option('wpgv_recipientemailbody') : '<p>Dear <strong>{recipient_name}</strong>,</p><p>You have received gift voucher from <strong>{customer_name}</strong>.</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
 		$adminemailsubject = get_option('wpgv_adminemailsubject') ? get_option('wpgv_adminemailsubject') : 'New Voucher Order Received from {customer_name}  (Order No: {order_number})!';
 		$adminemailbody = get_option('wpgv_adminemailbody') ? get_option('wpgv_adminemailbody') : '<p>Hello, New Voucher Order received.</p><p><strong>Order Id:</strong> {order_number}</p><p><strong>Name:</strong> {customer_name}<br /><strong>Email:</strong> {customer_email}<br /><strong>Amount:</strong> {amount}</p>';
-		$demoimageurl = get_option('wpgv_demoimageurl') ? get_option('wpgv_demoimageurl') : WPGIFT__PLUGIN_URL.'/assets/img/demo.png';
+		$demoimageurl_voucher = get_option('wpgv_demoimageurl_voucher') ? get_option('wpgv_demoimageurl_voucher') : WPGIFT__PLUGIN_URL.'/assets/img/demo.png';
+		$demoimageurl_item = get_option('wpgv_demoimageurl_item') ? get_option('wpgv_demoimageurl_item') : WPGIFT__PLUGIN_URL.'/assets/img/demo.png';
 		$cancelpagemessage = get_option('wpgv_cancelpagemessage') ? get_option('wpgv_cancelpagemessage') : 'You cancelled your order. Please place your order again from <a href="'.get_site_url().'/gift-voucher">here</a>.';
 		$successpagemessage = get_option('wpgv_successpagemessage') ? get_option('wpgv_successpagemessage') : 'We have got your order! <br>E-Mail Sent Successfully to %s.<br>This link will be invalid after 1 hour.';
 		$wpgv_stripe_alternative_text = get_option('wpgv_stripe_alternative_text') ? get_option('wpgv_stripe_alternative_text') : 'Stripe';
@@ -260,6 +279,7 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 								</select>
 							</td>
 						</tr>
+
 						<tr>
 							<th scope="row">
 								<label for="company_name"><?php echo __( 'Company Name', 'gift-voucher' ); ?> <span class="description">(required)</span></label>
@@ -301,7 +321,14 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 								<label for="voucher_bgcolor"><?php echo __( 'Voucher Background Color', 'gift-voucher' ); ?> <span class="description">(required)</span></label>
 							</th>
 							<td>
-								<input name="voucher_bgcolor" type="text" id="voucher_bgcolor" value="#<?php echo esc_html( $options->voucher_bgcolor ); ?>" class="regular-text" aria-required="true">
+								<div>
+									<input name="voucher_bgcolor" type="text" id="voucher_bgcolor" value="#<?php echo esc_html( $options->voucher_bgcolor ); ?>" class="regular-text" aria-required="true">
+									<span class="description"> <?php echo __('Background Color', 'gift-voucher'); ?></span>
+								</div>
+								<div>
+								<input name="voucher_brcolor" type="text" id="voucher_bgcolor" value="#<?php echo esc_html( $voucher_brcolor ); ?>" class="regular-text" aria-required="true">
+								<span class="description"> <?php echo __('Border & Button Color', 'gift-voucher'); ?></span>
+								</div>
 							</td>
 						</tr>
 						<tr>
@@ -382,6 +409,58 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 								<p class="description"><a href="http://php.net/manual/en/function.date.php#refsect1-function.date-parameters" target="_blank">Click Here</a> to check valid date formats</p>
 							</td>
 						</tr>
+
+						<tr><th colspan="2"><hr></th></tr>
+						<tr><td style="padding: 0px;"><h3>Gift Voucher</h3></td></tr>
+
+						<tr>
+							<th scope="row">
+								<label for="hide_price_voucher"><?php echo __( 'Hide price from voucher', 'gift-voucher'  ); ?></label>
+							</th>
+							<td>
+								<select name="hide_price_voucher" class="regular-text" id="hide_price_voucher">
+									<option value="1" <?php echo ($wpgv_hide_price_voucher == 1) ? 'selected' : ''; ?>>Yes</option>
+									<option value="0" <?php echo ($wpgv_hide_price_voucher == 0) ? 'selected' : ''; ?>>No</option>
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="demo_image_voucher"><?php echo __( 'Add Your Custom Demo Image', 'gift-voucher'  ); ?></label>
+								<p class="description">Default Image - check <a href="<?= WPGIFT__PLUGIN_URL.'/assets/img/demo.png' ?>" target="_blank">here</a></p>
+							</th>
+							<td>
+								<input name="demo_image_voucher" type="text" id="demo_image_voucher" value="<?php echo esc_html( $demoimageurl_voucher ); ?>" class="regular-text">
+							</td>
+						</tr>
+
+						<tr><th colspan="2"><hr></th></tr>
+						<tr><td style="padding: 0px;"><h3>Gift Items</h3></td></tr>
+						<tr>
+							<th scope="row">
+								<label for="hide_price_item"><?php echo __( 'Hide price from Items', 'gift-voucher'  ); ?></label>
+							</th>
+							<td>
+								<select name="hide_price_item" class="regular-text" id="hide_price_item">
+									<option value="1" <?php echo ($wpgv_hide_price_item == 1) ? 'selected' : ''; ?>>Yes</option>
+									<option value="0" <?php echo ($wpgv_hide_price_item == 0) ? 'selected' : ''; ?>>No</option>
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">
+								<label for="demo_image_item"><?php echo __( 'Add Your Custom Demo Image', 'gift-voucher'  ); ?></label>
+								<p class="description">Default Image - check <a href="<?= WPGIFT__PLUGIN_URL.'/assets/img/demo.png' ?>" target="_blank">here</a></p>
+							</th>
+							<td>
+								<input name="demo_image_item" type="text" id="demo_image_item" value="<?php echo esc_html( $demoimageurl_item ); ?>" class="regular-text">
+							</td>
+						</tr>
+
+						<tr><th colspan="2"><hr></th></tr>
+
 						<tr>
 							<th scope="row">
 								<label for="admin_email_body"><?php echo __( 'Terms and Condition Checkbox Text', 'gift-voucher' ); ?></label>
@@ -408,17 +487,6 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 									<option value="both" <?php echo ($wpgv_buying_for == 'both') ? 'selected' : ''; ?>>Both</option>
 									<option value="someone_else" <?php echo ($wpgv_buying_for == 'someone_else') ? 'selected' : ''; ?>>Someone Else</option>
 									<option value="yourself" <?php echo ($wpgv_buying_for == 'yourself') ? 'selected' : ''; ?>>Yourself</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
-								<label for="hide_price"><?php echo __( 'Hide price from voucher', 'gift-voucher'  ); ?></label>
-							</th>
-							<td>
-								<select name="hide_price" class="regular-text" id="hide_price">
-									<option value="1" <?php echo ($wpgv_hide_price == 1) ? 'selected' : ''; ?>>Yes</option>
-									<option value="0" <?php echo ($wpgv_hide_price == 0) ? 'selected' : ''; ?>>No</option>
 								</select>
 							</td>
 						</tr>
@@ -469,15 +537,6 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 						</tr>
 						<tr>
 							<th scope="row">
-								<label for="demo_image"><?php echo __( 'Add Your Custom Demo Image', 'gift-voucher'  ); ?></label>
-								<p class="description">Default Image - check <a href="<?= WPGIFT__PLUGIN_URL.'/assets/img/demo.png' ?>" target="_blank">here</a></p>
-							</th>
-							<td>
-								<input name="demo_image" type="text" id="demo_image" value="<?php echo esc_html( $demoimageurl ); ?>" class="regular-text">
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">
 								<label for="custom_loader"><?php echo __( 'Add Your Custom Loader URL', 'gift-voucher'  ); ?></label>
 								<p class="description">Default - check <a href="<?= WPGIFT__PLUGIN_URL.'/assets/img/loader.gif' ?>" target="_blank">here</a></p>
 							</th>
@@ -520,6 +579,14 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 								<input name="pdf_footer_email" type="text" id="pdf_footer_email" value="<?php echo esc_html( $options->pdf_footer_email ); ?>" class="regular-text">
 							</td>
 						</tr>
+						<tr>
+							<th scope="row">
+								<label for="leftside_notice"><?php echo __( 'Left side Voucher notice', 'gift-voucher'  ); ?></label>
+							</th>
+							<td>
+								<input name="leftside_notice" type="text" id="leftside_notice" class="regular-text" maxlength="80" value="<?php echo $wpgv_leftside_notice; ?>">
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				<table id="payment" class="form-table tab-content">
@@ -549,8 +616,13 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 						</tr>
 						<tr>
 							<th scope="row">
-								<label for="paypal_client_id"><?php echo __( 'PayPal Client ID', 'gift-voucher'  ); ?></label>
-								<p class="description"><?php echo __( 'Read the documentation of how to create PayPal live client ID.', 'gift-voucher' ); ?><br><a href="https://www.codemenschen.at/docs/wordpress-gift-vouchers-documentation/plugin-settings/payment-settings/" target="_blank">Click Here</a></p>
+								<label for="paypal_client_id" style="float: left;"><?php echo __( 'PayPal Client ID', 'gift-voucher'  ); ?></label> 
+								<div class="wpgv_tooltip">
+									<img src="<?php echo WPGIFT__PLUGIN_URL.'/assets/img/info-icon.png'; ?>" class="wpgv_info">
+									<span class="wpgv_tooltiptext">Credentials will be different for both Test mode and Live mode.</span>
+								</div>
+								<p class="description" style="width: 100%; float: left;"><?php echo __( 'Read the documentation of how to create PayPal live client ID.', 'gift-voucher' ); ?>
+								<br><a href="https://www.codemenschen.at/docs/wordpress-gift-vouchers-documentation/plugin-settings/payment-settings/" target="_blank">Click Here</a></p>
 							</th>
 							<td>
 								<input name="paypal_client_id" type="text" id="paypal_client_id" value="<?php echo $wpgv_paypal_client_id; ?>" class="regular-text">
@@ -671,6 +743,18 @@ if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 								<select name="per_invoice" class="regular-text" id="per_invoice">
 									<option value="1" <?php echo ($options->per_invoice == 1) ? 'selected' : ''; ?>>Yes</option>
 									<option value="0" <?php echo ($options->per_invoice == 0) ? 'selected' : ''; ?>>No</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">
+								<label for="per_invoice"><?php echo __( 'Send Direct Mail', 'gift-voucher'  ); ?></label>
+								<p class="description"><?php echo __('', 'gift-voucher'  ); ?></p>
+							</th>
+							<td>
+								<select name="invoice_mail_enable" id="invoice_mail_enable" class="regular-text">
+									<option value="1" <?php echo ($wpgv_invoice_mail_enable == 1) ? 'selected' : ''; ?>>Yes</option>
+									<option value="0" <?php echo ($wpgv_invoice_mail_enable == 0) ? 'selected' : ''; ?>>No</option>
 								</select>
 							</td>
 						</tr>

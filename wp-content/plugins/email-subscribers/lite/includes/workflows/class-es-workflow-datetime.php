@@ -13,11 +13,11 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class for Workflow date time options
  *
- * @class ES_Worfklow_DateTime
+ * @class ES_Workflow_DateTime
  * 
  * @since 4.4.1
  */
-class ES_Worfklow_DateTime extends DateTime {
+class ES_Workflow_DateTime extends DateTime {
 
 	/**
 	 * Same as parent but forces UTC timezone if no timezone is supplied instead of using the PHP default.
@@ -37,7 +37,7 @@ class ES_Worfklow_DateTime extends DateTime {
 
 
 	/**
-	 * Convert ES_Worfklow_DateTime from site timezone to UTC.
+	 * Convert ES_Workflow_DateTime from site timezone to UTC.
 	 *
 	 * Note this doesn't actually set the timezone property, it directly modifies the date.
 	 *
@@ -50,7 +50,7 @@ class ES_Worfklow_DateTime extends DateTime {
 
 
 	/**
-	 * Convert ES_Worfklow_DateTime from UTC to the site timezone.
+	 * Convert ES_Workflow_DateTime from UTC to the site timezone.
 	 *
 	 * Note this doesn't actually set the timezone property, it directly modifies the date.
 	 *
@@ -63,6 +63,8 @@ class ES_Worfklow_DateTime extends DateTime {
 
 
 	/**
+	 * Convert to mysql date time string
+	 * 
 	 * @since 4.4.0
 	 *
 	 * @return string

@@ -2,10 +2,11 @@
 /**
  * Manages CoCart plugin update notices.
  *
- * @since    2.0.12
  * @author   Sébastien Dumont
  * @category Admin
- * @package  CoCart/Admin
+ * @package  CoCart\Admin
+ * @since    2.0.12
+ * @version  2.6.1
  * @license  GPL-2.0+
  */
 
@@ -40,22 +41,31 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 		/**
 		 * Show plugin changes on the plugins screen.
 		 *
-		 * @access public
-		 * @param  array    $args     Unused parameter.
-		 * @param  stdClass $response Plugin update response.
+		 * @access  public
+		 * @since   2.0.12
+		 * @version 2.6.1
+		 * @param   array    $args     Unused parameter.
+		 * @param   stdClass $response Plugin update response.
 		 */
 		public function in_plugin_update_message( $args, $response ) {
-			$this->upgrade_notice  = $this->get_upgrade_notice( $response->new_version );
+			$this->upgrade_notice = $this->get_upgrade_notice( $response->new_version );
 
-			echo ! empty( $this->upgrade_notice ) ? '</p><p class="cocart_plugin_upgrade_notice">' . wp_kses_post( $this->upgrade_notice ) : '';
+			if ( ! empty( $this->upgrade_notice ) ) {
+				echo '</p></div><div class="notice inline notice-cocart">'.
+				'<p class="cart"><strong>' . sprintf( esc_html__( '%s Upgrade Notice', 'cart-rest-api-for-woocommerce' ), 'CoCart' ) . '</strong></p>'.
+				'<p>' . wp_kses_post( $this->upgrade_notice ) . '</p>'.
+				'</div>';
+			}
 		} // END in_plugin_update_message()
 
 		/**
 		 * Get the upgrade notice from WordPress.org.
 		 *
-		 * @access protected
-		 * @param  string $version CoCart new version.
-		 * @return string $upgrade_notice
+		 * @access  protected
+		 * @since   2.0.12
+		 * @version 2.6.1
+		 * @param   string $version CoCart new version.
+		 * @return  string $upgrade_notice
 		 */
 		protected function get_upgrade_notice( $version ) {
 			$transient_name = 'cocart_readme_upgrade_notice_' . $version;
@@ -66,7 +76,9 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 
 				if ( ! is_wp_error( $response ) && ! empty( $response['body'] ) ) {
 					$upgrade_notice = $this->parse_update_notice( $response['body'], $version );
-					set_transient( $transient_name, $upgrade_notice, DAY_IN_SECONDS );
+					if ( ! empty( $upgrade_notice ) ) {
+						set_transient( $transient_name, $upgrade_notice, DAY_IN_SECONDS );
+					}
 				}
 			}
 
@@ -76,10 +88,12 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 		/**
 		 * Parse update notice from readme file.
 		 *
-		 * @access private
-		 * @param  string $content        CoCart readme file content.
-		 * @param  string $new_version    CoCart new version.
-		 * @return string $upgrade_notice 
+		 * @access  private
+		 * @since   2.0.12
+		 * @version 2.6.1
+		 * @param   string $content        CoCart readme file content.
+		 * @param   string $new_version    CoCart new version.
+		 * @return  string $upgrade_notice 
 		 */
 		private function parse_update_notice( $content, $new_version ) {
 			$version_parts     = explode( '.', $new_version );
@@ -119,25 +133,12 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 		 *
 		 * @access  public
 		 * @since   2.0.3
-		 * @version 2.0.12
+		 * @version 2.6.1
 		 * @param   string $file        Plugin basename.
 		 * @param   array  $plugin_data Plugin information.
 		 * @return  false|void
 		 */
 		public function plugin_row( $file, $plugin_data ) {
-			?>
-			<style>
-			.mobile p::before {
-				color: #8564d2;
-				content: "\f470";
-				display: inline-block;
-				font: normal 20px/1 'dashicons';
-				-webkit-font-smoothing: antialiased;
-				-moz-osx-font-smoothing: grayscale;
-				vertical-align: top;
-			}
-			</style>
-			<?php
 			$plugins_allowedtags = array(
 				'a'       => array(
 					'href'  => array(),
@@ -153,9 +154,6 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 			$wp_list_table = _get_list_table( 'WP_Plugins_List_Table' );
 			$plugin_name   = wp_kses( $plugin_data['Name'], $plugins_allowedtags );
 
-			$version_mentioned = COCART_NEXT_VERSION;
-			//$details_url       = esc_url( COCART_NEXT_VERSION_DETAILS );
-
 			if ( is_network_admin() || ! is_multisite() ) {
 				if ( is_network_admin() ) {
 					$active_class = is_plugin_active_for_network( $file ) ? ' active' : '';
@@ -163,20 +161,20 @@ if ( ! class_exists( 'CoCart_Plugins_Screen_Updates' ) ) {
 					$active_class = is_plugin_active( $file ) ? ' active' : '';
 				}
 
-				$notice_type = 'notice-warning';
+				$notice_type = 'notice-cocart';
 
-				// Only show the plugin notice if this version of CoCart is not a beta or is lower than the version mentioned in the notice.
-				if ( CoCart_Admin::is_cocart_beta() || version_compare( COCART_VERSION, $version_mentioned, '>' ) ) {
+				// Only show the plugin notice if this version of CoCart is not a pre-release or is lower than the version mentioned in the notice.
+				if ( CoCart_Helpers::is_cocart_pre_release() || version_compare( COCART_NEXT_VERSION, strstr( COCART_VERSION, '-', true ), '<=' ) ) {
 					return;
 				}
 
-				echo '<tr class="plugin-update-tr' . $active_class . ' cocart-row-notice" id="' . esc_attr( 'cart-rest-api-for-woocommerce-update' ) . '" data-slug="cart-rest-api-for-woocommerce" data-plugin="' . esc_attr( $file ) . '"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="notice inline ' . $notice_type . ' notice-alt"><p>';
+				echo '<tr class="plugin-update-tr' . $active_class . ' cocart-row-notice" id="' . esc_attr( 'cart-rest-api-for-woocommerce-update' ) . '" data-slug="cart-rest-api-for-woocommerce" data-plugin="' . esc_attr( $file ) . '"><td colspan="' . $wp_list_table->get_column_count() . '" class="plugin-update colspanchange"><div class="notice inline ' . $notice_type . '"><p class="cart">';
 
 				/* translators: 1: plugin name, 2: version mentioned, 3: details URL */
 				printf(
-					__( 'In preparation for <strong>%1$s v%2$s</strong>, support for storing cart data will be introduced to support guest customers. I am in need of testers and your feedback. <a href="%3$s" target="_blank">Sign up to Test</a>.', 'cart-rest-api-for-woocommerce' ),
+					__( 'Because of the great feedback %1$s users have provided, <strong>%1$s v%2$s</strong> will be introducing a new and improved API in the future. I am in need of testers and your feedback. <a href="%3$s" target="_blank">Sign Up to Test</a>.', 'cart-rest-api-for-woocommerce' ),
 					$plugin_name,
-					$version_mentioned,
+					COCART_NEXT_VERSION,
 					esc_url( 'https://cocart.xyz/contact/' )
 				);
 

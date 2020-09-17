@@ -101,6 +101,48 @@ class WPGV_Voucher_List extends WP_List_Table {
 		WPGV_Gift_Voucher_Activity::record( $id, 'transaction', $result->amount, 'Voucher payment recieved.' );
 	}
 
+	public static function send_mail( $id ) 
+	{
+		global $wpdb;
+		$setting_table 	= $wpdb->prefix . 'giftvouchers_setting';
+		$setting_options = $wpdb->get_row( "SELECT * FROM $setting_table WHERE id = 1" );
+
+		$result = $wpdb->get_row( "SELECT * FROM `{$wpdb->prefix}giftvouchers_list` WHERE `id` = $id" );
+		
+		$upload = wp_upload_dir();
+ 		$upload_dir = $upload['basedir'];
+		$attachments[0] = $upload_dir.'/voucherpdfuploads/'.$result->voucherpdf_link.'.pdf';
+		$headers = 'Content-type: text/html;charset=utf-8' . "\r\n";
+		$headers .= 'From: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+		$headers .= 'Reply-to: '.$setting_options->sender_name.' <'.$setting_options->sender_email.'>' . "\r\n";
+
+		$emailsubject = get_option('wpgv_emailsubject') ? get_option('wpgv_emailsubject') : 'Order Confirmation - Your Order with {company_name} (Voucher Order No: {order_number} ) has been successfully placed!';
+		if(isset($_GET['per_invoice']) && $_GET['per_invoice'] == 1) {
+			$emailbody = get_option('wpgv_emailbodyperinvoice') ? get_option('wpgv_emailbodyperinvoice') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>You will pay us directly into bank. Our bank details are below:</p><p><strong>Account Number: </strong>XXXXXXXXXXXX<br /><strong>Bank Code: </strong>XXXXXXXX</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+		} else {
+			$emailbody = get_option('wpgv_emailbody') ? get_option('wpgv_emailbody') : '<p>Dear <strong>{customer_name}</strong>,</p><p>Order successfully placed.</p><p>We are pleased to confirm your order no {order_number}</p><p>Thank you for shopping with <strong>{company_name}</strong>!</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+		}
+
+		$recipientemailsubject = get_option('wpgv_recipientemailsubject') ? get_option('wpgv_recipientemailsubject') : 'Gift Voucher - Your have received voucher from {company_name}';
+		$recipientemailbody = get_option('wpgv_recipientemailbody') ? get_option('wpgv_recipientemailbody') : '<p>Dear <strong>{recipient_name}</strong>,</p><p>You have received gift voucher from <strong>{customer_name}</strong>.</p><p>You can download the voucher from {pdf_link}.</p><p>- For any clarifications please feel free to email us at {sender_email}.</p><p><strong>Warm Regards, <br /></strong> <strong>{company_name}<br />{website_url}</strong></p>';
+
+		$email = ($result->shipping_email != '')?$result->shipping_email:$result->email;
+
+		$emailto = $result->from_name .'<'.$email.'>';
+		$recipientemailsubject = wpgv_mailvarstr($recipientemailsubject, $setting_options, $result);
+		$recipientemailbody = wpgv_mailvarstr($recipientemailbody, $setting_options, $result);
+
+		$recipientmail_sent = wp_mail($emailto,$recipientemailsubject,$recipientemailbody,$headers, $attachments);
+
+		$attachments[1] = $upload_dir.'/voucherpdfuploads/'.$voucher_options->voucherpdf_link.'-receipt.pdf';
+
+		/* Buyer Mail */
+		$buyersub = wpgv_mailvarstr($emailsubject, $setting_options, $result);
+		$buyermsg = wpgv_mailvarstr($emailbody, $setting_options, $result);
+		$buyerto = $result->from_name .'<'.$result->email.'>';
+		$mail_sent = wp_mail( $buyerto, $buyersub, $buyermsg, $headers, $attachments );
+	}
+
 	/**
 	 * Delete a voucher record.
 	 *
@@ -414,11 +456,16 @@ class WPGV_Voucher_List extends WP_List_Table {
 				'paid' => sprintf( '<a href="?post_type=wpgv_voucher_product&page=%s&action=%s&voucher=%s&_wpnonce=%s">%s</a>', esc_attr( $_REQUEST['page'] ), 'paid', absint( $item['id'] ), $paid_nonce, __( 'Mark as Paid', 'gift-voucher' ) )
 				 );
 			$mark_paid = $this->row_actions( $actions, true );
+			$send_mail = '';
 		} else {
 			$mark_paid = '<span class="vpaid">'.__('Paid', 'gift-voucher').'</span>';
+			$actions = array(
+				'paid' => sprintf( '<a href="?post_type=wpgv_voucher_product&page=%s&action=%s&voucher=%s&_wpnonce=%s">%s</a>', esc_attr( $_REQUEST['page'] ), 'mail', absint( $item['id'] ), $paid_nonce, __( 'Send Mail', 'gift-voucher' ) )
+				 );
+			$send_mail = $this->row_actions( $actions, true );
 		}
 
-		return $mark_used . $mark_paid;
+		return $mark_used . $send_mail . $mark_paid;
 	}
 
 	/**
@@ -536,6 +583,15 @@ class WPGV_Voucher_List extends WP_List_Table {
 				wp_die( 'Go get a life script kiddies' );
 			}
 			self::paid_voucher( absint( $_GET['voucher'] ) );
+			wp_safe_redirect( "?post_type=wpgv_voucher_product&page=vouchers-lists");
+			exit;
+		} elseif ( 'mail' === $this->current_action() ) {
+			$nonce = esc_attr( $_REQUEST['_wpnonce'] );
+
+			if ( ! wp_verify_nonce( $nonce, 'paid_voucher' ) ) {
+				wp_die( 'Go get a life script kiddies' );
+			}
+			self::send_mail( absint( $_GET['voucher'] ) );
 			wp_safe_redirect( "?post_type=wpgv_voucher_product&page=vouchers-lists");
 			exit;
 		} elseif ( 'delete' === $this->current_action() ) {

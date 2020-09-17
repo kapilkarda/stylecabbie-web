@@ -2,14 +2,14 @@
 
 Contributors: yithemes
 Tags: wishlist, woocommerce, products, yit, e-commerce, shop, ecommerce wishlist, yith, woocommerce wishlist, shop wishlist
-Requires at least: 4.0
-Tested up to: 5.4
-Stable tag: 3.0.9
+Requires at least: 4.5
+Tested up to: 5.5
+Stable tag: 3.0.13
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 YITH WooCommerce Wishlist add all Wishlist features to your website. Needs WooCommerce to work.
-WooCommerce 4.0.x compatible.
+WooCommerce 4.4.x compatible.
 
 == Description ==
 
@@ -56,6 +56,7 @@ The free version of our plugin works like a charm, but the premium one is an eve
 * Allow users to manage wishlists, rename and delete them, add or remove items
 * Allow users to search and see registered wishlists
 * Allow users to set visibility options for each wishlist, by making them either public (visible to everyone), private (visible to the owner only) or shared (visible only to people it has been shared with)
+* Allow users to manage the item quantity in the wishlist
 * Show multiple ‘Add to Cart’ buttons in the wishlist table
 * Show product price variations (Amazon style)
 * Allow users to move an element from one wishlist to another, right from the wishlist table
@@ -111,6 +112,57 @@ Yes, of course you can. To avoid Wishlist page to show product prices, you can h
 
 
 == Changelog ==
+
+= 3.0.13 - Released on 17 August 2020 =
+
+* Fix: moved check over Ajax Loading option on first wishlist init only, to avoid problems when dynamically loading ATW on variable products
+
+= 3.0.12 - Released on 14 August 2020 =
+
+* New: support for WordPress 5.5
+* New: support for WooCommerce 4.4
+* New: support for Polylang PRO
+* New: load correct Add to Wishlist (ATW) template for selected variation, and refresh it when changing variations on product page
+* Update: plugin framework
+* Fix: upsells are now correctly identified as loop by wishlist
+* Fix: icon select at backend showing [Object object]
+* Fix: changed fragments indexes to work with a greater set of configurations
+* Fix: notice when using custom icons for ATW buttons
+* Dev: added new filter yith_wcwl_fragments_index_glue
+
+= 3.0.11 - Released on 08 Jun 2020 =
+
+* New: support for WooCommerce 4.2
+* Update: plugin framework
+* Tweak: added WordPress among blocked bot user agents
+* Tweak: make sure to finalize session when possible
+* Tweak: added link to product in wishlist mobile template
+* Fix: Prevent error if default wishlist doesn't exists
+* Fix: correctly applied yith_wcwl_is_wishlist_responsive filter to yith_wcwl_is_mobile function
+* Fix: avoid to use cache that cannot be invalidated (stop caching queries results, use cache for user wishlists)
+* Fix: clear_caches method wasnt properly cleaning cache for guest users
+* Dev: added yith_wcwl_add_to_wishlist_icon_html filter
+* Dev: added yith_wcwl_add_to_wishlist_heading_icon_html filter
+* Dev: added yith_wcwl_add_to_wishlist_data trigger, to allow third party code change data submitted with ATW ajax call
+
+= 3.0.10 - Released on 07 May 2020 =
+
+* New: support for WooCommerce 4.1
+* New: prevent some UserAgents from triggering wishlist handling (avoid spam)
+* New: added minor css fixes for Storefront theme
+* Update: plugin framework
+* Tweak: review add process, to avoid unnecessary items update
+* Tweak: improved localized date on wishlist table
+* Tweak: added wishlist as gutenberg block in new wishlist page
+* Tweak: added "Wishlist page" post status
+* Tweak: added new check to avoid "Cannot read property contains of undefined" error
+* Tweak: added search box to All Wishlist view
+* Fix: show remove button on list mobile when at least one of the two buttons is shown on desktop
+* Fix: fatal error on empty wishlist page
+* Dev: added yith_wcwl_is_wishlist_responsive filter, to allow developers disable responsive behaviour for the wishlist
+* Dev: added yith_wcwl_generated_default_wishlist action
+* Dev: added yith_wcwl_default_wishlist filter
+* Dev: added yith_wcwl_add_notice wrapper function, to avoid possible fatal errors when calling wc_add_notice
 
 = 3.0.9 - Released on 09 March 2020 =
 

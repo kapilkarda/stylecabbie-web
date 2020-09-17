@@ -98,7 +98,7 @@ namespace SW_WAPF\Includes\Classes
 
         #region Field Groups and Fields
 
-        public static function field_group(FieldGroup $field_group, $data = array()) {
+        public static function field_group($product, FieldGroup $field_group, $data = array()) {
 
             if(empty($field_group) || empty($field_group->fields))
                 return '';
@@ -110,12 +110,13 @@ namespace SW_WAPF\Includes\Classes
 
         }
 
-        public static function field(Field $field, $fieldgroup_id) {
+        public static function field($product,Field $field, $fieldgroup_id) {
 
             $model = array(
+            	'product'           => $product,
                 'field'             => $field,
                 'field_value'       => self::field_value($field),
-                'field_attributes'  => self::field_attributes($field,$fieldgroup_id)
+                'field_attributes'  => self::field_attributes($product,$field,$fieldgroup_id)
             );
 
             return self::view('frontend/fields/' . $field->type, $model);
@@ -154,7 +155,7 @@ namespace SW_WAPF\Includes\Classes
             },' ');
         }
 
-        public static function field_label(Field $field, $show_required_symbol = true) {
+        public static function field_label(Field $field, $product, $show_required_symbol = true) {
 
             $label = '<span>' . wp_kses($field->label, self::$minimal_allowed_html) .'</span>';
 
@@ -162,12 +163,12 @@ namespace SW_WAPF\Includes\Classes
                 $label .= ' <abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>';
 
             if($field->pricing_enabled() && $field->type !== 'true-false' && !$field->is_choice_field())
-                $label .= ' <span class="wapf-pricing-hint">('. Helper::format_pricing_hint($field->pricing->type, $field->pricing->amount) .')</span>';
+                $label .= ' <span class="wapf-pricing-hint">('. Helper::format_pricing_hint($field->pricing->type, $field->pricing->amount,$product,'shop') .')</span>';
 
             return $label;
         }
 
-        private static function field_attributes(Field $field, $field_group_id) {
+        private static function field_attributes($product,Field $field, $field_group_id) {
 
             $extra_classes = apply_filters('wapf/field_classes/' . $field->key, array());
             $classes = array('wapf-input');
@@ -183,7 +184,8 @@ namespace SW_WAPF\Includes\Classes
                 $field_attributes['required'] = '';
 
             if($field->type !== 'select' && $field->pricing_enabled() ) { 
-                $field_attributes['data-wapf-price'] = $field->pricing->amount;
+                $field_attributes['data-wapf-price'] = Helper::adjust_addon_price( $product,$field->pricing->amount, $field->pricing->type, 'shop' );
+
                 $field_attributes['data-wapf-pricetype'] = $field->pricing->type;
             }
 

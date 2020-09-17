@@ -2,11 +2,11 @@
 Contributors: EmranAhmed, getwooplugins
 Tags: woocommerce variation image gallery, additional variation image gallery, product variation image gallery, product variation image, variation images gallery, additional image, additianal variation image, WooCommerce variation product thumbnail gallery
 Requires at least: 4.8
-Tested up to: 5.3
+Tested up to: 5.5
 Requires PHP: 5.6
 Stable tag: trunk
 WC requires at least: 3.2
-WC tested up to: 4.0
+WC tested up to: 4.5
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -18,9 +18,9 @@ Allows to insert multiple images for per variation to let your store customer to
 
 [youtube https://www.youtube.com/watch?v=AuEbw3X0Irs]
 
-When it comes to displaying multiple images for WooCommerce product attribute variation to drive sales and conversion, Additional Variation Images Gallery for WooCommerce is incredible to option to pick.
+When it comes to displaying multiple images for WooCommerce product attribute variation to drive sales and conversion, Additional Variation Images Gallery for WooCommerce is an incredible option to pick.
 
-WooCommerce comes with a basic option to insert a single image for a product variation. It means, there is no option to insert more than a single variation image when it highly essential to sell your product.
+WooCommerce comes with a basic option to insert a single image for a product variation. It means, there is no option to insert more than a single variation image when it highly essential to show extra product images to boost sales.
 
 To boost the power and flexibility to use WooCommerce, WooCommerce Additional Variation Images Gallery plugin is here. <strong>It allows you to upload multiple images for each product variation</strong>. It means with the help of this feature you can show a different set of images to your visitors when the switch product variations like <strong>Color, Style, Size</strong> at the same time.
 
@@ -117,6 +117,23 @@ Yes, it is.
 4. Adding Images on gallery
 
 == Changelog ==
+
+= 1.1.42 =
+
+* Update: WP and WC Compatibility
+* Fix: Empty gallery export PHP warning issue.
+
+= 1.1.41 =
+
+* Improve: Match variation change image
+
+= 1.1.40 =
+
+* Improve: Performance
+
+= 1.1.39 =
+
+* Improve: Gallery image attributes
 
 = 1.1.38 =
 

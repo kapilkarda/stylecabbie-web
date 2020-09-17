@@ -1,88 +1,57 @@
 <section id="content_trackship_dashboard" class="inner_tab_section">
-	<div class="tab_inner_container">	
-		<div class="outer_form_table">
-			<table class="form-table heading-table">
-				<tbody>				
-					<tr valign="top">
-						<td><h3 style=""><?php _e( 'Connection status', 'woo-advanced-shipment-tracking' ); ?></h3></td>					
-					</tr>
-				</tbody>
-			</table>	
-			<table class="form-table">
-				<tbody>
-					<tr valign="top">
-						<td><label><?php _e( 'TrackShip Connection Status', 'woo-advanced-shipment-tracking' ); ?></label></td>
-						<td class="forminp">
-							<fieldset>
-								<a href="https://my.trackship.info/?utm_source=wpadmin&utm_medium=sidebar&utm_campaign=upgrade" target="_blank">
-									<span class="api_connected"><label><?php _e( 'Connected', 'woo-advanced-shipment-tracking' ); ?></label><span class="dashicons dashicons-yes"></span></span>
-								</a>
-							</fieldset>						
-						</td>					
-					</tr>
-					<tr valign="top">
-						<td><label><?php _e( 'Trackers Balance', 'woo-advanced-shipment-tracking' ); ?></label></td>
-						<td class="forminp">
-							<fieldset>
-								<strong><?php echo get_option('trackers_balance'); ?></strong>
-							</fieldset>						
-						</td>					
-					</tr>
-					<tr valign="top">
-						<td><label><?php _e( 'Current Plan', 'woo-advanced-shipment-tracking' ); ?></label></td>
-						<td class="forminp">
-							<fieldset>
-								<strong>
-									<?php 									
-										if(isset($plan_data->subscription_plan)){
-											echo $plan_data->subscription_plan;
-										}
-									?>
-								</strong>	
-							</fieldset>						
-						</td>					
-					</tr>						
-					<tr valign="top">										
-						<td colspan="2">
-							<?php _e( 'You are now connected with TrackShip! TrackShip makes it effortless to automate your post shipping operations and get tracking and delivery status updates directly in the WooCommerce admin.', 'woo-advanced-shipment-tracking' ); ?>					
-						</td>					
-					</tr>
-					<tr valign="top">										
-						<td colspan="2">
-							<a href="https://trackship.info/documentation/?utm_source=wpadmin&utm_medium=ts_settings&utm_campaign=docs" class="" style="margin-right: 10px;" target="blank"><?php _e( 'Documentation', 'woo-advanced-shipment-tracking' ); ?></a>
-							<a href="https://my.trackship.info/?utm_source=wpadmin&utm_medium=ts_settings&utm_campaign=dashboard" class="" target="blank"><?php _e( 'TrackShip Dashboard', 'woo-advanced-shipment-tracking' ); ?></a>						
-						</td>					
-					</tr>
-				</tbody>
-			</table>							
-		</div>
+	<div class="tab_inner_container">		
+		<?php
+		$trackship = WC_Advanced_Shipment_Tracking_Trackship::get_instance();
+		$admin = WC_Advanced_Shipment_Tracking_Admin::get_instance();		
+		$completed_order_with_tracking = $trackship->completed_order_with_tracking();		
+		$completed_order_with_zero_balance = $trackship->completed_order_with_zero_balance();							
+		$completed_order_with_do_connection = $trackship->completed_order_with_do_connection();
+		if($completed_order_with_tracking > 0 || $completed_order_with_zero_balance > 0 || $completed_order_with_do_connection > 0){
+		$total_orders = $completed_order_with_tracking + $completed_order_with_zero_balance + $completed_order_with_do_connection;	
+		?>
+		<div class="trackship-notice">
+			<p><?php echo sprintf(__('You have %s Shipped Orders from the last 30 days that you can bulk send to <a href="javascript:void(0);" class="tool_link">Get Shipment Status</a>', 'woo-advanced-shipment-tracking'),$total_orders ); ?></p>
+		</div>			
+		<?php } ?>				
 		
-		<div class="outer_form_table">
+		<div class="outer_form_table border_0">
 			<table class="form-table heading-table">
 				<tbody>
 					<tr valign="top">
 						<td>
-							<h3 style=""><?php _e( 'General Settings', 'woo-advanced-shipment-tracking' ); ?></h3>
+							<h3 style=""><?php _e( 'Settings', 'woocommerce' ); ?></h3>
 						</td>					
 					</tr>
 				</tbody>
 			</table>		
-			<?php $this->get_html( $this->get_trackship_general_data() ); ?>
+			<?php $admin->get_html_ul( $trackship->get_trackship_general_data() ); ?>
+			
+			<table class="form-table heading-table">
+				<tbody>
+					<tr valign="top">
+						<td>
+							<h3 style=""><?php _e( 'Automation', 'woo-advanced-shipment-tracking' ); ?></h3>
+						</td>					
+					</tr>
+				</tbody>
+			</table>		
+			<?php $admin->get_html_ul( $trackship->get_trackship_automation_data() ); ?>
+			
 			<table class="form-table">
 				<tbody>
 					<tr valign="top">						
 						<td class="button-column">
 							<div class="submit">								
-								<button name="save" class="button-primary woocommerce-save-button btn_ast2 btn_large" type="submit" value="Save changes"><?php _e( 'Save Changes', 'woo-advanced-shipment-tracking' ); ?></button>
+								<button name="save" class="button-primary woocommerce-save-button btn_green2 btn_large" type="submit" value="Save changes"><?php _e( 'Save Changes', 'woo-advanced-shipment-tracking' ); ?></button>
 								<div class="spinner"></div>								
-								<?php wp_nonce_field( 'wc_ast_trackship_form', 'wc_ast_trackship_form' );?>
+								<?php wp_nonce_field( 'wc_ast_trackship_form', 'wc_ast_trackship_form_nonce' );?>
 								<input type="hidden" name="action" value="wc_ast_trackship_form_update">
 							</div>	
 						</td>
 					</tr>
 				</tbody>
 			</table>
-		</div>
-	</div>
-	<?php include 'zorem_admin_sidebar.php'; ?>	
+		</div>				
+	</div>	
+	<?php include 'trackship_sidebar.php'; ?>		
 </section>

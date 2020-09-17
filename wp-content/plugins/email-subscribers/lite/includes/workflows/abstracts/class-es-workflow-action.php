@@ -76,6 +76,17 @@ abstract class ES_Workflow_Action {
 	public $workflow;
 
 	/**
+	 * The workflow trigger for which action is being added.
+	 *
+	 * This prop may not be set depending on the context.
+	 *
+	 * @since 4.4.3
+	 * 
+	 * @var ES_Workflow_Trigger
+	 */
+	public $trigger;
+
+	/**
 	 * Knows if admin details have been loaded.
 	 *
 	 * @since 4.4.1
@@ -113,6 +124,8 @@ abstract class ES_Workflow_Action {
 	 * Method to load the action's fields.
 	 *
 	 * @since 4.4.1
+	 * 
+	 * @modified 4.5.3 Removed dependency to modify child action file to load extra fields.
 	 */
 	public function load_fields() {}
 
@@ -221,7 +234,7 @@ abstract class ES_Workflow_Action {
 	 * @since 4.4.1
 	 * @param Field $field Action field object.
 	 */
-	protected function add_field( $field ) {
+	public function add_field( $field ) {
 		$field->set_name_base( 'ig_es_workflow_data[actions]' );
 		$this->fields[ $field->get_name() ] = $field;
 	}
@@ -247,14 +260,21 @@ abstract class ES_Workflow_Action {
 	/**
 	 * Gets the action's fields.
 	 *
-	 * @since 4.4.1
 	 * @return ES_Field[]
+	 * 
+	 * @since 4.4.1
+	 * 
+	 * @modified 4.4.3 Removed isset condition to allow latest list of fields every time when called.
+	 * 
+	 * @modified 4.5.3 Added new action action_name_load_extra_fileds to allow loading of extra fields for action.
 	 */
 	public function get_fields() {
-		if ( ! isset( $this->fields ) ) {
-			$this->fields = array();
-			$this->load_fields();
-		}
+
+		$this->fields = array();
+		$this->load_fields();
+
+		// Load extra fields for workflow action.
+		do_action( $this->name . '_load_extra_fields', $this );
 
 		return $this->fields;
 	}

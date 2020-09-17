@@ -12,21 +12,16 @@ jQuery( function( $ ) {
 
 		// When a user enters a new tracking item
 		save_form: function () {			
-						var error;	
+			var error;	
 			var tracking_number = jQuery("#tracking_number");
-			var tracking_provider = jQuery("#tracking_provider");
+			var tracking_provider = jQuery("#tracking_provider");			
 			
 			if( tracking_number.val() === '' ){				
 				showerror( tracking_number );error = true;
 			} else{
-				var pattern = /^[0-9a-zA-Z- \b]+$/;			
-				if(!pattern.test(tracking_number.val())){			
-					showerror( tracking_number );
-					error = true;
-				} else{
-					hideerror(tracking_number);
-				}				
+				hideerror(tracking_number);				
 			}
+			
 			if( tracking_provider.val() === '' ){				
 				jQuery("#tracking_provider").siblings('.select2-container').find('.select2-selection').css('border-color','red');
 				error = true;
@@ -35,16 +30,17 @@ jQuery( function( $ ) {
 				hideerror(tracking_provider);
 			}
 			
-			
-			if(jQuery("tr").hasClass("ASTProduct_row")){
-				var qty = false;
-				jQuery(".ASTProduct_row").each(function(index){
-					var ASTProduct_qty = jQuery(this).find('input[type="number"]').val();
-					if(ASTProduct_qty > 0){
-						qty = true;		
-						return false;					
-					}
-				});						
+			if(jQuery('.enable_tracking_per_item').prop("checked") == true){
+				if(jQuery("tr").hasClass("ASTProduct_row")){
+					var qty = false;
+					jQuery(".ASTProduct_row").each(function(index){
+						var ASTProduct_qty = jQuery(this).find('input[type="number"]').val();
+						if(ASTProduct_qty > 0){
+							qty = true;		
+							return false;					
+						}
+					});						
+				}
 			}
 
 			if(qty == false){
@@ -101,6 +97,7 @@ jQuery( function( $ ) {
 				tracking_number:          $( 'input#tracking_number' ).val(),
 				tracking_product_code:    $( 'input#tracking_product_code' ).val(),
 				date_shipped:             $( 'input#date_shipped' ).val(),
+				enable_tracking_per_item: $('input[name=enable_tracking_per_item]:checked').val(),
 				productlist: 	          jsonString, 
 				change_order_to_shipped:  checked,
 				security:                 $( '#wc_shipment_tracking_create_nonce' ).val()
@@ -126,7 +123,7 @@ jQuery( function( $ ) {
 						$( 'input#tracking_number' ).val( '' );
 						$( 'input#date_shipped' ).val( '' );
 						if(checked == 'change_order_to_shipped'){
-							jQuery('#order_status').val('wc-completed');											
+							jQuery('#order_status').val('wc-completed');
 							jQuery('#order_status').select2().trigger('change');
 							jQuery('#post').before('<div id="order_updated_message" class="updated notice notice-success is-dismissible"><p>Order updated.</p><button type="button" class="notice-dismiss update-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button></div>');						
 						} else if(checked == 'change_order_to_partial_shipped'){
@@ -147,6 +144,7 @@ jQuery( function( $ ) {
 		show_form: function () {
 			$( '#woocommerce-advanced-shipment-tracking #advanced-shipment-tracking-form' ).show();
 			$( '#woocommerce-advanced-shipment-tracking .button-show-tracking-form' ).hide();
+			$( "#woocommerce-advanced-shipment-tracking #advanced-shipment-tracking-form #tracking_number" ).focus();
 		},
 
 		// Delete a tracking item
@@ -297,8 +295,15 @@ jQuery(document).on("click", ".add_inline_tracking", function(){
 		type: 'POST',						
 		success: function(response) {
 			jQuery( ".add_tracking_popup" ).remove();
-			jQuery("body").append(response);						
+			jQuery( ".tracking_details_popup" ).remove();	
+			jQuery("body").append(response);				
 			jQuery('.add_tracking_popup').show();
+			jQuery( "#add_tracking_number_form #tracking_number" ).focus();		
+			
+			jQuery('#tracking_provider').select2({
+					matcher: modelMatcher
+			});			
+			
 			var selected_provider = jQuery("#tracking_provider").val();	
 			
 			if(selected_provider == 'nz-couriers' || selected_provider == 'post-haste' || selected_provider == 'castle-parcels' || selected_provider == 'dx-mail' || selected_provider == 'now-couriers'){
@@ -336,23 +341,18 @@ jQuery(document).on("submit", "#add_tracking_number_form", function(){
 		
 	
 	if( tracking_provider.val() === '' ){				
-		showerror(tracking_provider);
+		jQuery("#tracking_provider").siblings('.select2-container').find('.select2-selection').css('border-color','red');
 		error = true;
-	} else{		
+	} else{
+		jQuery("#tracking_provider").siblings('.select2-container').find('.select2-selection').css('border-color','#ddd');
 		hideerror(tracking_provider);
-	}	
+	}
 	
 	if( tracking_number.val() === '' ){				
 		showerror(tracking_number);
 		error = true;
 	} else{		
-		var pattern = /^[0-9a-zA-Z- \b]+$/;	
-		if(!pattern.test(tracking_number.val())){			
-			showerror(tracking_number);
-			error = true;
-		} else{
-			hideerror(tracking_number);
-		}
+		hideerror(tracking_number);
 	}	
 	
 	if( date_shipped.val() === '' ){				
@@ -363,15 +363,17 @@ jQuery(document).on("submit", "#add_tracking_number_form", function(){
 	}
 	
 	
-	if(jQuery("tr").hasClass("ASTProduct_row")){
-		var qty = false;
-		jQuery(".ASTProduct_row").each(function(index){
-			var ASTProduct_qty = jQuery(this).find('input[type="number"]').val();
-			if(ASTProduct_qty > 0){
-				qty = true;		
-				return false;					
-			}
-		});						
+	if(jQuery('.enable_tracking_per_item').prop("checked") == true){
+		if(jQuery("tr").hasClass("ASTProduct_row")){
+			var qty = false;
+			jQuery(".ASTProduct_row").each(function(index){
+				var ASTProduct_qty = jQuery(this).find('input[type="number"]').val();
+				if(ASTProduct_qty > 0){
+					qty = true;		
+					return false;					
+				}
+			});						
+		}
 	}
 
 	if(qty == false){
@@ -442,6 +444,7 @@ jQuery(document).on("click", ".inline_tracking_delete", function(){
 		return;
 	}	
 });
+
 jQuery(document).on("change", "#tracking_provider", function(){	
 	var selected_provider = jQuery(this).val();
 	if(selected_provider == 'nz-couriers' || selected_provider == 'post-haste' || selected_provider == 'castle-parcels' || selected_provider == 'dx-mail' || selected_provider == 'now-couriers'){
@@ -450,6 +453,7 @@ jQuery(document).on("change", "#tracking_provider", function(){
 		jQuery('.tracking_product_code_field').hide();
 	}			 
 });
+
 jQuery(document).ready(function() {
 	var selected_provider = jQuery("#tracking_provider").val();
 	if(selected_provider == 'nz-couriers' || selected_provider == 'post-haste' || selected_provider == 'castle-parcels' || selected_provider == 'dx-mail' || selected_provider == 'now-couriers'){
@@ -458,6 +462,7 @@ jQuery(document).ready(function() {
 		jQuery('.tracking_product_code_field').hide();
 	}
 });
+
 function showerror(element){
 	element.css("border","1px solid red");
 }

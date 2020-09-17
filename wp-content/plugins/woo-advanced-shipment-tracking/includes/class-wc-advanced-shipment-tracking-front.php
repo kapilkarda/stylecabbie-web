@@ -66,6 +66,8 @@ class WC_Advanced_Shipment_Tracking_Front {
 	 * Include front js and css
 	*/
 	public function front_styles(){		
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		wp_register_script( 'jquery-blockui', WC()->plugin_url() . '/assets/js/jquery-blockui/jquery.blockUI' . $suffix . '.js', array( 'jquery' ), '2.70', true );
 		wp_register_script( 'front-js', wc_advanced_shipment_tracking()->plugin_dir_url().'assets/js/front.js', array( 'jquery' ), wc_advanced_shipment_tracking()->version );
 		wp_localize_script( 'front-js', 'zorem_ajax_object', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
 		
@@ -80,6 +82,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 	
 	public function woo_track_order_function(){	
 		wp_enqueue_style( 'front_style' );
+		wp_enqueue_script( 'jquery-blockui' );
 		wp_enqueue_script( 'front-js' );	
 		global $wpdb;
 		$wc_ast_api_key = get_option('wc_ast_api_key');	
@@ -95,10 +98,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 		<?php if($primary_color){ ?>		
 			body .tracker-progress-bar-with-dots .secondary .dot {
 				border-color: <?php echo $primary_color; ?>;
-			}
-			body .progress-bar.bg-secondary:before{
-				background-color: <?php echo $primary_color; ?>;
-			}
+			}			
 			body .tracking-number{
 				color: <?php echo $primary_color; ?> !important;
 			}
@@ -124,7 +124,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 		}
 		if(isset($_GET['order_id']) &&  isset($_GET['order_key'])){
 			
-			$order_id = $_GET['order_id'];
+			$order_id = wc_clean($_GET['order_id']);
 			$order = wc_get_order( $order_id );
 			$order_key = $order->get_order_key();
 		
@@ -170,10 +170,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 		return $form;
 		
 		} else{
-			ob_start();	
-			
-			$wast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
-			$order_id = $wast->get_formated_order_id($order_id);						
+			ob_start();												
 		
 			$num = 1;
 			$total_trackings = sizeof($tracking_items);	
@@ -183,54 +180,40 @@ class WC_Advanced_Shipment_Tracking_Front {
 			$tracking_number = $item['tracking_number'];
 			$trackship_url = 'https://trackship.info';
 			$tracking_provider = $item['tracking_provider'];
-			$results = $wpdb->get_row( "SELECT * FROM {$this->table} WHERE ts_slug= '{$tracking_provider}'");
+			$results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table WHERE ts_slug = %s", $tracking_provider ) );
 			$tracking_provider = $results->provider_name;
-			
+			$custom_provider_name = $results->custom_provider_name;
+			$custom_thumb_id = $results->custom_thumb_id;
+						
 			/*** Update in 2.7.9
 			* Date - 20/01/2020
 			* Remove api call code after three month - get_tracking_info
 			***/
-			if( isset($shipment_status[$key]['tracking_events'])){					
-				$tracker = new \stdClass();
-				$tracker->ep_status = $shipment_status[$key]['status'];							
-				$tracker->tracking_detail = json_encode($shipment_status[$key]['tracking_events']);
-				$tracker->est_delivery_date = $shipment_status[$key]['est_delivery_date'];				
-				$decoded_data = true;								
+			$tracker = new \stdClass();
+			if( isset($shipment_status[$key]['tracking_events']) || isset($shipment_status[$key]['pending_status'])){
 				
-			} else {								
-				/*** Update in 2.4.1 
-				* Change URL
-				* Add User Key
-				***/
-				$url = $trackship_url.'/wp-json/tracking/get_tracking_info';		
-				$args['body'] = array(
-					'tracking_number' => $tracking_number,
-					'order_id' => $order_id,
-					'domain' => get_home_url(),
-					'user_key' => $wc_ast_api_key,
-				);	
-				$response = wp_remote_post( $url, $args );
-				
-				if ( is_wp_error( $response ) ) {
-					
+				if(isset($shipment_status[$key]['pending_status'])){
+					$tracker->ep_status = $shipment_status[$key]['pending_status'];								
 				} else{
-					$data = $response['body'];				
-					$decoded_data = json_decode($data);								
-					
-					$tracker = new \stdClass();
-					$tracker->ep_status = '';
-					if(!empty($decoded_data)){
-						$tracker = $decoded_data[0];
-					}	
-				}						
-			}
+					$tracker->ep_status = $shipment_status[$key]['status'];
+				}	
+				
+				if( isset($shipment_status[$key]['tracking_events']) ){
+					$tracker->tracking_detail = json_encode($shipment_status[$key]['tracking_events']);
+				}
+				
+				if(isset($shipment_status[$key]['tracking_destination_events'])){
+					$tracker->tracking_destination_events = json_encode($shipment_status[$key]['tracking_destination_events']);
+				}
+				$tracker->est_delivery_date = $shipment_status[$key]['est_delivery_date'];				
+				$decoded_data = true;				
+			}									
 			
 			$tracking_detail_org = '';	
 			$trackind_detail_by_status_rev = '';
 			
 			if(isset($tracker->tracking_detail) && $tracker->tracking_detail != 'null'){						
-				$tracking_detail_org = json_decode($tracker->tracking_detail);	
-					
+				$tracking_detail_org = json_decode($tracker->tracking_detail);						
 				$trackind_detail_by_status_rev = array_reverse($tracking_detail_org);	
 			}
 			$tracking_details_by_date = array();
@@ -239,7 +222,25 @@ class WC_Advanced_Shipment_Tracking_Front {
 					$date = date('Y-m-d', strtotime($details->datetime));
 					$tracking_details_by_date[$date][] = $details;
 				}
-			}			
+			}
+			
+			$tracking_destination_detail_org = '';	
+			$trackind_destination_detail_by_status_rev = '';
+			
+			if(isset($tracker->tracking_destination_events) && $tracker->tracking_destination_events != 'null'){						
+				$tracking_destination_detail_org = json_decode($tracker->tracking_destination_events);	
+					
+				$trackind_destination_detail_by_status_rev = array_reverse($tracking_destination_detail_org);	
+			}
+			
+			$tracking_destination_details_by_date = array();
+			
+			foreach((array)$trackind_destination_detail_by_status_rev as $key => $details){
+				if(isset($details->datetime)){		
+					$date = date('Y-m-d', strtotime($details->datetime));
+					$tracking_destination_details_by_date[$date][] = $details;
+				}
+			}	
 		
 		if(!empty($decoded_data)){										
 			if($tracking_page_layout == 't_layout_1'){ ?>
@@ -249,7 +250,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 				<p class="shipment_heading"><?php 				
 				echo sprintf(__("Shipment - %s (out of %s)", 'woo-advanced-shipment-tracking'), $num , $total_trackings); ?></p>
 				<?php } 
-				echo $this->tracking_page_header($order_id,$tracking_provider,$tracking_number,$tracker);
+				echo $this->tracking_page_header($order_id,$tracking_provider,$custom_provider_name, $custom_thumb_id,  $tracking_number,$tracker, $item);
 				
 				if($tracker->ep_status == 'pending_trackship' || $tracker->ep_status == 'INVALID_TRACKING_NUM' || $tracker->ep_status == 'carrier_unsupported' || $tracker->ep_status == 'invalid_user_key' || $tracker->ep_status == 'wrong_shipping_provider' || $tracker->ep_status == 'deleted' || $tracker->ep_status == 'pending'){
 				} elseif(isset($tracker->ep_status)){
@@ -257,7 +258,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 				} 
 				
 				if( !empty($trackind_detail_by_status_rev) && $hide_tracking_events != 1  ){
-					echo $this->layout1_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date);
+					echo $this->layout1_tracking_details( $trackind_detail_by_status_rev, $tracking_details_by_date, $trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date );
 				} ?>	
 			</div>
 			<?php } else{ 											
@@ -266,14 +267,14 @@ class WC_Advanced_Shipment_Tracking_Front {
 				<?php if($total_trackings > 1 ){ ?>
 					<p class="shipment_heading"><?php echo sprintf(__("Shipment - %s (out of %s)", 'woo-advanced-shipment-tracking'), $num , $total_trackings); ?></p>
 				<?php } 			
-			echo $tracking_header = $this->tracking_page_header($order_id,$tracking_provider,$tracking_number,$tracker); 			
+			echo $tracking_header = $this->tracking_page_header($order_id,$tracking_provider,$custom_provider_name, $custom_thumb_id,$tracking_number,$tracker,$item); 			
 			if($tracker->ep_status == 'pending_trackship' || $tracker->ep_status == 'INVALID_TRACKING_NUM' || $tracker->ep_status == 'carrier_unsupported' || $tracker->ep_status == 'invalid_user_key' || $tracker->ep_status == 'wrong_shipping_provider' || $tracker->ep_status == 'deleted' || $tracker->ep_status == 'pending'){
 			} elseif(isset($tracker->ep_status)){
 				echo $this->layout2_progress_bar($tracker);
-			}			
-		
-			if( !empty($trackind_detail_by_status_rev) && $hide_tracking_events != 1  ){
-				echo $this->layout2_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date);	
+			}									
+			
+			if( !empty($trackind_detail_by_status_rev) && $hide_tracking_events != 1  ){				
+				echo $this->layout2_tracking_details( $trackind_detail_by_status_rev, $tracking_details_by_date, $trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date );	
 			} ?>
 		
 		</div>	
@@ -300,6 +301,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 	
 	public function get_tracking_info_fun(){
 		wp_enqueue_style( 'front_style' );
+		wp_enqueue_script( 'jquery-blockui' );
 		wp_enqueue_script( 'front-js' );
 		global $wpdb;
 		$wc_ast_api_key = get_option('wc_ast_api_key');	
@@ -343,8 +345,11 @@ class WC_Advanced_Shipment_Tracking_Front {
 			return;
 		}
 		
-		$order_id = $_POST['order_id'];		
-		$email = $_POST['order_email'];
+		$order_id = wc_clean($_POST['order_id']);		
+		$email = sanitize_email($_POST['order_email']);
+		
+		$wast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
+		$order_id = $wast->get_formated_order_id($order_id);
 		
 		$order = wc_get_order( $order_id );
 		if(empty($order)){
@@ -358,7 +363,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 					<div class="clear"></div>
 					<input type="hidden" name="action" value="get_tracking_info">
 					<p class="form-row"><button type="submit" class="button" name="track" value="Track"><?php echo apply_filters( 'ast_tracking_page_front_track_label', __( 'Track', 'woo-advanced-shipment-tracking' ) ); ?></button></p>
-					<div class="track_fail_msg" style="display:none;color: red;"></div>	
+					<div class="track_fail_msg" style="display:block;color: red;"><?php _e( 'Order not found.', 'woo-advanced-shipment-tracking' ); ?></div>	
 				</form>
 			</div>
 		<?php 
@@ -369,8 +374,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 		}
 		
 		$wast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
-		$order_id = $wast->get_formated_order_id($order_id);						
-							
+		$order_id = $wast->get_formated_order_id($order_id);									
 		$order_email = $order->get_billing_email();
 		
 		if(strtolower($order_email) != strtolower($email)){
@@ -398,9 +402,26 @@ class WC_Advanced_Shipment_Tracking_Front {
 		} else {			
 			$tracking_items = $order->get_meta( '_wc_shipment_tracking_items', true );			
 		} 
+		
 		$shipment_status = get_post_meta( $order_id, "shipment_status", true);
 		if(!$tracking_items){
-			echo 'tracking_items_not_found';
+			ob_start();		
+			?>
+			<div class="track-order-section">
+				<form method="post" class="order_track_form">			
+					<p><?php echo apply_filters( 'ast_tracking_page_front_text', __( 'To track your order please enter your Order ID in the box below and press the "Track" button. This was given to you on your receipt and in the confirmation email you should have received.', 'woo-advanced-shipment-tracking' ) ); ?></p>
+					<p class="form-row form-row-first"><label for="order_id"><?php echo apply_filters( 'ast_tracking_page_front_order_label', __( 'Order ID', 'woocommerce' ) ); ?></label> <input class="input-text" type="text" name="order_id" id="order_id" value="" placeholder="<?php _e( 'Found in your order confirmation email.', 'woo-advanced-shipment-tracking' ); ?>"></p>
+					<p class="form-row form-row-last"><label for="order_email"><?php echo apply_filters( 'ast_tracking_page_front_order_email_label', __( 'Order Email', 'woo-advanced-shipment-tracking' ) ); ?></label> <input class="input-text" type="text" name="order_email" id="order_email" value="" placeholder="<?php _e( 'Found in your order confirmation email.', 'woo-advanced-shipment-tracking' ); ?>"></p>				
+					<div class="clear"></div>
+					<input type="hidden" name="action" value="get_tracking_info">
+					<p class="form-row"><button type="submit" class="button" name="track" value="Track"><?php echo apply_filters( 'ast_tracking_page_front_track_label', __( 'Track', 'woo-advanced-shipment-tracking' ) ); ?></button></p>
+					<div class="track_fail_msg" style="display:block;color: red;"><?php _e( 'Tracking details not found.', 'woo-advanced-shipment-tracking' ); ?></div>	
+				</form>
+			</div>
+		<?php 
+		
+		$form = ob_get_clean();
+			echo $form;exit;
 			exit;
 		}
 		
@@ -412,42 +433,34 @@ class WC_Advanced_Shipment_Tracking_Front {
 			$tracking_number = $item['tracking_number'];
 			$trackship_url = 'https://trackship.info';
 			$tracking_provider = $item['tracking_provider'];
-			$results = $wpdb->get_row( "SELECT * FROM {$this->table} WHERE ts_slug= '{$tracking_provider}'");
+			$results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table WHERE ts_slug = %s", $tracking_provider ) );
 			$tracking_provider = $results->provider_name;
-		
+			$custom_provider_name = $results->custom_provider_name;
+			$custom_thumb_id = $results->custom_thumb_id;
+			
 			/*** Update in 2.7.9
 			* Date - 20/01/2020
 			* Remove api call code after three month - get_tracking_info
 			***/
-			if( isset($shipment_status[$key]['tracking_events'])){					
-				$tracker = new \stdClass();
-				$tracker->ep_status = $shipment_status[$key]['status'];							
-				$tracker->tracking_detail = json_encode($shipment_status[$key]['tracking_events']);
+			$tracker = new \stdClass();
+			if( isset($shipment_status[$key]['tracking_events']) || isset($shipment_status[$key]['pending_status'])){
+				
+				if(isset($shipment_status[$key]['pending_status'])){
+					$tracker->ep_status = $shipment_status[$key]['pending_status'];								
+				} else{
+					$tracker->ep_status = $shipment_status[$key]['status'];
+				}	
+				
+				if( isset($shipment_status[$key]['tracking_events']) ){
+					$tracker->tracking_detail = json_encode($shipment_status[$key]['tracking_events']);
+				}
+				
+				if(isset($shipment_status[$key]['tracking_destination_events'])){
+					$tracker->tracking_destination_events = json_encode($shipment_status[$key]['tracking_destination_events']);
+				}
 				$tracker->est_delivery_date = $shipment_status[$key]['est_delivery_date'];				
-				$decoded_data = true;								
-				
-			} else {								
-				/*** Update in 2.4.1 
-				* Change URL
-				* Add User Key
-				***/
-				$url = $trackship_url.'/wp-json/tracking/get_tracking_info';		
-				$args['body'] = array(
-					'tracking_number' => $tracking_number,
-					'order_id' => $order_id,
-					'domain' => get_home_url(),
-					'user_key' => $wc_ast_api_key,
-				);	
-				$response = wp_remote_post( $url, $args );
-				$data = $response['body'];				
-				$decoded_data = json_decode($data);								
-				
-				$tracker = new \stdClass();
-				$tracker->ep_status = '';
-				if(!empty($decoded_data)){
-					$tracker = $decoded_data[0];
-				}			
-			}
+				$decoded_data = true;				
+			}	
 			
 			$tracking_detail_org = '';	
 			$trackind_detail_by_status_rev = '';
@@ -462,6 +475,24 @@ class WC_Advanced_Shipment_Tracking_Front {
 					$date = date('Y-m-d', strtotime($details->datetime));
 					$tracking_details_by_date[$date][] = $details;
 				}
+			}
+
+			$tracking_destination_detail_org = '';	
+			$trackind_destination_detail_by_status_rev = '';
+			
+			if(isset($tracker->tracking_destination_events) && $tracker->tracking_destination_events != 'null'){						
+				$tracking_destination_detail_org = json_decode($tracker->tracking_destination_events);	
+					
+				$trackind_destination_detail_by_status_rev = array_reverse($tracking_destination_detail_org);	
+			}
+			
+			$tracking_destination_details_by_date = array();
+			
+			foreach((array)$trackind_destination_detail_by_status_rev as $key => $details){
+				if(isset($details->datetime)){		
+					$date = date('Y-m-d', strtotime($details->datetime));
+					$tracking_destination_details_by_date[$date][] = $details;
+				}
 			}			
 		
 		if(!empty($decoded_data)){										
@@ -472,7 +503,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 				<p class="shipment_heading"><?php 				
 				echo sprintf(__("Shipment - %s (out of %s)", 'woo-advanced-shipment-tracking'), $num , $total_trackings); ?></p>
 				<?php } 
-				echo $this->tracking_page_header($order_id,$tracking_provider,$tracking_number,$tracker);
+				echo $this->tracking_page_header($order_id,$tracking_provider,$custom_provider_name, $custom_thumb_id,$tracking_number,$tracker,$item);
 				
 				if($tracker->ep_status == 'pending_trackship' || $tracker->ep_status == 'INVALID_TRACKING_NUM' || $tracker->ep_status == 'carrier_unsupported' || $tracker->ep_status == 'invalid_user_key' || $tracker->ep_status == 'wrong_shipping_provider' || $tracker->ep_status == 'deleted' || $tracker->ep_status == 'pending'){
 				} elseif(isset($tracker->ep_status)){
@@ -480,7 +511,7 @@ class WC_Advanced_Shipment_Tracking_Front {
 				} 
 				
 				if( !empty($trackind_detail_by_status_rev) && $hide_tracking_events != 1  ){
-					echo $this->layout1_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date);
+					echo $this->layout1_tracking_details( $trackind_detail_by_status_rev, $tracking_details_by_date, $trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date );
 				} ?>	
 			</div>
 			<?php } else{ 											
@@ -489,14 +520,14 @@ class WC_Advanced_Shipment_Tracking_Front {
 				<?php if($total_trackings > 1 ){ ?>
 					<p class="shipment_heading"><?php echo sprintf(__("Shipment - %s (out of %s)", 'woo-advanced-shipment-tracking'), $num , $total_trackings); ?></p>
 				<?php } 			
-			echo $tracking_header = $this->tracking_page_header($order_id,$tracking_provider,$tracking_number,$tracker); 			
+			echo $tracking_header = $this->tracking_page_header($order_id,$tracking_provider,$custom_provider_name, $custom_thumb_id,$tracking_number,$tracker,$item); 			
 			if($tracker->ep_status == 'pending_trackship' || $tracker->ep_status == 'INVALID_TRACKING_NUM' || $tracker->ep_status == 'carrier_unsupported' || $tracker->ep_status == 'invalid_user_key' || $tracker->ep_status == 'wrong_shipping_provider' || $tracker->ep_status == 'deleted' || $tracker->ep_status == 'pending'){
 			} elseif(isset($tracker->ep_status)){
 				echo $this->layout2_progress_bar($tracker);
 			}			
 		
 			if( !empty($trackind_detail_by_status_rev) && $hide_tracking_events != 1  ){
-				echo $this->layout2_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date);	
+				echo $this->layout2_tracking_details( $trackind_detail_by_status_rev, $tracking_details_by_date, $trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date );
 			} ?>
 		
 		</div>	
@@ -522,17 +553,57 @@ class WC_Advanced_Shipment_Tracking_Front {
 		exit; 
 	}
 	
-	public function tracking_page_header($order_id,$tracking_provider,$tracking_number,$tracker){
+	public function tracking_page_header($order_id,$tracking_provider,$custom_provider_name = NULL, $custom_thumb_id = 0,$tracking_number,$tracker,$item){
+		
 		if($tracker->est_delivery_date){	
 			$unixTimestamp = strtotime($tracker->est_delivery_date);				
 			$day = date("l", $unixTimestamp);
 		}
+		
+		$ast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
+		
+		$wc_ast_link_to_shipping_provider = get_option('wc_ast_link_to_shipping_provider');
+		
+		$tracking_number_url = '';
+		
+		if($wc_ast_link_to_shipping_provider == 1){
+			$tracking_number_url = $this->get_tracking_number_url( $order_id, $tracking_provider, $tracking_number, $item );	
+		}		
+		
 		$hide_tracking_provider_image = get_option('wc_ast_hide_tracking_provider_image');
+		$upload_dir   = wp_upload_dir();	
+		$ast_directory = $upload_dir['baseurl'] . '/ast-shipping-providers/';
+		$ast_base_directory = $upload_dir['basedir'] . '/ast-shipping-providers/';
+		
+		if($custom_thumb_id != 0){
+			$image_attributes = wp_get_attachment_image_src( $custom_thumb_id , array('60','60') );
+			$src = $image_attributes[0];
+		} else if(!file_exists($ast_base_directory.''.sanitize_title($tracking_provider).'.png')){
+			$src = wc_advanced_shipment_tracking()->plugin_dir_url().'assets/shipment-provider-img/'.sanitize_title($tracking_provider).'.png?v='.wc_advanced_shipment_tracking()->version;
+		} else{
+			$src = $ast_directory.''.sanitize_title($tracking_provider).'.png?v='.wc_advanced_shipment_tracking()->version;
+		}
+		
+		if($custom_provider_name != NULL){
+			$provider_name = $custom_provider_name;	
+		} else{
+			$provider_name = $tracking_provider;	
+		}		 
+		
+		$order_id = $ast->get_custom_order_number($order_id);		
 		?>		
 		<div class="tracking-header tracking-desktop-header">
 			<div class="col-md col-md-6">					
 				<span class="tracking-number"><?php _e( 'Order', 'woocommerce' ); ?>: <strong>#<?php echo apply_filters( 'ast_order_number_filter', $order_id); ?></strong></span><br>
-				<span class="tracking-number"><?php echo apply_filters( 'ast_provider_title', esc_html( $tracking_provider )); ?>: <strong><?php echo $tracking_number; ?></strong></span>					
+				<span class="tracking-number"><span class="header_tracking_provider">
+					<?php echo apply_filters( 'ast_provider_title', esc_html( $provider_name )); ?>:</span> 
+					<?php if($wc_ast_link_to_shipping_provider == 1 && $tracking_number_url != ''){ ?>
+						<a href="<?php echo $tracking_number_url; ?>" target="blank"><strong><?php echo $tracking_number; ?></strong></a>	
+					<?php } else{ ?>
+						<strong><?php echo $tracking_number; ?></strong>	
+					<?php } ?>
+					
+				</span>					
 				<h1 class="shipment_status_heading <?php if($tracker->ep_status == "delivered" || $tracker->ep_status == "available_for_pickup") { echo 'text-success'; } elseif($tracker->ep_status == "return_to_sender" || $tracker->ep_status == "failure") { echo 'text-warning'; } else{ echo 'text-secondary'; } ?>">
 					<?php echo apply_filters("trackship_status_filter",$tracker->ep_status);?>
 				</h1>
@@ -548,17 +619,23 @@ class WC_Advanced_Shipment_Tracking_Front {
 			</div>
 			<div class="col-md col-md-6 provider-image-div" style="<?php if($hide_tracking_provider_image == 1) { echo 'display:none'; };  ?>">
 				<div class="text-right">
-					<img class="provider_image" src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/shipment-provider-img/<?php echo sanitize_title($tracking_provider); ?>.png">
+					<img class="provider_image" src="<?php echo $src; ?>">
 				</div>
 			</div>
 		</div>
 		<div class="tracking-header tracking-mobile-header">
 			<div class="d-flex align-items-center header_top1">
 				<div class="header_top_left" style="<?php if($hide_tracking_provider_image == 1) { echo 'display:none'; };  ?>">
-					<img class="provider_image" src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/shipment-provider-img/<?php echo sanitize_title($tracking_provider); ?>.png">
+					<img class="provider_image" src="<?php echo $src; ?>">
 				</div>
 				<div class="header_top_right">						
-					<span class="tracking-number"><?php echo apply_filters( 'ast_provider_title', esc_html( $tracking_provider )); ?>: <strong><?php echo $tracking_number; ?></strong></span><br>
+					<span class="tracking-number"><span class="header_tracking_provider"><?php echo apply_filters( 'ast_provider_title', esc_html( $provider_name )); ?>:</span> 
+						<?php if($wc_ast_link_to_shipping_provider == 1 && $tracking_number_url != ''){ ?>
+							<a href="<?php echo $tracking_number_url; ?>" target="blank"><strong><?php echo $tracking_number; ?></strong></a>	
+						<?php } else{ ?>
+							<strong><?php echo $tracking_number; ?></strong>	
+						<?php } ?>
+					</span><br>
 					<span class="tracking-number"><?php _e( 'Order', 'woocommerce' ); ?>: <strong>#<?php echo apply_filters( 'ast_order_number_filter', $order_id); ?></strong></span>
 				</div>
 			</div>
@@ -578,6 +655,81 @@ class WC_Advanced_Shipment_Tracking_Front {
 			</div>
 		</div>
 	<?php }
+	
+	public function get_tracking_number_url( $order_id, $tracking_provider, $tracking_number, $item ){
+		
+		if ( version_compare( WC_VERSION, '3.0', '<' ) ) {
+			$postcode = get_post_meta( $order_id, '_shipping_postcode', true );
+		} else {
+			$order    = new WC_Order( $order_id );
+			$postcode = $order->get_shipping_postcode();
+		}
+
+		if ( empty( $postcode ) ) {
+			$postcode = get_post_meta( $order_id, '_shipping_postcode', true );
+		}
+		
+		$ast = WC_Advanced_Shipment_Tracking_Actions::get_instance();
+		$link_format = '';
+		foreach ( $ast->get_providers() as $provider => $format ) {		
+			if (  $format['provider_name']  === $tracking_provider ) {
+				$link_format = $format['provider_url'];				
+				break;
+			}			
+		}
+		
+		if($link_format){
+			$searchVal = array("%number%", str_replace(' ', '', "%2 $ s") );
+			$tracking_number = str_replace(' ', '', $tracking_number);
+			$replaceVal = array( $tracking_number, urlencode( $postcode ) );
+			$link_format = str_replace($searchVal, $replaceVal, $link_format); 
+			
+			if(isset($item['tracking_product_code'])){
+				$searchnumber2 = array("%number2%", str_replace(' ', '', "%2 $ s") );
+				$tracking_product_code = str_replace(' ', '', $item['tracking_product_code']);					
+				$link_format = str_replace($searchnumber2, $tracking_product_code, $link_format); 						
+			}
+			
+			if($order->get_shipping_country() != null){
+				$shipping_country = $order->get_shipping_country();	
+			} else{
+				$shipping_country = $order->get_billing_country();	
+			}								
+			
+			if($shipping_country){												
+				
+				if($tracking_provider == 'JP Post' && $shipping_country != 'JP'){
+					$local_en = '&locale=en';
+					$link_format = $link_format.$local_en;
+				}						
+				
+				if($tracking_provider == 'DHL eCommerce'){
+					$link_format = str_replace('us-en', strtolower($shipping_country).'-en', $link_format); 	
+				}
+				
+				if($tracking_provider == 'DHL Freight'){
+					$link_format = str_replace('global-en', strtolower($shipping_country).'-en', $link_format);
+				}
+			}
+			
+			if($order->get_shipping_postcode() != null){
+				$shipping_postal_code = $order->get_shipping_postcode();	
+			} else{
+				$shipping_postal_code = $order->get_billing_postcode();
+			}	
+			
+			$shipping_country = str_replace(' ', '', $shipping_country);					
+			$link_format = str_replace("%country_code%", $shipping_country, $link_format);
+													
+			if($tracking_provider == 'APC Overnight'){	
+				$shipping_postal_code = str_replace(' ', '+', $shipping_postal_code);
+			} else{
+				$shipping_postal_code = str_replace(' ', '', $shipping_postal_code);
+			}
+			$link_format = str_replace("%postal_code%", $shipping_postal_code, $link_format);
+		}
+		return $link_format;
+	}
 	
 	public function layout1_progress_bar($tracker){
 		if($tracker->ep_status == "unknown"){ $state0_class = 'unknown'; } else{ $state0_class = 'pre_transit'; }		
@@ -639,10 +791,10 @@ class WC_Advanced_Shipment_Tracking_Front {
 						<span class="state-label state-1 <?php if($tracker->ep_status == "in_transit" || $tracker->ep_status == "on_hold"){ echo 'current-state'; } elseif($tracker->ep_status == "pre_transit" || $tracker->ep_status =="unknown"){ echo 'future-state'; } else{ echo 'past-state'; } ?>">
 							<?php //echo apply_filters("trackship_status_filter",'in_transit'); ?>						
 							<?php
-								if($tracker->ep_status == "in_transit"){
-									echo apply_filters("trackship_status_filter",'in_transit');								
-								} elseif($tracker->ep_status == "on_hold"){
+								if($tracker->ep_status == "on_hold"){
 									echo apply_filters("trackship_status_filter",'on_hold');								
+								} else {
+									echo apply_filters("trackship_status_filter",'in_transit');								
 								} 
 							?>
 						</span>
@@ -702,146 +854,336 @@ class WC_Advanced_Shipment_Tracking_Front {
 			</div>	
 	<?php }
 	
-	public function layout1_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date){ 		
+	public function layout1_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date,$trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date){ 		
 		?>
 		<div class="tracking-details" style="">
 			<div class="shipment_progress_heading_div">	               				
 				<h4 class="tracking-number h4-heading text-uppercase"><?php _e( 'Tracking Details', 'woo-advanced-shipment-tracking' ); ?></h4>					
 			</div>
 			<?php if(!empty($tracking_details_by_date)){ ?>
-			<div class="tracking_details_desktop">
-				<div class="tracking_group_by_date">
+			<div class="tracking_details_desktop">				
+				<?php if(!empty($tracking_destination_details_by_date)){ ?>
+				<div class="tracking_destination_details_by_date">
+					<h4 style=""><?php _e( 'Destination Details', 'woo-advanced-shipment-tracking' ); ?></h4>					
 					<?php 
+					$a = 1;
+					foreach($tracking_destination_details_by_date as $date => $date_details){
+						if($a > 1)break;
+						foreach($date_details as $key => $value){
+						?>
+						<div class="tracking_group_by_date d-flex mb-3">					
+							<div class="d-md-flex w-100">
+								<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) )?></div>									
+								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+								<div class="location text-uppercase ml-auto"><?php echo $value->tracking_location->city; ?></div>
+							</div>						
+						</div>	
+					<?php } $a++; } ?>					
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_destination_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							} 
+						foreach($date_details as $key => $value){ ?>					
+							<div class="tracking_group_by_date d-flex mb-3">					
+								<div class="d-md-flex w-100">
+									<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) );?> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) )?></div>									
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>							
+							</div>					
+						<?php } ?> 						
+						<?php } ?>
+					</div>					
+				</div>
+				<?php } ?>
+				
+				<div class="tracking_details_by_date">
+					<?php if(!empty($tracking_destination_details_by_date)){ ?>
+						<h4 class="" style=""><?php _e( 'Origin Details', 'woo-advanced-shipment-tracking' ); ?></h4>
+					<?php } 
 					$a = 1;
 					foreach($tracking_details_by_date as $date => $date_details){
 						if($a > 1)break;
 						foreach($date_details as $key => $value){
 						?>
-						<div class="d-flex mb-3">					
+						<div class="tracking_group_by_date d-flex mb-3">					
 							<div class="d-md-flex w-100">
-								<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
-								<div class="time mr-md-2"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+								<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) );?> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ); ?></div>
 								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
-								<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								<div class="location text-uppercase ml-auto"><?php echo $value->tracking_location->city; ?></div>
 							</div>						
 						</div>	
 					<?php } $a++; } ?>					
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							} ?>						
+						<?php foreach($date_details as $key => $value){ ?>					
+							<div class="tracking_group_by_date d-flex mb-3">					
+								<div class="d-md-flex w-100">
+									<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); ?> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) ?></div>									
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>							
+							</div>					
+						<?php } ?> 						
+						<?php } ?>
+					</div>					
 				</div>
-				<div class="old-details" style="">
-					<?php 				
-					$a = 1;					
-					foreach($tracking_details_by_date as $date => $date_details){ 						
-						if($a == 1){
-							$a++;
-							continue;							
-						} ?>
-					<div class="tracking_group_by_date">
-					<?php foreach($date_details as $key => $value){ ?>					
-						<div class="d-flex mb-3">					
-							<div class="d-md-flex w-100">
-								<div class="date text-uppercase font-weight-demi-bold"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
-								<div class="time mr-md-2"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+				<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 	'woo-advanced-shipment-tracking' ); ?></a>
+				<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 		'woo-advanced-shipment-tracking' ); ?></a>
+			</div>
+			
+			<div class="tracking_details_mobile">
+				
+				<?php if(!empty($tracking_destination_details_by_date)){ ?>
+				<div class="tracking_destination_details_by_date">
+					<?php if(!empty($tracking_destination_details_by_date)){ ?>
+						<h4 class="" style=""><?php _e( 'Destination Details', 'woo-advanced-shipment-tracking' ); ?></h4>
+					<?php }
+					$a = 1;
+					foreach($tracking_destination_details_by_date as $date => $date_details){
+						if($a > 1)break;
+						foreach($date_details as $key => $value){ ?>
+							<div class="d-flex mb-3 tracking_details_mobile_row">								
+								<div class="d-md-flex w-100">							
+									<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>						
+							</div>	
+						<?php }
+					$a++;
+					}
+					?>				
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_destination_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							}
+							foreach($date_details as $key => $value){
+						?>
+						<div class="d-flex mb-3 tracking_details_mobile_row">					
+							<div class="d-md-flex w-100">								
+								<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
 								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
 								<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
 							</div>							
-						</div>					
-					<?php } ?> 
-					</div>
-					<?php } ?>
+						</div>
+						<?php }	} ?>
+					</div>					
 				</div>
+				<?php } ?>
+				
+				<div class="tracking_details_by_date">
+					<?php if(!empty($tracking_destination_details_by_date)){ ?>
+						<h4 class="" style=""><?php _e( 'Origin Details', 'woo-advanced-shipment-tracking' ); ?></h4>
+					<?php }
+					$a = 1;
+					foreach($tracking_details_by_date as $date => $date_details){
+						if($a > 1)break;
+						foreach($date_details as $key => $value){ ?>
+							<div class="d-flex mb-3 tracking_details_mobile_row">								
+								<div class="d-md-flex w-100">							
+									<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>						
+							</div>	
+						<?php }
+					$a++;
+					}
+					?>				
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							}
+							foreach($date_details as $key => $value){
+						?>
+						<div class="d-flex mb-3 tracking_details_mobile_row">					
+							<div class="d-md-flex w-100">								
+								<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+								<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+							</div>							
+						</div>
+						<?php }	} ?>
+					</div>						
+				</div>
+				<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 	'woo-advanced-shipment-tracking' ); ?></a>
+				<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 		'woo-advanced-shipment-tracking' ); ?></a>	
 			</div>
+			
+			<?php } ?>
+		</div>
+	<?php }
+	
+	public function layout2_tracking_details( $trackind_detail_by_status_rev, $tracking_details_by_date, $trackind_destination_detail_by_status_rev, $tracking_destination_details_by_date){ 		
+	?>
+		<div class="tracking-details">
+			<div class="shipment_progress_heading_div">	               				
+				<h4 class="tracking-number h4-heading text-uppercase" style=""><?php _e( 'Tracking Details', 'woo-advanced-shipment-tracking' ); ?></h4>					
+			</div>
+			<div class="tracking_details_desktop">
+				
+				<?php if(!empty($tracking_destination_details_by_date)){ ?>				
+				
+				<div class="tracking_destination_details_by_date">
+					<h4 style=""><?php _e( 'Destination Details', 'woo-advanced-shipment-tracking' ); ?></h4>	
+					<?php 				
+					$b = 1;					
+					foreach($tracking_destination_details_by_date as $date => $date_details){
+						if($b > 1)break;						
+					?>
+						<div class="tracking_group_by_date">
+							<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
+							<?php foreach($date_details as $key => $value){ ?>
+							<div class="d-flex mb-3">								
+								<div class="d-md-flex w-100">							
+									<div class="time mr-md-2"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>						
+							</div>
+							<?php } ?>	
+						</div>
+					<?php $b++; } ?>	
+					<div class="old-details">
+						<?php 				
+						$b = 1;					
+						foreach($tracking_destination_details_by_date as $date => $date_details){ 						
+							if($b == 1){
+								$b++;
+								continue;							
+							} ?>
+						<div class="tracking_group_by_date">
+							<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
+							<?php foreach($date_details as $key => $value){ ?>							
+							<div class="d-flex mb-3">					
+								<div class="d-md-flex w-100">								
+									<div class="time text-gray-300 mr-md-2 text-success"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>							
+							</div>
+							<?php } ?>	
+						</div>
+						<?php } ?>
+					</div>					
+				</div>		
+				
+				<?php } ?>								
+				
+				<div class="tracking_details_by_date">
+					<?php if(!empty($tracking_destination_details_by_date)){ ?>
+						<h4 class="" style=""><?php _e( 'Origin Details', 'woo-advanced-shipment-tracking' ); ?></h4>
+					<?php }
+					
+					$a = 1;					
+					foreach($tracking_details_by_date as $date => $date_details){
+						if($a > 1)break;						
+					?>
+						<div class="tracking_group_by_date">
+							<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) );  ?></div>
+							<?php foreach($date_details as $key => $value){ ?>
+							<div class="d-flex mb-3">								
+								<div class="d-md-flex w-100">							
+									<div class="time mr-md-2"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>						
+							</div>
+							<?php } ?>	
+						</div>
+					<?php $a++; } ?>	
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							} ?>
+						<div class="tracking_group_by_date">
+							<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
+							<?php foreach($date_details as $key => $value){ ?>							
+							<div class="d-flex mb-3">					
+								<div class="d-md-flex w-100">								
+									<div class="time text-gray-300 mr-md-2 text-success"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+									<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+									<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								</div>							
+							</div>
+							<?php } ?>	
+						</div>
+						<?php } ?>
+					</div>					
+				</div>	
+				<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 'woo-advanced-shipment-tracking' ); ?></a>
+				<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 		'woo-advanced-shipment-tracking' ); ?></a>	
+			</div>						
+			
 			<div class="tracking_details_mobile">
+				<?php if(!empty($tracking_destination_details_by_date)){ ?>	
+				<div class="tracking_destination_details_by_date">				
+					<h4 class="" style=""><?php _e( 'Destination Details', 'woo-advanced-shipment-tracking' ); ?></h4>
 				<?php 
 				$a = 1;
-				foreach($tracking_details_by_date as $date => $date_details){
+				foreach($tracking_destination_details_by_date as $date => $date_details){
 					if($a > 1)break;
 					foreach($date_details as $key => $value){ ?>
 						<div class="d-flex mb-3 tracking_details_mobile_row">								
 							<div class="d-md-flex w-100">							
-								<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+								<div class="time text-gray-300 mr-md-2 text-success"><span class="text-uppercase"><?php echo date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
 								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
-								<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
+								<div class="location text-uppercase text-md-right ml-auto text-gray-300"><?php echo $value->tracking_location->city; ?></div>
 							</div>						
 						</div>	
 					<?php }
 				$a++;
 				}
 				?>				
-				<div class="old-details" style="">
-					<?php 				
-					$a = 1;					
-					foreach($tracking_details_by_date as $date => $date_details){ 						
-						if($a == 1){
-							$a++;
-							continue;							
-						}
-						foreach($date_details as $key => $value){
-					?>
-					<div class="d-flex mb-3 tracking_details_mobile_row">					
-						<div class="d-md-flex w-100">								
-							<div class="time mr-md-2"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
-							<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
-							<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
-						</div>							
-					</div>
-					<?php }	} ?>
-				</div>
-			</div>
-			<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 'woo-advanced-shipment-tracking' ); ?></a>
-			<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 		'woo-advanced-shipment-tracking' ); ?></a>
-			<?php } ?>
-		</div>
-	<?php }
-	
-	public function layout2_tracking_details($trackind_detail_by_status_rev,$tracking_details_by_date){ ?>
-		<div class="tracking-details">
-			<div class="shipment_progress_heading_div">	               				
-				<h4 class="tracking-number h4-heading text-uppercase" style=""><?php _e( 'Tracking Details', 'woo-advanced-shipment-tracking' ); ?></h4>					
-			</div>
-			<div class="tracking_details_desktop">
-				<?php 				
-				$a = 1;					
-				foreach($tracking_details_by_date as $date => $date_details){
-					if($a > 1)break;						
-				?>
-					<div class="tracking_group_by_date">
-						<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
-						<?php foreach($date_details as $key => $value){ ?>
-						<div class="d-flex mb-3">								
-							<div class="d-md-flex w-100">							
-								<div class="time mr-md-2"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
-								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
-								<div class="location text-uppercase text-md-right ml-auto"><?php echo $value->tracking_location->city; ?></div>
-							</div>						
-						</div>
-						<?php } ?>	
-					</div>
-				<?php $a++; } ?>	
-				<div class="old-details" style="">
-					<?php 				
-					$a = 1;					
-					foreach($tracking_details_by_date as $date => $date_details){ 						
-						if($a == 1){
-							$a++;
-							continue;							
-						} ?>
-					<div class="tracking_group_by_date">
-						<div class="date text-uppercase font-weight-bold mb-3"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></div>
-						<?php foreach($date_details as $key => $value){ ?>							
-						<div class="d-flex mb-3">					
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_destination_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							}
+							foreach($date_details as $key => $value){
+						?>
+						<div class="d-flex mb-3 tracking_details_mobile_row">					
 							<div class="d-md-flex w-100">								
-								<div class="time text-gray-300 mr-md-2 text-success"><?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+								<div class="time text-gray-300 mr-md-2 text-success"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
 								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
 								<div class="location text-uppercase text-md-right ml-auto text-gray-300"><?php echo $value->tracking_location->city; ?></div>
 							</div>							
 						</div>
-						<?php } ?>	
-					</div>
-					<?php } ?>
+						<?php }	} ?>
+					</div>					
 				</div>
-			</div>
-			<div class="tracking_details_mobile">
-				<?php 
+				<?php } ?>
+				
+				<div class="tracking_details_by_date">
+				<?php if(!empty($tracking_destination_details_by_date)){ ?>
+						<h4 class="" style=""><?php _e( 'Origin Details', 'woo-advanced-shipment-tracking' ); ?></h4>
+					<?php }
 				$a = 1;
 				foreach($tracking_details_by_date as $date => $date_details){
 					if($a > 1)break;
@@ -857,28 +1199,29 @@ class WC_Advanced_Shipment_Tracking_Front {
 				$a++;
 				}
 				?>				
-				<div class="old-details" style="">
-					<?php 				
-					$a = 1;					
-					foreach($tracking_details_by_date as $date => $date_details){ 						
-						if($a == 1){
-							$a++;
-							continue;							
-						}
-						foreach($date_details as $key => $value){
-					?>
-					<div class="d-flex mb-3 tracking_details_mobile_row">					
-						<div class="d-md-flex w-100">								
-							<div class="time text-gray-300 mr-md-2 text-success"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
-							<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
-							<div class="location text-uppercase text-md-right ml-auto text-gray-300"><?php echo $value->tracking_location->city; ?></div>
-						</div>							
-					</div>
-					<?php }	} ?>
+					<div class="old-details" style="">
+						<?php 				
+						$a = 1;					
+						foreach($tracking_details_by_date as $date => $date_details){ 						
+							if($a == 1){
+								$a++;
+								continue;							
+							}
+							foreach($date_details as $key => $value){
+						?>
+						<div class="d-flex mb-3 tracking_details_mobile_row">					
+							<div class="d-md-flex w-100">								
+								<div class="time text-gray-300 mr-md-2 text-success"><span class="text-uppercase"><?php echo date_i18n( get_option( 'date_format' ), strtotime($date) ); //date( 'F j, Y', strtotime($date)); ?></span> <?php echo date_i18n( get_option( 'time_format' ), strtotime($value->datetime) ) //date( 'g:i a', strtotime($value->datetime)); ?></div>
+								<div class="message font-weight-demi-bold mr-md-3"><?php echo $value->message; ?></div>
+								<div class="location text-uppercase text-md-right ml-auto text-gray-300"><?php echo $value->tracking_location->city; ?></div>
+							</div>							
+						</div>
+						<?php }	} ?>
+					</div>					
 				</div>
-			</div>
-			<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 'woo-advanced-shipment-tracking' ); ?></a>
-			<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 		'woo-advanced-shipment-tracking' ); ?></a>
+				<a class="view_old_details" href="javaScript:void(0);" style="display: inline;"><?php _e( 'view more', 'woo-advanced-shipment-tracking' ); ?></a>
+				<a class="hide_old_details" href="javaScript:void(0);" style="display: none;"><?php _e( 'view less', 	'woo-advanced-shipment-tracking' ); ?></a>	
+			</div>			
 		</div>
 	<?php } 
 	
@@ -905,9 +1248,14 @@ class WC_Advanced_Shipment_Tracking_Front {
 		$wc_ast_api_key = get_option('wc_ast_api_key');	
 		$primary_color = get_option('wc_ast_select_primary_color');	
 		$border_color = get_option('wc_ast_select_border_color');
+		$wc_ast_link_to_shipping_provider = get_option('wc_ast_link_to_shipping_provider');
 		$hide_tracking_provider_image = get_option('wc_ast_hide_tracking_provider_image');
 		$hide_tracking_events = get_option('wc_ast_hide_tracking_events');
 		$tracking_page_layout = get_option('wc_ast_select_tracking_page_layout','t_layout_1');	
+		
+		$upload_dir   = wp_upload_dir();	
+		$ast_directory = $upload_dir['baseurl'] . '/ast-shipping-providers/';
+		$ast_base_directory = $upload_dir['basedir'] . '/ast-shipping-providers/';
 		?>
 		
 		<style>	
@@ -1107,13 +1455,13 @@ class WC_Advanced_Shipment_Tracking_Front {
 				</div>
 				<div class="col-md col-md-6 provider-image-div" style="<?php if($hide_tracking_provider_image == 1) { echo 'display:none'; };  ?>">
 					<div class="text-right">
-						<img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/shipment-provider-img/ups.png">	
+						<img src="<?php echo $ast_directory;?>ups.png">	
 					</div>
 				</div>
 			</div>
 			<div class="tracking-header tracking-mobile-header">
 				<div class="d-flex align-items-center header_top1">
-					<div class="header_top_left"><img src="<?php echo wc_advanced_shipment_tracking()->plugin_dir_url()?>assets/shipment-provider-img/ups.png"></div>
+					<div class="header_top_left"><img src="<?php echo $ast_directory;?>ups.png"></div>
 					<div class="header_top_right">						
 						<span class="tracking-number">UPS: <strong>6A17149676461</strong></span><br>
 						<span class="tracking-number"><?php _e( 'Order', 'woocommerce' ); ?>: <strong>#4542</strong></span>

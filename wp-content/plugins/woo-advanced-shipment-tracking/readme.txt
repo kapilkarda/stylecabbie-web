@@ -1,152 +1,112 @@
 === Advanced Shipment Tracking for WooCommerce  ===
 Contributors: zorem
-Tags: woocommerce, delivery, shipping, shipment tracking, tracking
-Requires at least: 4.0
-Requires PHP: 5.2.4
-Tested up to: 5.4
-Stable tag: 5.3
+Tags: WooCommerce, delivery, shipping, shipment tracking, tracking
+Requires at least: 5.0
+Tested up to: 5.5.1
+Requires PHP: 7.0
+Stable tag: 4.0.1
 License: GPLv2 
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Add shipment tracking information to your WooCommerce orders and provide your customers with an easy way to track their orders, reduce customer service inquiries and Improve the overall post-purchase experience.
+Add shipment tracking information to your WooCommerce orders and provide your customers with an easy way to track their orders. 
 
 == Description ==
 
-The AST plugin provides you with easy ways to add shipment tracking information to orders. Your customers will receive the tracking information and a link to track their order on the order emails and my-account area. 
+Advanced Shipment Tracking (AST) for WooCommerce lets you add tracking information to orders and provides your customers an easy way to track their orders. AST provides powerful features that let WooCommerce shop owners to better manage and automate their post-shipping orders flow, reduce time spent on customer service and increase customer satisfaction.
 
-AST provides a pre-defined list of more than 150 shipping providers (carriers) from around the globe, you can add custom providers, customize the tracking display on emails, create custom order statuses, customize the emails, bulk upload tracking info to orders with CSV files, use the API endpoint to update tracking in orders and more...
+Advanced Shipment Tracking is the #1 shipment tracking plugin for WooCommerce. AST provides powerful tools that help shops to manage WooCommerce orders in a more officiant ways and to automate the post-shipping operations.
 
-== Key Features ==
+https://www.youtube.com/watch?v=QOVbwfgXQdU
 
-* Add shipment tracking info to orders – shipping provider, tracking number and shipping date
-* Add multiple tracking numbers to orders
-* Add tracking info to orders from the orders admin (inline)
-* Select shipping providers to use when adding tracking info to orders
-* Set the default provider when adding tracking info to orders
-* Add custom shipping providers
-* Sync your shipping providers list with TrackShip
-* Display shipment tracking information and tracking link on user accounts
-* Display shipment tracking information and tracking link on customer order emails
-* Customize and preview the tracking info display on customer emails using email customizer.
-* Choose on which Customer emails to include the tracking info.
-* Bulk import tracking info to orders with CSV file.
-* WooCommerce REST API endpoint to update shipment tracking information
-* Rename the Completed Order status to Shipped
-* Enable custom order statuses - Delivered, Partially Shipped, Updated Tracking
-* Enable  custom order status emails to customers
-* Customize and preview the Delivered status email using email designer.
+==Key Features==
+
+* **Easily add Tracking information to orders**
+Easily add tracking information to your orders, AST lets you add the tracking from the WooCommerce orders admin or from a single order admin, we also allow you to mark the order as Completed when adding the tracking information.  
+
+* **Customize The Tracking Display on the Order Emails**
+You can fully customize the tracking information display on the order emails and on their accounts. With our customizer with a live preview, you can choose the design layout, show/hide tracking information, edit the content, fonts, colors, and more..
+
+* **List of 250+ Shipping Providers**
+AST provides a list of more than 250 shipping providers (carriers) around the globe with a predefined tracking link, AST automatically generates the tracking link sent to your customers when you ship their orders.
+
+* **Keep your Tracking Links Up-To-Date**
+We maintain this list and you can sync the shipping providers list to keep it up-to-date with any changes in the shipping providers info.
+
+* **Custom Shipping Providers**
+If you can’t find your shipping provider on our list, you can suggest it for us to add or you can add your own custom providers, you can set a tracking link with tracking information variables to use in the tracking link.
+
+* **WooCommerce REST API Support**
+AST creates a Shipment Tracking WooCommerce REST API endpoint so you can easily update the tracking information in your WooCommerce orders from any external system or shipping labels service you use and automate your daily workflow..
+
+* **Bulk Upload from CSV**
+If your shipper provides the tracking information in files and you want to avoid manually adding them into orders, AST provides a quick and easy interface to import multiple tracking numbers to orders in bulk from a CSV.
+
+* **Custom Order Statuses**
+Improve your order management flow, with custom order statuses, enable the Partially Shipped for orders that you ship in separate packages at different times or enable the Delivered order status if you use [TrackShip](https://trackship.info/) for tracking & delivery automation.
+
+* **Compatibility with many shipping providers plugins and services**
+AST is compatible with many shipping labels plugins.
 
 == PREMIUM ADD-ONS ==
 
-= Tracking Per Item Add-on =
-The Tracking per item add-on allows you to attach tracking numbers to specific order items and also to attach tracking numbers to different quantities of the same line item.
-[Get this Add-on](https://www.zorem.com/shop/tracking-per-item-ast-add-on/)
+**Tracking Per Item Add-on** - The Tracking per item add-on allows you to attach tracking numbers to specific order items and also to attach tracking numbers to different quantities of the same line item. [Get this Add-on](https://www.zorem.com/shop/tracking-per-item-ast-add-on/)
 
-= TrackShip Add-on = 
-[TrackShip](https://trackship.info/) is a shipment tracking API that fully integrates with WooCommerce with the Advanced Shipment Tracking. TrackShip automates the order management workflows, reduces customer inquiries, reduces time spent on customer service, and improves the post-purchase experience and satisfaction of your customers.
+**TrackShip Integration** -  [TrackShip](https://trackship.info/) is a multi-carrier shipment tracking API that fully integrates into WooCommerce with the AST plugin. TrackShip automates the orders workflow, reduces customer inquiries and time spent on customer service, and keeps your customers informed on their shipment status at all times.
 
-* Automatically track shipments with 150+ shipping providers
-* View the latest shipment status, update date, and est. delivery date on your orders admin
+* Auto-track shipped orders with 200+ shipping providers
+* Up-to-date shipment status and est. delivery date on your orders admin
 * Automatically change the order status to Delivered once it’s delivered to your customers
-* Send personalized emails to notify the customer when their shipments are In Transit, Out For Delivery, Delivered or have an exception
-* Direct customers to a Tracking page on your store
+* Send shipment status update emails to notify your customers when their shipments are Out For Delivery, Delivered or have an exception
+* Direct customers to a Tracking Page on your store
 
 You must have a [TrackShip](https://trackship.info/) account to activate these advanced features.
 
+== Compatibility == 
+The Advanced Shipment Tracking plugin is compatible with many other plugins such as shipping label plugins and services, email customizer plugins, Customer order number plugins, PDF invoices plugins,  multi vendor plugins, SMS plugins and more. Check out [AST's full list of plugins compatibility](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/compatibility/). 
+
+== Documentation ==
+You can get more information, detailed tutorials and code snippets on the [ AST documentation](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking).
+
 == Translations == 
-
 The AST plugin is localized/ translatable by default, we added translation to the following languages: 
+English - default, German (Deutsch), Hebrew, Hindi, Italian, Norwegian (Bokmål), Russian, Swedish, Turkish, Bulgarian, Danish Spanish (Spain), French (France), Greek, Português Brasil, Dutch (Nederlands)
 
-* English - default, always included
-* German (Deutsch)
-* Hebrew
-* Hindi
-* Italian
-* Norwegian (Bokmål)
-* Russian
-* Swedish
-* Turkish
-* Bulgarian
-* Danish
-* Spanish (Spain)
-* French (France)
-* Greek
-* Português Brasil
-* Dutch (Nederlands)
-
-If your lenguage is not in this list and you  want us to include it in the plugin, you can send us the translation files (po/mo) [here](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/translations/#upload-your-language-files)
+If your language is not in this list and you  want us to include it in the plugin, you can send us [on our docs](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/translations/#upload-your-language-files)
+ the translation files (po/mo) and we will add them to the plugin files.
 
 == Shipping Providers == 
 
-The AST plugin supports more then 150 shipping providers (carriers) with pre-defined tracking link:
+The AST plugin supports more then 250 shipping providers (carriers) with pre-defined tracking link:
 
-USPS, ePacket, Delhivery, Yun Express Tracking, UPS, Australia Post, FedEx, Aramex, DHL eCommerce, ELTA Courier, Colissimo, DHL Express, La Poste, DHLParcel NL, Purolator, 4px, Brazil Correios, Deutsche Post DHL, Bpost, DHL US, EMS, DPD.de, GLS, China Post, Loomis Express, DHL Express, DHL Express UK, Poste Maroc, PostNL International 3S, Royal Mail and many more..
+USPS, ePacket, Delhivery, Yun Express Tracking, UPS, Australia Post, FedEx, Aramex, DHL eCommerce, ELTA Courier, Colissimo, DHL Express, La Poste, DHLParcel NL, Purolator, 4px, Brazil Correios, Deutsche Post DHL, Bpost, DHL US, EMS, DPD.de, GLS, China Post, Loomis Express, DHL Express, DHL Express UK, Poste Maroc, PostNL International 3S, Royal Mail and many others..
 
-== Compatibility == 
-
-= Compatibility with WooCommerce email customization plugins =
-* [Kadence WooCommerce Email Customizer](https://wordpress.org/plugins/kadence-woocommerce-email-designer/)
-* [Decorator – WooCommerce Email Customizer](https://wordpress.org/plugins/decorator-woocommerce-email-customizer/)
-* [Email Customizer for WooCommerce](https://codecanyon.net/item/email-customizer-for-woocommerce/8654473)
-
-= Compatibility with custom order numbers plugins =
-* [Custom Order Numbers for WooCommerce](https://wordpress.org/plugins/custom-order-numbers-for-woocommerce/)
-* [WooCommerce Sequential Order Numbers](https://wordpress.org/plugins/woocommerce-sequential-order-numbers/)
-* [Sequential Order Numbers Pro](https://woocommerce.com/products/sequential-order-numbers-pro/)
-* [Booster for WooCommerce](https://wordpress.org/plugins/woocommerce-jetpack/)
-* [WP-Lister Pro for Amazon](https://www.wplab.com/plugins/wp-lister-for-amazon/)
-
-= Compatibility with PDF Invoices & Packing Slips  plugins =
-* [WooCommerce PDF Invoices & Packing Slips plugin](https://wordpress.org/plugins/woocommerce-pdf-invoices-packing-slips)
-* [DHL for WooCommerce](https://wordpress.org/plugins/dhl-for-woocommerce/)
-* [ShipWorks Connector for WordPress](https://wordpress.org/plugins/shipworks-e-commerce-bridge/)
-
-= Compatibility with SMS Plugins =
-* [SMS Alert Order Notifications – WooCommerce](https://wordpress.org/plugins/sms-alert/)
-* [WC – APG SMS Notifications](https://wordpress.org/plugins/woocommerce-apg-sms-notifications/)
-* [Twilio SMS Notifications](https://woocommerce.com/products/twilio-sms-notifications/)
-* [WPNotif: WordPress SMS & WhatsApp Message Notifications](https://codecanyon.net/item/wpnotif-wordpress-sms-whatsapp-notifications/24045791)
-
-= Compatibility with Multilingual Plugins =
-* [WPML - The WordPress Multilingual Plugin](https://wpml.org/)
-
-== Documentation ==
-[documentation](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking) for more details.
-
-https://www.youtube.com/watch?v=Mw7laecPtyw
-
-== Frequently Asked Questions == 
+== FAQ == 
 
 = Where will my customer see the tracking info?
-The tracking info and a tracking link to track the order on the shipping provider website will be added to the **Shipped** (Completed) order status emails.  We will also display the tracking info in my-account area for each order in the order history tab.
-= Can I add multiple tracking numbers to orders?
-Yes, you can add as many tracking numbers to orders and they will all be displayed to your customers. 
-= Can I add a shipping provider that is not on your list?
-Yes, you can add custom providers, choose your default shipment provider, Change the providers order in the list and enable only providers that are relevant to you.
-= Can I design the display of Tracking info on WooCommerce emails?
-Yes, you have full control over the design and display of the tracking info and you can customize it.
-= can I track my order and send shipment status and delivery notifications to my customers?
-Yes, you can sign up to [Trackship](https://trackship.info) and connect your store, TrackShip will auto-track your shipments and update your orders with shipment status and delivery updates to your WooCommerce store and automates your order management process, you can send shipment status notifications to your customers and direct them to tracking page on your store.
-= How do I set the custom provider URL so it will direct exactly to the tracking number results?
-You can add tracking number parameter in this format:
-http://shippingprovider.com?tracking_number=%number% , %number% - this variable will hold the tracking number for the order.
-= is it possible to import multiple tracking numbers to orders in bulk?
-Yes, you can use our Bulk import option to import multiple tracking inumbers to orders, you need to add each tracking number is one row.
-= is it possible to add tracking number to specific products?
-Yes, you can use the [Tracking Per Item pro add-on](https://www.zorem.com/products/tracking-per-item-ast-add-on/) which add the option to attach tracking numbers to specific line items and even to attach tracking numbers to specific line item quantities.
-=How do I use the Rest API to add/retrieve/delete tracking info to my orders?
-you can use the plugin to add, retrieve, delete tracking information for orders using WooCommerce REST API. 
-For example, in order to add tracking number to order:
-use the order id that you wish to update in the URL instead of <order-id>, add the shipping provider and tracking code. 
+The tracking info and a tracking link to track the order will be added to the Shipped (Completed) order status emails. We will also display the tracking info in my-account area for each order in the order history tab.
 
-curl -X POST 
-http://a32694-tmp.s415.upress.link/wp-json/wc/v1/orders/<order-id>/shipment-trackings \
-    -u consumer_key:consumer_secret \
-    -H "Content-Type: application/json" \
-    -d '{
-  "tracking_provider": "USPS",
-  "tracking_number": "123456789",
-}'
+= Can I edit the Tracking info display on the WooCommerce emails?
+Yes, you have full control over the design and display of the tracking info and you can customize the display and content in a customizer with a live preview.
+
+= Can I add multiple tracking numbers to an order?
+Yes, you can add as many tracking numbers to orders and they will all be displayed to your customers on the order email and their my-account area.
+
+= Can AST automatically track my orders and send automated delivery emails?
+Yes, AST fully integrates with [TrackShip](https://trackship.info/), a Multi-Carrier Shipment Tracking API that will auto-track your shipments and updates your orders with shipment status and delivery changes ,automates your order management process, lets you send shipment status notifications to your customers and direct them to tracking page on your store.
+
+= How do I add a direct tracking link to my custom provider?
+If your shipping providers has a tracking page and the URL contains the tracking number to allow direct tracking, you can add tracking number parameter that will automatically generate a tracking link with the tracking number, add the tracking URL in this format:
+
+https://example-provider.com?tracking_number=%number% where the %number% variable in the URL will be replaced with the tracking number, you can even use the country code and postal code variables. Check out the [AST documentation](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/setting-shipping-providers/#adding-custom-shipping-provider) for more details.
+
+= Can I Import tracking information from CSV files?
+Yes, you can use our [CSV import tool](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/bulk-import-shipment-tracking/) to import multiple tracking numbers to orders, you need to add each tracking number in one row.
+
+= Can I add tracking numbers to specific products in the Order?
+Yes, you can use the [Tracking Per Item add-on](https://www.zorem.com/products/tracking-per-item-ast-add-on/) which adds the option to attach tracking numbers to specific line items and even to attach tracking numbers to specific line item quantities.
+
+= How can we automatically add tracking info to orders?
+If you use external shipping services that work with the WooCommerce REST API to update your orders, they can use the [AST shipment tracking API endpoint](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/rest-api-support/) to update the tracking information in orders and if you're using a WooCommerce plugin to generate shipping labels, check out the [AST compatibility list](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/compatibility/) and if it's not on the list, let us know on the support forum and we will try to add compatibility.
 
 == Installation ==
 
@@ -156,98 +116,100 @@ http://a32694-tmp.s415.upress.link/wp-json/wc/v1/orders/<order-id>/shipment-trac
 
 == Changelog ==
 
-= 2.9.5 = 
-* Enhancement - Edit button visible always in shipment status notification section in Trackship
-* Dev - When TrackShip shipment status change to delivered change order status to delivered only if order status is Completed(Shipped)
-* Fix - Fix php warning in TrackShip tracking page 'Uncaught Error: Cannot use object of type WP_Error as array'
-* Fix - Mobile issue of Shipping provider image in TrackShip tracking page templates
+= 3.1.1 =
+* Enhancement - Added a option in AST general settings for select On which Order status to display Add Tracking icon in the Order Actions menu.
+* Enhancement - Uppdated Late Shipments Customizer
+* Enhancement - Updated design of tools
+* Enhancement - Updated toggle design
+* Enhancement - Updated Shipping Providers List
+* Enhancement - TrackShip - Added a option to set shipping provider tracking page link in TrackShip tracking page 
+* Dev -Added compatibility with Advanced Order Status Manager plugin
+* Fix - Fixed issue with TrackShip Dashboard widget
 
-= 2.9.4 =
-* Fix - Bulk import csv issue
+= 3.1 =
+* Enhancement - Add API Name column to the shipping providers. User can use use API name for the providers lookup when adding tracking information through REST API
+* Enhancement - TrackShip tracking page - added option for add custom URL as a tracking page
+* Enhancement - Added a option in AST settings to select API Date Format
+* Dev - Removed the shipment status Counts from the WC orders filter and added option in TrackShip for remove shipment status filter from orders page
+* Enhancement - Tracking Per Item - Added Settings Option in the AST general settings - Display products SKU in add tracking form
+* Enhancement - Change the Tracking # input to be first in the add tracking form
+* Dev - Added Default colors for Custom Order Statuses
+* Dev - Added and Updated API Endpoint
+* Enhancement - Updated Shipment Tracking and TrackShip page settings
+* Dev - Remove the Add Tracking from action menu for completed order status
+* Enhancement - On deactivate plugin check if order in custom order status and give option to reassign that order to different order status
+* Fixed - Tracking Page - Events CSS issue 
+* Fixed - Fixed rtl issue of settings page
+* Enhancement - Added admin message for review
 
-= 2.9.3 =
-* Fix - Bulk import csv issue
+= 3.0.9 =
+* Dev - Added compatibility with WordPress 5.5
+* Dev - Added compatibility with Custom Order Numbers for WooCommerce Pro plugin.
+* Enhancement - Updated design TrackShip tab if TrackShip is not connected
+* Enhancement - Added an option add display name in custom providers
+* Enhancement - Added a seperate TrackShip menu if TrackShip is connected
+* Fix - Fixed warning 'register_rest_route was called incorrectly. The REST API route definition for wc/v1/orders/(?P[\d]+)/shipment-trackings/providers is missing the required permission_callback argument' for WordPress version 5.5
+* Enhancement - Updated the settings page design
 
-= 2.9.2 =
-* Enhancement - Added product code field in tracking info form for this shipping provider - Post Haste,Now Couriers,Dx Mail and Castle Parcels
-* Enhancement - Updated settings page design
-* Dev - Added compatibility with custom order number functionality for Booster for WooCommerce plugin
-* Dev - Added On Hold shipment status for DHL Us shipping provider
-* Fix - Tracking display customizer doesn’t load in Enfold
-* Fix - Notice: Undefined variable: value in woo-advanced-shipment-tracking/includes/class-wc-advanced-shipment-tracking.php on line 1624
-* Fix - Duplicate tracking in simple layout tracking info in my-account orders page
+= 3.0.8 =
+* Fix - Fixed fatal error when changing status to delivered
+* Fix - Fixed email content issue in TrackShip late shipments email
 
-= 2.9.1 =
-* Dev - rename update tracking, partially shipped and delivered order status we will use that update order status name in Bulk action dropdown in orders page
-* Dev - Added functionality to override  tracking info email template in theme
-* Enhancement - Update Tracking display customizer link
-* Dev - Updated functionality for Custom Order Numbers for WooCommerce plugin for custom order numbers in bulk import tracking info
-* Fix - NZ Couriers shipping provider, the conditional fields are missing on add tracking form
-* Fix - Duplicate tracking in simple layout tracking info 
-* Fix - Undefined index: simple_layout_content in /woo-advanced-shipment-tracking/includes/class-wc-advanced-shipment-tracking.php on line 1604
+= 3.0.7 =
+* Enhancement - Updated the design of TrackShip tracking page
+* Enhancement - Updated design of Shipping Providers edit image lightbox and change label
+* Enhancement - Updated design of shipping providers list
+* Enhancement - Change CSV Import label
+* Enhancement - Improve search shipping providers functionality
+* Enhancement - Updated design of Trackship tools
+* Enhancement - Custom Order Status auto save on change enable/disable, Color, Font color and Enable email
+* Enhancement - Updated design of TrackShip tracking page settings
+* Enhancement - Updated Order status and shipment status email customizer
+* Fix - Fixed jQuery.live() in shipping_row.js
 
+= 3.0.6 =
+* Enhancement - Added Pending Trckship option in shipment status filter in orders page
+* Enhancement - Added option for Edit shipping provider name and image
+* Enhancement - Trackship tracking page added functionality for show origin tracking details and destination tracking details
+* Enhancement - Add Re-Order button in my accounr single order page for custom order page - Delivered, Partially Shipped, Updated Tracking
+* Dev - Added parent class in paging class in shipping providers list page
+* Dev - Added Error message instead of error code in shipment status box in orders list page and single order page for TrackShip
+* Fix - Fixed issue with bulk import with Partially Shipped
 
+= 3.0.5 =
+* Fix - Fixed issue with custom order number generated by Booster for WooCommerce plugin
+* Fix - Fixed issue with custom order number in TrackShip tracking page
+* Dev - Moved Tracking Per Item add-on license from this plugin to Tracking Per Item add-on
+* Enhancement - Change default background color of tracking display table to #f5f5f5 
 
-= 2.9.0 =
-* Enhancement - Added functionality for add product code in add tracking info form if the provider is NZ Courier
-* Enhancement - Added message in Shipment tracking page if the Trackship is not connected
-* Enhancement - Updated sidebar addons image
-* Enhancement - Redesign Shipment Tracking Customizer
-* Fix - Fixed issue in tracking display customizer table background-color
+= 3.0.4 =
+* Fix - Fixed license error for Tracking Per Item Add-on User
 
-= 2.8.9 =
-* Enhancement - Add editable text for simple layout in tracking info customizer
-* Dev - Added Rest API v3
-* Localization - Updated language translation files
-* Fix - undefined variable $tracking_info_settings in emails/plain/tracking-info.php
-* Fix - Fixed issue in WooCommerce app - unable to fetch Shipping providers
+= 3.0.3 =
+* Dev - Removed Tracking Per Item Add-on license activation code AST and moved to Tracking Per Item Add-on
 
-= 2.8.8 =
-* Enhancement - Added "Date" in simple layout tracking display format
-* Enhancement - Updated date format for bulk import from dd-mm-YYYY to dd/mm/YYYY
-* Dev - Added missing plain email template tracking-info.php
-* Dev - Updated sample csv file for bulk import
+= 3.0.2 =
+* Fix - Fixed error on Add Tracking button on orders page
+* Fix - fixed issue with On Hold customizer
+* Enhancement - Remove TrackShip shipment stats change text before tracking info table from all shipment status emails
 
-= 2.8.7 =
-* Dev - Added compatibility with WooCommerce 4.0
-* Dev - Added compatibility with WPML
-* Dev - Migrate customizer data from theme_mode to option
-* Fix - Undefined index: date_shipped in woo-advanced-shipment-tracking/includes/api/v1/class-wc-advanced-shipment-tracking-rest-api-controller.php on line 520
-* Fix - Undefined index: date_shipped in woo-advanced-shipment-tracking/templates/emails/tracking-info.php on line 259
-* Fix - Undefined variable: th_column_style in woo-advanced-shipment-tracking/includes/class-wc-advanced-shipment-tracking.php on line 827
+= 3.0.1 =
+* Fix - fixed delivered order status email customizer issue
+* Fix - fixed TrackShip tracking page jQuery Block UI issue for some of the themes
 
-= 2.8.6 =
-* Localization - Added language support for Dutch / Nederlands
-* Enhancement - Added functionality for Late Shipment admin nitifactions
-* Enhancement - Added option for choose date format for CSV import
-* Dev - Added hook in orders details email template - 'wcast_email_before_order_table' and 'wcast_email_after_order_table'
-* Dev - Updated TrackShip status emails logic - if the shipment status changes to one of the tracking numbers, send only this tracking number in the email notification
-* Fix - validation issue in shippment tracking page
-
-= 2.8.5 =
-* Dev - If custom provider has no tracking link remove url from tracking number
-* Fix - Fixed issue with tracking page in settings, display save button when trackship tracking page disable
-* Fix - Fixed error with kadence customizer in completed email
-
-= 2.8.4 =
-* Dev - Updated licensing system for AST Tracking Per Item Add-on
-
-= 2.8.3 =
-* Fix - Fixed error 'Call to undefined function SMSWOO()' in settings page
-
-= 2.8.2 =
-* Dev - Added compatibility with Sequential Order Numbers Pro
-* Enhancement - Added Indonesian shipping carriers
-* Enhancement - Added SMS for WooCommerce section in Add-ons tab in settings
-* Fix - Fixed issue with tracking url '&#038' in custom shipping provider
-
-= 2.8.1 =
-* Enhancement - Updated New Zealand Post and CourierPost shipping provider image
-* Enhancement - Added success admin notice for review
-
-= 2.8 =
-* Dev - Added functionality for Bulk import tracking info per item for Tracking Per Item Addon
-* Dev - Added functionality for add tracking info per item for Tracking Per Item Addon
-* Enhancement - Updated New Zealand Post shipment provider logo
+= 3.0 =
+* Enhancement - Updated CSV Upload page design in settings page
+* Enhancement - Updated TrackShip dashboard page design
+* Enhancement - Added On Hold Shipment status emails for TrackShip
+* Enhancement - Redesign Shipping Providers List in settings page
+* Enhancement - Added option for hard sync shipping providers in Sync Providers option
+* Dev - Updated plugin code for better security and optimize
+* Dev - Removed compatibility code for WC – APG SMS Notifications from plugin
+* Dev - Added all shipping provider image under wp-content/uploads/ast-shipping-providers folder. So load shipping provider image from there
+* Dev - Optimized all shipping provider image
+* Dev - Added new functions for add tracking information and get tracking information
+* Dev - Removed all kind of special character validation from adding tracking number 
+* Fix - Fixed issue of set order status shipped from order details page when "mark order as shipped" without page refresh
+* Localization - Updated Swedish, Turkish and French Translations
 
 [For the complete changelog](https://www.zorem.com/docs/woocommerce-advanced-shipment-tracking/changelog/)

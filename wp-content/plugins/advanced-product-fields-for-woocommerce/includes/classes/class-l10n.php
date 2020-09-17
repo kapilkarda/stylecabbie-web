@@ -14,15 +14,28 @@ namespace SW_WAPF\Includes\Classes {
         public function __construct()
         {
             add_action('plugins_loaded', array($this, 'load_text_domain'));
+
+	        add_filter( 'pll_get_post_types', array($this, 'add_cpt_to_polylang'), 10, 2);
         }
 
         public function load_text_domain()
         {
             load_plugin_textdomain(
-                'sw-wapf',
+                'advanced-product-fields-for-woocommerce',
                 false,
                 trailingslashit(wapf_get_setting('slug')) . trailingslashit($this->language_folder)
             );
         }
+
+	    public function add_cpt_to_polylang($post_types, $is_settings) {
+
+		    if ( $is_settings ) {
+			    unset( $post_types['wapf_product'] );
+		    } else {
+			    $post_types['wapf_product'] = 'wapf_product';
+		    }
+
+		    return $post_types;
+	    }
     }
 }

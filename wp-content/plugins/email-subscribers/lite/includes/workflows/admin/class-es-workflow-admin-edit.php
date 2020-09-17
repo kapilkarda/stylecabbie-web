@@ -153,6 +153,7 @@ class ES_Workflow_Admin_Edit {
 					$action_status = 'error';
 				}
 			}
+
 			$redirect_url = menu_page_url( 'es_workflows', false );
 			$redirect_url = add_query_arg(
 				array(
@@ -175,22 +176,35 @@ class ES_Workflow_Admin_Edit {
 		$workflow_id        = self::$workflow ? self::$workflow->get_id() : '';
 		$workflow_title     = self::$workflow ? self::$workflow->get_title() : '';
 		$workflows_page_url = menu_page_url( 'es_workflows', false );
+
+		$action      = ig_es_get_request_data( 'action' );
+		if ( 'new' === $action ) {
+			$title        = __( ' Add New Workflow', 'email-subscribers' );
+		} else {
+			$title        = __( ' Edit Workflow', 'email-subscribers' );
+		}
 		?>
-		<div class="wrap">
-			<h1 class="wp-heading-inline">
-				<?php esc_html_e( 'Add New Workflow', 'email-subscribers' ); ?>
-				<a href="<?php echo esc_url( $workflows_page_url ); ?>"
-					class="inline-flex justify-center rounded-md border border-transparent px-2.5 py-0.5 bg-white text-sm leading-5 font-medium text-white hover:text-white focus:text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:shadow-outline-blue transition ease-in-out duration-150">
-					<?php esc_html_e( 'Workflows', 'email-subscribers' ); ?>
-				</a>
-			</h1>
+		<div>
+			<h2 class="text-2xl leading-7 text-gray-900 sm:leading-9 sm:truncate">
+				<span class="text-base font-normal leading-7 text-indigo-600 sm:leading-9 sm:truncate">
+					<a href="<?php echo esc_url( $workflows_page_url ); ?>"><?php esc_html_e('Workflows', 'email-subscribers'); ?></a>
+				</span> 
+				<svg class="w-6 h-6 mt-2 inline-block" fill="currentColor" viewBox="0 0 24 24">
+					<path
+						fill-rule="evenodd"
+						d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+						clip-rule="evenodd"
+					></path>
+				</svg>
+				<?php echo esc_html( $title ); ?>
+			</h2>
 			<form method="post" action="#">
 				<input type="hidden" id="workflow_id" name="workflow_id" value="<?php echo ! empty( $workflow_id ) ? esc_attr( $workflow_id ) : ''; ?>">
 				<?php
-					/* Workflow nonce */
+					// Workflow nonce.
 					wp_nonce_field( 'ig-es-workflow', 'ig-es-workflow-nonce', false );
 
-					/* Used to save closed metaboxes and their order */
+					// Used to save closed metaboxes and their order.
 					wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 					wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 				?>
@@ -274,7 +288,7 @@ class ES_Workflow_Admin_Edit {
 			'meta-box-actions',
 			array(
 				'workflow'                 => self::$workflow,
-				'actions'                  => self::$workflow ? self::$workflow->get_actions() : false,
+				'workflow_actions'         => self::$workflow ? self::$workflow->get_actions(): false,
 				'action_select_box_values' => $action_select_box_values,
 			)
 		);
@@ -328,24 +342,26 @@ class ES_Workflow_Admin_Edit {
 	 * @since 4.4.1
 	 * @param int $workflow_id Workflow ID.
 	 * @return mixed $workflow_id/false workflow id on success otherwise false
+	 * 
+	 * @modified 4.5.3 Removed sanitization for $posted being performed through ig_es_get_request_data function. Instead added individual sanitization based on workflow field.
 	 */
 	public static function save( $workflow_id = 0 ) {
 
-		$posted = ig_es_get_request_data( 'ig_es_workflow_data' );
+		$posted = ig_es_get_request_data( 'ig_es_workflow_data', array(), false );
 
 		if ( ! is_array( $posted ) ) {
 			return false;
 		}
 
-		$workflow_title  = isset( $posted['title'] ) ? $posted['title'] : '';
+		$workflow_title  = isset( $posted['title'] ) ? ig_es_clean( $posted['title'] ) : '';
 		$workflow_name   = ! empty( $workflow_title ) ? sanitize_title( ES_Clean::string( $workflow_title ) ) : '';
-		$trigger_name    = isset( $posted['trigger_name'] ) ? $posted['trigger_name'] : '';
-		$trigger_options = isset( $posted['trigger_options'] ) ? $posted['trigger_options'] : array();
-		$rules           = isset( $posted['rules'] ) ? $posted['rules'] : array();
-		$actions         = isset( $posted['actions'] ) ? $posted['actions'] : array();
-		$status          = isset( $posted['status'] ) ? $posted['status'] : 0;
-		$type            = isset( $posted['type'] ) ? $posted['type'] : 0;
-		$priority        = isset( $posted['priority'] ) ? $posted['priority'] : 0;
+		$trigger_name    = isset( $posted['trigger_name'] ) ? ig_es_clean( $posted['trigger_name'] ): '';
+		$trigger_options = isset( $posted['trigger_options'] ) ? ig_es_clean( $posted['trigger_options'] ): array();
+		$rules           = isset( $posted['rules'] ) ? ig_es_clean( $posted['rules'] ) : array();
+		$actions         = isset( $posted['actions'] ) ? $posted['actions'] : array(); // We can't sanitize actions data since some actions like Send email allows html in its field.
+		$status          = isset( $posted['status'] ) ? ig_es_clean( $posted['status'] ): 0;
+		$type            = isset( $posted['type'] ) ? ig_es_clean( $posted['type'] ) : 0;
+		$priority        = isset( $posted['priority'] ) ? ig_es_clean( $posted['priority'] ) : 0;
 
 		$workflow_meta                = array();
 		$workflow_meta['when_to_run'] = self::extract_string_option_value( 'when_to_run', $posted, 'immediately' );

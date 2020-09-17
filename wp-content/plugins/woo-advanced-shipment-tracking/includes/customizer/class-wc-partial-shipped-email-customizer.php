@@ -141,7 +141,7 @@ class wcast_partial_shipped_customizer_email {
 		$wp_customize->add_control( new WP_Customize_Heading_Control( $wp_customize, 'partial_shipped_order_email_heading',
 			array(
 				'label' => __( 'Partially Shipped status email', 'woo-advanced-shipment-tracking' ),
-				'description' => __( 'This section lets you customize the Email Content.', 'woo-advanced-shipment-tracking' ),
+				'description' => '',
 				'section' => 'customer_partial_shipped_email'
 			)
 		) );		

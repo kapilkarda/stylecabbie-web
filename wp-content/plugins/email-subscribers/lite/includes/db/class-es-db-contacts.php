@@ -5,19 +5,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class ES_DB_Contacts extends ES_DB {
+
 	/**
+	 * Table name
+	 * 
 	 * @since 4.2.4
 	 * @var $table_name
 	 *
 	 */
 	public $table_name;
+
 	/**
+	 * Table DB version
+	 * 
 	 * @since 4.2.4
 	 * @var $version
 	 *
 	 */
 	public $version;
+
 	/**
+	 * Table primary key column name
+	 * 
 	 * @since 4.2.4
 	 * @var $primary_key
 	 *
@@ -129,11 +138,15 @@ class ES_DB_Contacts extends ES_DB {
 		$subscriber_email_name_map = array();
 		if ( count( $emails ) > 0 ) {
 
-			$ig_contacts_table = IG_CONTACTS_TABLE;
+			$emails_str  = implode( ',', $emails );
 
-			$emails_str = $this->prepare_for_in_query( $emails );
-
-			$subscribers = $wpdb->get_results( "SELECT email, first_name, last_name FROM $ig_contacts_table WHERE email IN ($emails_str)", ARRAY_A );
+			$subscribers = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT email, first_name, last_name FROM {$wpdb->prefix}ig_contacts WHERE FIND_IN_SET( email, %s )",
+					$emails_str
+				),
+				ARRAY_A
+			);
 
 			if ( count( $subscribers ) > 0 ) {
 				foreach ( $subscribers as $subscriber ) {
@@ -248,9 +261,15 @@ class ES_DB_Contacts extends ES_DB {
 
 		global $wpdb;
 
-		$ig_lists_contacts_table = IG_LISTS_CONTACTS_TABLE;
-
-		$where = $wpdb->prepare( "id IN (SELECT contact_id FROM $ig_lists_contacts_table WHERE list_id = %d AND status IN ('subscribed', 'confirmed'))", $list_id );
+		if ( is_array( $list_id ) ) {
+			$list_ids_str = implode( ',', $list_id );
+			$where        = $wpdb->prepare( 
+				"id IN (SELECT contact_id FROM {$wpdb->prefix}ig_lists_contacts WHERE FIND_IN_SET( list_id, %s ) AND status IN ('subscribed', 'confirmed'))",
+				$list_ids_str
+			);
+		} else {
+			$where = $wpdb->prepare( "id IN (SELECT contact_id FROM {$wpdb->prefix}ig_lists_contacts WHERE list_id = %d AND status IN ('subscribed', 'confirmed'))", $list_id );
+		}
 
 		return $this->get_by_conditions( $where );
 
@@ -293,16 +312,22 @@ class ES_DB_Contacts extends ES_DB {
 
 		global $wpdb;
 
-		$ig_lists_contacts_table = IG_LISTS_CONTACTS_TABLE;
-
-		$query = $wpdb->prepare( "SELECT count(distinct(contact_id)) as total_subscribers FROM $ig_lists_contacts_table WHERE status = %s", 'subscribed' );
-
 		if ( ! empty( $list_id ) ) {
-			$query .= ' AND list_id = %d';
-			$query = $wpdb->prepare( $query, $list_id );
+			$subscribers = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT count(distinct(contact_id)) as total_subscribers FROM {$wpdb->prefix}ig_lists_contacts WHERE status = %s AND list_id = %d",
+					'subscribed',
+					$list_id
+				)
+			);
+		} else {
+			$subscribers = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT count(distinct(contact_id)) as total_subscribers FROM {$wpdb->prefix}ig_lists_contacts WHERE status = %s",
+					'subscribed'
+				)
+			);
 		}
-
-		$subscribers = $wpdb->get_var( $query );
 
 		return $subscribers;
 
@@ -360,15 +385,15 @@ class ES_DB_Contacts extends ES_DB {
 	public function edit_contact_global_status( $ids = array(), $unsubscribed = 0 ) {
 		global $wpdb;
 
-		$ig_contacts_table = IG_CONTACTS_TABLE;
+		$ids = implode( ',', $ids );
 
-		$ids = $this->prepare_for_in_query( $ids );
-
-		$sql   = "UPDATE $ig_contacts_table SET unsubscribed = %d WHERE id IN ($ids)";
-		$query = $wpdb->prepare( $sql, $unsubscribed );
-
-		return $wpdb->query( $query );
-
+		return $wpdb->query( 
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}ig_contacts SET unsubscribed = %d WHERE FIND_IN_SET( id, %s )",
+				$unsubscribed,
+				$ids
+			)	
+		);
 	}
 
 	/**
@@ -395,14 +420,16 @@ class ES_DB_Contacts extends ES_DB {
 				$list_id = array( $list_id );
 			}
 
-			$ig_lists_contacts_table = IG_LISTS_CONTACTS_TABLE;
+			$list_ids_str = implode( ',', $list_id );
 
-			$list_ids_str = $this->prepare_for_in_query( $list_id );
+			$list_contact_count = $wpdb->get_var(
+				$wpdb->prepare( 
+					"SELECT count(*) as count FROM {$wpdb->prefix}ig_lists_contacts WHERE FIND_IN_SET(list_id,%s) AND contact_id = %d",
+					$list_ids_str,
+					$contact_id
+				)
+			);
 
-			$list_query = "SELECT count(*) as count FROM $ig_lists_contacts_table WHERE list_id IN ($list_ids_str) AND contact_id = %s";
-			$list_sql   = $wpdb->prepare( $list_query, $contact_id );
-
-			$list_contact_count = $wpdb->get_var( $list_sql );
 			if ( ! empty( $list_contact_count ) ) {
 				$data['list_id'] = true;
 			}
@@ -423,10 +450,10 @@ class ES_DB_Contacts extends ES_DB {
 	public function get_email_details_map() {
 		global $wpdb;
 
-		$ig_contacts_table = IG_CONTACTS_TABLE;
-
-		$query    = "SELECT id, email, hash FROM $ig_contacts_table";
-		$contacts = $wpdb->get_results( $query, ARRAY_A );
+		$contacts = $wpdb->get_results( 
+			"SELECT id, email, hash FROM {$wpdb->prefix}ig_contacts",
+			ARRAY_A
+		);
 		$details  = array();
 		if ( count( $contacts ) > 0 ) {
 			foreach ( $contacts as $contact ) {
@@ -477,17 +504,17 @@ class ES_DB_Contacts extends ES_DB {
 	public function get_contact_ids_by_emails( $emails = array() ) {
 		global $wpdb;
 
-		$ig_contacts_table = IG_CONTACTS_TABLE;
-
-		$query = "SELECT id FROM $ig_contacts_table";
-
 		if ( count( $emails ) > 0 ) {
-			$emails_str = $this->prepare_for_in_query( $emails );
-
-			$query .= " WHERE email IN ($emails_str)";
+			$emails_str = implode( ',', $emails );
+			$ids        = $wpdb->get_col( 
+				$wpdb->prepare(
+					"SELECT id FROM {$wpdb->prefix}ig_contacts WHERE FIND_IN_SET( email, %s ) ",
+					$emails_str
+				)
+			);
+		} else {
+			$ids = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}ig_contacts" );	
 		}
-
-		$ids = $wpdb->get_col( $query );
 
 		return $ids;
 	}
@@ -505,17 +532,18 @@ class ES_DB_Contacts extends ES_DB {
 	public function get_email_id_map( $emails = array() ) {
 		global $wpdb;
 
-		$ig_contacts_table = IG_CONTACTS_TABLE;
-
-		$query = "SELECT id, email FROM $ig_contacts_table";
-
 		if ( count( $emails ) > 0 ) {
-			$emails_str = $this->prepare_for_in_query( $emails );
-
-			$query .= " WHERE email IN ($emails_str)";
+			$emails_str = implode( ',', $emails );
+			$results    = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT id, email FROM {$wpdb->prefix}ig_contacts WHERE FIND_IN_SET( email, %s )",
+					$emails_str
+				),
+				ARRAY_A
+			);
+		} else {
+			$results = $wpdb->get_results( "SELECT id, email FROM {$wpdb->prefix}ig_contacts", ARRAY_A );
 		}
-
-		$results = $wpdb->get_results( $query, ARRAY_A );
 
 		$map = array();
 		if ( count( $results ) > 0 ) {
@@ -551,11 +579,9 @@ class ES_DB_Contacts extends ES_DB {
 	 */
 	public function migrate_subscribers_from_older_version() {
 		global $wpdb;
-
-		$es_email_list_table = ES_EMAILLIST_TABLE;
+		
 		//Get Total count of subscribers
-		$query = "SELECT count(*) as total FROM $es_email_list_table";
-		$total = $wpdb->get_var( $query );
+		$total = $wpdb->get_var( "SELECT count(*) as total FROM {$wpdb->prefix}es_emaillist" );
 
 		// If we have subscribers?
 		if ( $total > 0 ) {
@@ -574,8 +600,14 @@ class ES_DB_Contacts extends ES_DB {
 			$j = 0;
 			for ( $i = 0; $i < $total_batches; $i ++ ) {
 				$batch_start = $i * $batch_size;
-				$query       = "SELECT * FROM $es_email_list_table LIMIT {$batch_start}, {$batch_size} ";
-				$results     = $wpdb->get_results( $query, ARRAY_A );
+				$results     = $wpdb->get_results( 
+					$wpdb->prepare(
+						"SELECT * FROM {$wpdb->prefix}es_emaillist LIMIT %d, %d ",
+						$batch_start,
+						$batch_size
+					),
+					ARRAY_A
+				);
 				if ( count( $results ) > 0 ) {
 					$contacts = array();
 					foreach ( $results as $key => $result ) {
@@ -602,7 +634,7 @@ class ES_DB_Contacts extends ES_DB {
 							$contacts[ $key ]['email']        = $email;
 							$contacts[ $key ]['source']       = 'Migrated';
 							$contacts[ $key ]['status']       = ( 'spam' === strtolower( $result['es_email_status'] ) ) ? 'spam' : 'verified';
-							$contacts[ $key ]['unsubscribed'] = ( $result['es_email_status'] === 'Unsubscribed' ) ? 1 : 0;
+							$contacts[ $key ]['unsubscribed'] = ( 'Unsubscribed' === $result['es_email_status'] ) ? 1 : 0;
 							$contacts[ $key ]['hash']         = $result['es_email_guid'];
 							$contacts[ $key ]['created_at']   = $result['es_email_created'];
 							$contacts[ $key ]['updated_at']   = ig_get_current_date_time();
@@ -625,7 +657,7 @@ class ES_DB_Contacts extends ES_DB {
 
 			}
 
-			//Do import Lists Contacts
+			// Do import Lists Contacts
 			if ( count( $lists_contacts ) > 0 ) {
 				$list_name_id_map = ES()->lists_db->get_list_id_name_map( '', true );
 				foreach ( $lists_contacts as $list_name => $contacts ) {
@@ -652,26 +684,50 @@ class ES_DB_Contacts extends ES_DB {
 	public function edit_list_contact_status( $contact_ids, $list_ids, $status ) {
 		global $wpdb;
 
-		$contact_ids = $this->prepare_for_in_query( $contact_ids );
-
-		$list_ids = $this->prepare_for_in_query( $list_ids );
-
+		$contact_ids  = implode( ',', $contact_ids );
+		$list_ids     = implode( ',', $list_ids );
 		$current_date = ig_get_current_date_time();
 
-		$ig_contacts_table = IG_LISTS_CONTACTS_TABLE;
-
+		$query_result = array();
 		if ( 'subscribed' === $status ) {
-			$sql   = "UPDATE $ig_contacts_table SET status = %s, subscribed_at = %s WHERE contact_id IN ($contact_ids) AND list_id IN ($list_ids)";
-			$query = $wpdb->prepare( $sql, array( $status, $current_date ) );
+			$query_result = $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}ig_lists_contacts SET status = %s, subscribed_at = %s WHERE FIND_IN_SET( contact_id, %s ) AND FIND_IN_SET( list_id, %s )",
+					array(
+						$status,
+						$current_date,
+						$contact_ids,
+						$list_ids
+					)
+				)
+			);
 		} elseif ( 'unsubscribed' === $status ) {
-			$sql   = "UPDATE $ig_contacts_table SET status = %s, unsubscribed_at = %s WHERE contact_id IN ($contact_ids) AND list_id IN ($list_ids)";
-			$query = $wpdb->prepare( $sql, array( $status, $current_date ) );
+			$query_result = $wpdb->query(
+				$wpdb->prepare(
+					"UPDATE {$wpdb->prefix}ig_lists_contacts SET status = %s, unsubscribed_at = %s WHERE FIND_IN_SET( contact_id, %s ) AND FIND_IN_SET( list_id, %s )",
+					array(
+						$status,
+						$current_date,
+						$contact_ids,
+						$list_ids
+					)
+				)
+			);
 		} elseif ( 'unconfirmed' === $status ) {
-			$sql   = "UPDATE $ig_contacts_table SET status = %s, optin_type = %d, subscribed_at = NULL, unsubscribed_at = NULL WHERE contact_id IN ($contact_ids) AND list_id IN ($list_ids)";
-			$query = $wpdb->prepare( $sql, array( $status, IG_DOUBLE_OPTIN ) );
+			$query_result = $wpdb->query(
+				$wpdb->prepare( 
+					"UPDATE {$wpdb->prefix}ig_lists_contacts SET status = %s, optin_type = %d, subscribed_at = NULL, unsubscribed_at = NULL WHERE FIND_IN_SET( contact_id, %s ) AND FIND_IN_SET( list_id, %s )",
+					array(
+						$status,
+						IG_DOUBLE_OPTIN,
+						$contact_ids,
+						$list_ids
+					)
+				)
+			);
 		}
 
-		return $wpdb->query( $query );
+		return $query_result;
 	}
 
 	/**
@@ -686,8 +742,8 @@ class ES_DB_Contacts extends ES_DB {
 	 */
 	public function get_total_contacts_by_date( $status = 'subscribed', $days = 60 ) {
 
-		if ( $status === 'subscribed' ) {
-			$results = ES()->lists_contacts_db->get_total_subscribed_contacts_by_date( $days );
+		if ( 'subscribed' === $status ) {
+			$results = $this->get_total_subscribed_contacts_by_date( $days );
 		}
 
 		return $results;
@@ -710,5 +766,78 @@ class ES_DB_Contacts extends ES_DB {
 
 		return $this->get_column_by( 'id', 'wp_user_id', $user_id );
 	}
+
+	/**
+	 * Get total subscribed contacts by date
+	 *
+	 * @param string $status
+	 * @param int $days
+	 *
+	 * @return array
+	 *
+	 * @since 4.4.2
+	 */
+	public function get_total_subscribed_contacts_by_date( $days = 60 ) {
+		global $wpbd;
+
+		$columns = array( 'DATE(created_at) as date', 'count(DISTINCT(id)) as total' );
+		$where   = 'unsubscribed = %d';
+		$args[]  = 0;
+
+		if ( 0 != $days ) {
+			$days   = esc_sql( $days );
+			$where .= ' AND created_at >= DATE_SUB(NOW(), INTERVAL %d DAY)';
+			$args[] = $days;
+		}
+
+		$group_by = ' GROUP BY DATE(created_at)';
+
+		$where .= $group_by;
+
+		$where = $wpbd->prepare( $where, $args );
+
+		$results = $this->get_columns_by_condition( $columns, $where );
+
+		$contacts = array();
+		if ( ! empty( $results ) ) {
+			foreach ( $results as $result ) {
+				$contacts[ $result['date'] ] = $result['total'];
+			}
+		}
+
+		return $contacts;
+	}
+
+	/**
+	 * Get total subscribed contacts before $days
+	 *
+	 * @param int $days
+	 *
+	 * @return array
+	 *
+	 * @since 4.4.2
+	 */
+	public function get_total_subscribed_contacts_before_days( $days = 60 ) {
+		global $wpbd;
+
+		$columns = array( 'count(DISTINCT(id)) as total' );
+		$where   = 'unsubscribed = %d';
+		$args[]  = 0;
+
+		if ( 0 != $days ) {
+			$days   = esc_sql( $days );
+			$where .= ' AND created_at < DATE_SUB(NOW(), INTERVAL %d DAY)';
+			$args[] = $days;
+		}
+
+		$where = $wpbd->prepare( $where, $args );
+
+		$results = $this->get_columns_by_condition( $columns, $where );
+
+		$results = array_shift( $results );
+
+		return $results['total'];
+	}
+
 
 }

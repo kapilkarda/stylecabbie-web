@@ -191,7 +191,7 @@ namespace SW_WAPF\Includes\Classes {
                 $groups = array();
 
                 foreach ($posts as $post) {
-                    $groups[] = maybe_unserialize($post->post_content);
+                    $groups[] = self::process_data($post->post_content);
                 }
 
                 $cached = $groups;
@@ -208,7 +208,7 @@ namespace SW_WAPF\Includes\Classes {
             global $post;
 
             if($post && $post->ID == $id && in_array($post->post_type, wapf_get_setting('cpts')))
-                return maybe_unserialize($post->post_content);
+                return self::process_data($post->post_content);
 
             $cache_key = self::$field_group_cache_key . $id;
 
@@ -218,7 +218,7 @@ namespace SW_WAPF\Includes\Classes {
             }
 
             if(strpos($id, 'p_') !== false) {
-                $the_group = maybe_unserialize(get_post_meta(intval(str_replace('p_','',$id)),'_wapf_fieldgroup', true));
+                $the_group = self::process_data(get_post_meta(intval(str_replace('p_','',$id)),'_wapf_fieldgroup', true));
                 Cache::set($cache_key,$the_group);
                 return $the_group;
             }
@@ -246,7 +246,7 @@ namespace SW_WAPF\Includes\Classes {
             if(!$post || !in_array($post->post_type,wapf_get_setting('cpts')))
                 return null;
 
-            $cached = maybe_unserialize($post->post_content);
+            $cached = self::process_data($post->post_content);
             Cache::set($cache_key,$cached);
 
             return $cached;
@@ -341,7 +341,7 @@ namespace SW_WAPF\Includes\Classes {
             if($post_title != null)
                 $save['post_title'] = sanitize_text_field($post_title);
 
-            $save['post_content'] = wp_slash(serialize($fg));
+            $save['post_content'] = wp_slash(serialize($fg->to_array()));
 
             if($post_id)
                 $id = wp_update_post($save);
@@ -351,7 +351,7 @@ namespace SW_WAPF\Includes\Classes {
                 $fg->id = $id;
                 $update_data = array(
                     'ID'            => $id,
-                    'post_content'  => wp_slash(serialize($fg))
+                    'post_content'  => wp_slash(serialize($fg->to_array()))
                 );
                 wp_update_post($update_data);
             }
@@ -366,6 +366,19 @@ namespace SW_WAPF\Includes\Classes {
                 });
             });
         }
+
+	    public static function process_data($data) {
+
+			$unserialized = maybe_unserialize($data);
+
+			if(is_array($unserialized)) {
+				$fg = new FieldGroup();
+				return $fg->from_array($unserialized);
+			}
+
+			return $unserialized;
+
+	    }
 
     }
 

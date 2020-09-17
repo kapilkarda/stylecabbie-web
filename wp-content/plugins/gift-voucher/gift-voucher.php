@@ -5,7 +5,7 @@
  * Plugin URI: https://www.telberia.com/
  * Author: codemenschen
  * Author URI: https://www.codemenschen.at/
- * Version: 3.3.9.1
+ * Version: 3.3.10
  * Text Domain: gift-voucher
  * Domain Path: /languages
  * License: GNU General Public License v2.0 or later
@@ -15,7 +15,7 @@
  *
  * @package         Gift Cards
  * @author          Aakash Gupta
- * @copyright       Copyright (c) 2019
+ * @copyright       Copyright (c) 2020
  *
  */
 
@@ -194,8 +194,8 @@ function wpgv_plugin_activation() {
         paypal_email varchar(100) DEFAULT NULL,
         sofort_configure_key varchar(100) DEFAULT NULL,
         reason_for_payment varchar(100) DEFAULT NULL,
-        stripe_publishable_key varchar(100) DEFAULT NULL,
-        stripe_secret_key varchar(100) DEFAULT NULL,
+        stripe_publishable_key varchar(255) DEFAULT NULL,
+        stripe_secret_key varchar(255) DEFAULT NULL,
         sender_name varchar(100) DEFAULT NULL,
         sender_email varchar(100) DEFAULT NULL,
         test_mode int(10) NOT NULL,
@@ -374,6 +374,9 @@ function wpgv_upgrade_completed( $upgrader_object, $options ) {
     $wpdb->query("ALTER TABLE $giftvouchers_setting ADD voucher_style varchar(100) DEFAULT NULL");
     $wpdb->query("ALTER TABLE $giftvouchers_setting ADD currency varchar(10) DEFAULT NULL");
     $wpdb->query("ALTER TABLE $giftvouchers_setting ADD currency_code varchar(10) DEFAULT NULL");
+
+    $wpdb->query("ALTER TABLE $giftvouchers_setting MODIFY COLUMN stripe_publishable_key varchar(255) DEFAULT NULL;");
+    $wpdb->query("ALTER TABLE $giftvouchers_setting MODIFY COLUMN stripe_secret_key varchar(255) DEFAULT NULL;");
 
     $orders = $wpdb->get_results( "SELECT id,from_name,amount FROM $giftvouchers_list WHERE id NOT IN (SELECT voucher_id FROM $giftvouchers_activity) AND `status` = 'unused' AND `payment_status` = 'Paid'" );
     foreach ($orders as $order) {

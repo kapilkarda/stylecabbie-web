@@ -1,6 +1,5 @@
 <?php
 	
-	
 	defined( 'ABSPATH' ) or die( 'Keep Quit' );
 	
 	if ( ! class_exists( 'Woo_Variation_Gallery_Export_Import' ) ):
@@ -26,6 +25,7 @@
 				
 			}
 			
+			// Export
 			public function export_column_name( $columns ) {
 				
 				// column slug => column name
@@ -37,7 +37,12 @@
 			public function export_column_data( $value, $product, $column_id ) {
 				$product_id     = $product->get_id();
 				$gallery_images = get_post_meta( $product_id, 'woo_variation_gallery_images', true );
-				$images         = array();
+				
+				if ( empty( $gallery_images ) ) {
+					return '';
+				}
+				
+				$images = array();
 				
 				foreach ( $gallery_images as $image_id ) {
 					$image = wp_get_attachment_image_src( $image_id, 'full' );
@@ -50,7 +55,7 @@
 				return implode( ',', $images );
 			}
 			
-			
+			// Import
 			public function import_column_name( $columns ) {
 				// column slug => column name
 				$columns[ $this->column_id ] = esc_html__( 'Woo Variation Gallery Images', 'woo-variation-gallery' );

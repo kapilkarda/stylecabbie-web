@@ -33,7 +33,7 @@ if ( $tracking_items ) :
 	$tracking_info_settings = get_option('tracking_info_settings');
 	$ast = new WC_Advanced_Shipment_Tracking_Actions;	
 	
-	$select_tracking_template = $tracking_info_settings['select_tracking_template'];
+	$select_tracking_template = $ast->get_option_value_from_array('tracking_info_settings','select_tracking_template',$wcast_customizer_settings->defaults['select_tracking_template']);
 
 	$show_provider_th = 1;	
 	$colspan = 1;
@@ -71,9 +71,11 @@ if ( $tracking_items ) :
 	
 	$email_border_size = $ast->get_option_value_from_array('tracking_info_settings','table_border_size',$wcast_customizer_settings->defaults['table_border_size']);
 	
-	if($tracking_info_settings['header_text_change']){ $shipment_tracking_header = $tracking_info_settings['header_text_change']; } else{ $shipment_tracking_header = "Tracking Information"; }
+	$hide_trackig_header = $ast->get_option_value_from_array('tracking_info_settings','hide_trackig_header','');
 	
-	if($tracking_info_settings['additional_header_text']){ $shipment_tracking_header_text = $tracking_info_settings['additional_header_text']; } 
+	$shipment_tracking_header = $ast->get_option_value_from_array('tracking_info_settings','header_text_change','Tracking Information');
+	
+	$shipment_tracking_header_text = $ast->get_option_value_from_array('tracking_info_settings','additional_header_text','');
 	
 	$email_table_backgroud_color = $ast->get_option_value_from_array('tracking_info_settings','table_bg_color',$wcast_customizer_settings->defaults['table_bg_color']);
 	
@@ -93,7 +95,7 @@ if ( $tracking_items ) :
 	
 	$tracking_link_bg_color = $ast->get_option_value_from_array('tracking_info_settings','tracking_link_bg_color',$wcast_customizer_settings->defaults['tracking_link_bg_color']);
 	
-	if($tracking_info_settings['tracking_link_border']){ 
+	if(isset($tracking_info_settings['tracking_link_border'])){ 
 		$tracking_link_border = 'underline';	
 	} else{
 		$tracking_link_border = 'unset';	
@@ -139,14 +141,14 @@ if ( $tracking_items ) :
 	$text_align = is_rtl() ? 'right' : 'left'; 
 	
 	$shipment_status = get_post_meta( $order_id, "shipment_status", true);
+	if($preview){
 	?>
-	<h2 class="header_text" style="text-align:<?php echo $text_align; ?>"><?php echo apply_filters( 'woocommerce_shipment_tracking_my_orders_title', __( $shipment_tracking_header, 'woo-advanced-shipment-tracking' ) ); ?></h2>
+	<h2 class="header_text <?php if($hide_trackig_header){ echo 'hide'; } ?>" style="text-align:<?php echo $text_align; ?>;"><?php echo apply_filters( 'woocommerce_shipment_tracking_my_orders_title', __( $shipment_tracking_header, 'woo-advanced-shipment-tracking' ) ); ?></h2>
+	<?php } else{ ?>
+		<h2 class="header_text" style="text-align:<?php echo $text_align; ?>;<?php if($hide_trackig_header){ echo 'display:none;'; } ?>"><?php echo apply_filters( 'woocommerce_shipment_tracking_my_orders_title', __( $shipment_tracking_header, 'woo-advanced-shipment-tracking' ) ); ?></h2>
+	<?php } ?>
 	<p class="addition_header"><?php echo $shipment_tracking_header_text; ?></p>
-	<?php 
-		if(isset($new_status)){ ?>
-			<p> <?php echo sprintf(__('Shipment status changed to %s', 'woo-advanced-shipment-tracking'), apply_filters("trackship_status_filter",$new_status)) ?></p>
-		<?php }	
-	?>
+	
 	<?php if($select_tracking_template == 'simple_list'){ ?>
 	<div class="tracking_info">
 		<ul class="tracking_list">
@@ -155,20 +157,30 @@ if ( $tracking_items ) :
 			if(isset($tracking_item['date_shipped'])){
 				$date_shipped = $tracking_item['date_shipped'];
 			}	
-				
+			
+			global $wpdb;
+			
+			$tracking_provider = isset( $tracking_item['tracking_provider'] ) ? $tracking_item['tracking_provider'] : $tracking_item['custom_tracking_provider'];
+			
+			$tracking_provider = apply_filters('convert_provider_name_to_slug',$tracking_provider);
+
+			$results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woo_shippment_provider WHERE ts_slug = %s", $tracking_provider ) );											
+			
+			$provider_name = apply_filters('get_ast_provider_name', $tracking_provider, $results);	
+			
 			$url = str_replace('%number%',$tracking_item['tracking_number'],$tracking_item['formatted_tracking_link']);	
 			$simple_layout_content_updated = '';
 			?>	
 				<li class="tracking_list_li">
 					<div class="tracking_list_div" style="font-size:<?php echo $simple_provider_font_size; ?>px;color:<?php echo $simple_provider_font_color; ?>;border-bottom:<?php echo $show_provider_border; ?>px solid <?php echo $provider_border_color; ?>">
 						<?php 
-						$formatted_tracking_provider = apply_filters( 'ast_provider_title', esc_html( $tracking_item['formatted_tracking_provider'] ));
+						$formatted_tracking_provider = apply_filters( 'ast_provider_title', esc_html( $provider_name ));
 						
 						$simple_layout_content_updated = str_replace('{ship_date}',date_i18n( get_option( 'date_format' ), $date_shipped ),$simple_layout_content);
 						
 						$simple_layout_content_updated = str_replace('{shipping_provider}',$formatted_tracking_provider,$simple_layout_content_updated);
 						
-						$tracking_number_link = '<a href="'.esc_url( $url ).'">'.$tracking_item['tracking_number'].'</a>';
+						$tracking_number_link = '<a target="_blank" href="'.esc_url( $url ).'">'.$tracking_item['tracking_number'].'</a>';
 						
 						$simple_layout_content_updated = str_replace('{tracking_number_link}',$tracking_number_link,$simple_layout_content_updated);
 						
@@ -216,16 +228,16 @@ if ( $tracking_items ) :
 			<tr>
 				<?php if($show_provider_th){ ?>
 					<th class="tracking-provider" colspan="<?php echo $colspan; ?>"  scope="col" class="td" style="<?php echo $th_column_style; ?>">
-						<?php _e( $provider_header_text, 'woo-advanced-shipment-tracking' ); ?>
+						<?php esc_html_e( $provider_header_text, 'woo-advanced-shipment-tracking' ); ?>
 					</th>
 				<?php } ?>
 				<?php do_action("ast_tracking_email_header", $order_id, $th_column_style); ?>
-				<th class="tracking-number" scope="col" class="td" style="<?php echo $th_column_style; ?>"><?php _e( $tracking_number_header_text, 'woo-advanced-shipment-tracking' ); ?></th>				
+				<th class="tracking-number" scope="col" class="td" style="<?php echo $th_column_style; ?>"><?php esc_html_e( $tracking_number_header_text, 'woo-advanced-shipment-tracking' ); ?></th>				
 				<?php if($preview){ ?>
-					<th class="date-shipped <?php if($remove_date_from_tracking_info == 1){ echo 'hide'; } ?>" scope="col" class="td" style="<?php echo $th_column_style; ?>"><?php _e( $shipped_date_header_text, 'woo-advanced-shipment-tracking' ); ?></th>
+					<th class="date-shipped <?php if($remove_date_from_tracking_info == 1){ echo 'hide'; } ?>" scope="col" class="td" style="<?php echo $th_column_style; ?>"><?php esc_html_e( $shipped_date_header_text, 'woo-advanced-shipment-tracking' ); ?></th>
 				<?php } else{
 						if($remove_date_from_tracking_info != 1){ ?>
-							<th class="date-shipped" style="<?php echo $th_column_style; ?>"><span class="nobr"><?php _e( $shipped_date_header_text, 'woo-advanced-shipment-tracking' ); ?></span></th>
+							<th class="date-shipped" style="<?php echo $th_column_style; ?>"><span class="nobr"><?php esc_html_e( $shipped_date_header_text, 'woo-advanced-shipment-tracking' ); ?></span></th>
 						<?php }
 					} ?>
 				<?php 
@@ -249,32 +261,25 @@ if ( $tracking_items ) :
 				if(isset($tracking_item['date_shipped'])){
 					$date_shipped = $tracking_item['date_shipped'];
 				}
+				
+				global $wpdb;
+				
+				$tracking_provider = isset( $tracking_item['tracking_provider'] ) ? $tracking_item['tracking_provider'] : $tracking_item['custom_tracking_provider'];
+				$tracking_provider = apply_filters('convert_provider_name_to_slug',$tracking_provider);
+
+				$results = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}woo_shippment_provider WHERE ts_slug = %s", $tracking_provider ) );											
+				
+				$provider_name = apply_filters('get_ast_provider_name', $tracking_provider, $results);
 				?>
 				<tr class="tracking" style="background-color:<?php echo $email_table_backgroud_color; ?>">
 					<?php if($display_thumbnail == 1){ ?>
 					<td class="tracking-provider" data-title="<?php _e( 'Provider', 'woo-advanced-shipment-tracking' ); ?>" style="<?php echo $td_column_style; ?>;width: 50px;">
-						<?php 
-						global $wpdb;		
-						$woo_shippment_table_name = wc_advanced_shipment_tracking()->table;	
-						$shippment_provider = $wpdb->get_results( "SELECT * FROM $woo_shippment_table_name WHERE provider_name='".$tracking_item['formatted_tracking_provider']."'" );
-						$custom_thumb_id = $shippment_provider['0']->custom_thumb_id;
-						//echo $custom_thumb_id;
-						if($custom_thumb_id == 0 && $shippment_provider['0']->shipping_default == 1){
-							$src = wc_advanced_shipment_tracking()->plugin_dir_url()."assets/shipment-provider-img/".sanitize_title($tracking_item['formatted_tracking_provider']).".png";
-						} else{
-							$image_attributes = wp_get_attachment_image_src( $custom_thumb_id , array('60','60') );
-							if($image_attributes[0]){
-								$src = $image_attributes[0];	
-							} else{
-								$src = wc_advanced_shipment_tracking()->plugin_dir_url()."assets/shipment-provider-img/icon-default.png";	
-							}							
-						}
-						 ?><img style="width: 50px;vertical-align: middle;" src="<?php echo $src; ?>">
+						<img style="width: 50px;vertical-align: middle;" src="<?php echo apply_filters('get_shipping_provdider_src',$results); ?>">
 					</td>
 					<?php } ?>
 					<?php if($display_shipping_provider_name == 1){ ?>
 					<td class="tracking-provider" data-title="<?php _e( 'Provider Name', 'woo-advanced-shipment-tracking' ); ?>" style="<?php echo $td_column_style; ?>">
-						<?php echo apply_filters( 'ast_provider_title', esc_html( $tracking_item['formatted_tracking_provider'] )); ?>
+						<?php echo apply_filters( 'ast_provider_title', esc_html( $provider_name )); ?>
 					</td>
 					<?php } ?>
 

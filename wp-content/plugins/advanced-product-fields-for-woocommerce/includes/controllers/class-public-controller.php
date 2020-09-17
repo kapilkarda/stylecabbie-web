@@ -18,6 +18,8 @@ namespace SW_WAPF\Includes\Controllers {
 
             add_action( 'wp_enqueue_scripts', array($this, 'register_assets') );
 
+	        add_filter('wc_stripe_hide_payment_request_on_product_page','__return_true',10,2);
+
             new Product_Controller();
 
         }

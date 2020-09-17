@@ -2,8 +2,8 @@
 /**
  * Admin trigger metabox
  *
- * @author      Icegram
  * @since       4.4.1
+ * @author      Icegram
  * @version     1.0
  * @package     Email Subscribers
  */
@@ -18,21 +18,35 @@ foreach ( ES_Workflow_Triggers::get_all() as $trigger ) {
 if ( ! ES()->is_starter() ) {
 	$starter_trigger_list = array(
 		'Comment' => array(
-			'ig_es_comment_added' => __( 'Comment added', 'email-subscribers' ),
+			'ig_es_comment_added' => __( 'Comment Added', 'email-subscribers' ),
 		),
 		'Form'    => array(
-			'ig_es_cf7_submitted'           => __( 'Contact Form 7 Submitted', 'email-subscribers' ),
-			'ig_es_wpforms_submitted'       => __( 'WP Form Submitted', 'email-subscribers' ),
-			'ig_es_ninja_forms_submitted'   => __( 'Ninja Form Submitted', 'email-subscribers' ),
-			'ig_es_gravity_forms_submitted' => __( 'Gravity Form Submitted', 'email-subscribers' ),
+			'ig_es_cf7_submitted'              => __( 'Contact Form 7 Submitted', 'email-subscribers' ),
+			'ig_es_wpforms_submitted'          => __( 'WP Form Submitted', 'email-subscribers' ),
+			'ig_es_ninja_forms_submitted'      => __( 'Ninja Form Submitted', 'email-subscribers' ),
+			'ig_es_gravity_forms_submitted'	   => __( 'Gravity Form Submitted', 'email-subscribers' ),
+			'ig_es_forminator_forms_submitted' => __( 'Forminator Form Submitted', 'email-subscribers' ),
 		),
 		'Order'   => array(
-			'ig_es_wc_order_completed'    => __( 'WooCommerce order completed', 'email-subscribers' ),
-			'ig_es_edd_complete_purchase' => __( 'EDD purchase completed', 'email-subscribers' ),
-			'ig_es_give_donation_made'    => __( 'Give donation', 'email-subscribers' ),
+			'ig_es_wc_order_completed'    => __( 'WooCommerce Order Completed', 'email-subscribers' ),
+			'ig_es_edd_complete_purchase' => __( 'EDD Purchase Completed', 'email-subscribers' ),
+			'ig_es_give_donation_made'    => __( 'Give Donation Added', 'email-subscribers' ),
 		),
 	);
-	$trigger_list         = array_merge( $trigger_list, $starter_trigger_list );
+
+	$trigger_list = array_merge_recursive( $trigger_list, $starter_trigger_list );
+}
+
+if ( ! ES()->is_pro() ) {
+	$pro_trigger_list = array(
+		'Comment' => array(
+			'ig_es_wc_product_review_approved' => __( 'New Product Review Posted', 'email-subscribers' ),
+		),
+		'Order'   => array(
+			'ig_es_wc_order_refunded' => __( 'WooCommerce Order Refunded', 'email-subscribers' ),
+		),
+	);
+	$trigger_list = array_merge_recursive( $trigger_list, $pro_trigger_list );
 }
 ?>
 <table class="ig-es-table">
@@ -50,23 +64,38 @@ if ( ! ES()->is_starter() ) {
 						foreach ( $triggers as $trigger_name => $_trigger ) :
 							if ( $_trigger instanceof ES_Workflow_Trigger ) :
 								?>
-									<option value="<?php echo esc_attr( $_trigger->get_name() ); ?>" <?php echo esc_attr( $current_trigger && $current_trigger->get_name() === $trigger_name ? 'selected="selected"' : '' ); ?>><?php echo esc_html( $_trigger->get_title() ); ?></option>
+								<option value="<?php echo esc_attr( $_trigger->get_name() ); ?>" <?php echo esc_attr( $current_trigger && $current_trigger->get_name() === $trigger_name ? 'selected="selected"' : '' ); ?>><?php echo esc_html( $_trigger->get_title() ); ?></option>
 								<?php
-								elseif ( is_string( $_trigger ) ) :
-									?>
-									<option value="<?php echo esc_attr( $trigger_name ); ?>" disabled><?php echo $_trigger; ?></option>
-									<?php
-								endif;
-							endforeach;
+							elseif ( is_string( $_trigger ) ) :
+								?>
+								<option value="<?php echo esc_attr( $trigger_name ); ?>" disabled><?php echo esc_html( $_trigger ); ?></option>
+								<?php
+							endif;
+						endforeach;
 						?>
 					</optgroup>
 				<?php endforeach; ?>
 			</select>
 			<?php if ( $current_trigger && $current_trigger->get_description() ) : ?>
-				<div class="js-trigger-description"><?php echo $current_trigger->get_description_html(); // phpcs:ignore ?></div>
+				<div class="js-trigger-description"><?php echo wp_kses_post( $current_trigger->get_description_html() ); ?></div>
 			<?php else : ?>
 				<div class="js-trigger-description"></div>
 			<?php endif; ?>
 		</td>
 	</tr>
+
+	<?php
+
+	if ( $workflow ) {
+		ES_Workflow_Admin::get_view(
+			'trigger-fields',
+			array(
+				'trigger'     => $current_trigger,
+				'workflow'    => $workflow,
+				'fill_fields' => true,
+			)
+		);
+	}
+
+	?>
 </table>

@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Handles workflow admin ajax functionality
  *
@@ -43,6 +48,7 @@ class ES_Workflow_Admin_Ajax {
 		check_ajax_referer( 'ig-es-workflow-nonce', 'security' );
 
 		$trigger_name = ig_es_get_request_data( 'trigger_name' );
+		$workflow_id  = ig_es_get_request_data( 'workflow_id' );
 
 		$trigger = ES_Workflow_Triggers::get( $trigger_name );
 
@@ -50,8 +56,26 @@ class ES_Workflow_Admin_Ajax {
 			die;
 		}
 
+		$workflow = null;
+		if ( ! empty( $workflow_id ) ) {
+			$workflow = new ES_Workflow( $workflow_id );
+		}
+
+		ob_start();
+
+		ES_Workflow_Admin::get_view(
+			'trigger-fields',
+			array(
+				'trigger'  => $trigger,
+				'workflow' => $workflow,
+			)
+		);
+
+		$fields = ob_get_clean();
+
 		wp_send_json_success(
 			array(
+				'fields'  => $fields,
 				'trigger' => ES_Workflow_Admin_Edit::get_trigger_data( $trigger ),
 			)
 		);
@@ -66,16 +90,22 @@ class ES_Workflow_Admin_Ajax {
 
 		$action_name   = ig_es_get_request_data( 'action_name' );
 		$action_number = ig_es_get_request_data( 'action_number' );
+		$trigger_name  = ig_es_get_request_data( 'trigger_name' );
 
-		$action = ES_Workflow_Actions::get( $action_name );
+		$action  = ES_Workflow_Actions::get( $action_name );
+		$trigger = ES_Workflow_Triggers::get( $trigger_name );
+
+		if ( ! empty( $trigger ) ) {
+			$action->trigger = $trigger;
+		}
 
 		ob_start();
 
 		ES_Workflow_Admin::get_view(
 			'action-fields',
 			array(
-				'action'        => $action,
-				'action_number' => $action_number,
+				'workflow_action' => $action,
+				'action_number'   => $action_number,
 			)
 		);
 

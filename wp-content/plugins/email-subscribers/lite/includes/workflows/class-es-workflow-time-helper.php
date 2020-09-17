@@ -43,7 +43,7 @@ class ES_Workflow_Time_Helper {
 	/**
 	 * Convert local time to GMT time.
 	 *
-	 * @param \DateTime|ES_Worfklow_DateTime $datetime DateTime object.
+	 * @param \DateTime|ES_Workflow_DateTime $datetime DateTime object.
 	 */
 	public static function convert_to_gmt( $datetime ) {
 		$datetime->modify( '-' . self::get_timezone_offset() * HOUR_IN_SECONDS . ' seconds' );

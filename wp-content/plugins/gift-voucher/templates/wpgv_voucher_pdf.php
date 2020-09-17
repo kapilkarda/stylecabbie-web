@@ -41,11 +41,11 @@ $preview = true;
 if ($setting_options->is_style_choose_enable) {
 	$voucher_style = sanitize_text_field(base64_decode($_GET['style']));
 	$image_attributes = get_attached_file( $images[$voucher_style] );
-	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
+	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_voucher');
 } else {
 	$voucher_style = 0;
 	$image_attributes = get_attached_file( $images[0] );
-	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl');
+	$image = ($image_attributes) ? $image_attributes : get_option('wpgv_demoimageurl_voucher');
 }
 
 switch ($voucher_style) {

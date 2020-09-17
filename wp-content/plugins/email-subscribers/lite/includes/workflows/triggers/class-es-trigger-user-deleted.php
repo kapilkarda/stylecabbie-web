@@ -28,8 +28,8 @@ class ES_Trigger_User_Deleted extends ES_Workflow_Trigger {
 	 * Load trigger admin props.
 	 */
 	public function load_admin_details() {
-		$this->title       = __( 'User deleted', 'email-subscribers' );
-		$this->description = __( 'Fires when user deleted from WordPress .', 'email-subscribers' );
+		$this->title       = __( 'User Deleted', 'email-subscribers' );
+		$this->description = __( 'Fires when user deleted from WordPress.', 'email-subscribers' );
 		$this->group       = __( 'User', 'email-subscribers' );
 	}
 

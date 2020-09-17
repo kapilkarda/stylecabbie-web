@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Class to handle data absctraction from worflow trigger
+ * 
  * @class ES_Workflow_Data_Layer
  */
 class ES_Workflow_Data_Layer {
@@ -8,9 +10,11 @@ class ES_Workflow_Data_Layer {
 	private $data = array();
 
 	/**
+	 * Constructor
+	 * 
 	 * @param array $data
 	 */
-	function __construct( $data = array() ) {
+	public function __construct( $data = array() ) {
 
 		if ( is_array( $data ) ) {
 			$this->data = $data;
@@ -23,12 +27,12 @@ class ES_Workflow_Data_Layer {
 	/**
 	 * Initiate the data layer
 	 */
-	function init() {
+	public function init() {
 		do_action( 'ig_es_data_layer_init' );
 	}
 
 
-	function clear() {
+	public function clear() {
 		$this->data = array();
 	}
 
@@ -38,25 +42,29 @@ class ES_Workflow_Data_Layer {
 	 *
 	 * @return array
 	 */
-	function get_raw_data() {
+	public function get_raw_data() {
 		return $this->data;
 	}
 
 
 	/**
+	 * Set data item
+	 * 
 	 * @param $type
 	 * @param $item
 	 */
-	function set_item( $type, $item ) {
+	public function set_item( $type, $item ) {
 		$this->data[ $type ] = $item;
 	}
 
 
 	/**
+	 * Get data item
+	 * 
 	 * @param string $type
 	 * @return mixed
 	 */
-	function get_item( $type ) {
+	public function get_item( $type ) {
 
 		if ( ! isset( $this->data[ $type ] ) ) {
 			return false;

@@ -39,7 +39,7 @@ jQuery(document).on("submit", ".order_track_form", function(){
 				jQuery('.track-order-section').replaceWith(response);
 			} else{				
 				jQuery(".track_fail_msg ").show();
-				jQuery(".track_fail_msg ").text('Order id not found.');
+				jQuery(".track_fail_msg ").text('Order not found.');
 			}
 			jQuery(".order_track_form ").unblock();	
 		},
@@ -84,6 +84,18 @@ jQuery(document).on("click", ".hide_old_details", function(){
 	jQuery(this).closest('.tracking-details').find('.view_old_details').show();
 	jQuery(this).closest('.tracking-details').find('.old-details').fadeOut();	
 });
+
+jQuery(document).on("click", ".view_destination_old_details", function(){
+	jQuery(this).hide();
+	jQuery(this).closest('.tracking-details').find('.hide_destination_old_details').show();
+	jQuery(this).closest('.tracking-details').find('.old-destination-details').fadeIn();
+});
+jQuery(document).on("click", ".hide_destination_old_details", function(){
+	jQuery(this).hide();
+	jQuery(this).closest('.tracking-details').find('.view_destination_old_details').show();
+	jQuery(this).closest('.tracking-details').find('.old-destination-details').fadeOut();	
+});
+
 function showerror(element){
 	element.css("border-color","red");
 }

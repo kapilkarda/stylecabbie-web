@@ -16,7 +16,7 @@ namespace SW_WAPF\Includes\Classes {
 
         public static function cpt_to_string($cpt){
 
-            return __('Product','sw-wapf');
+            return __('Product','advanced-product-fields-for-woocommerce');
 
         }
 
@@ -43,17 +43,19 @@ namespace SW_WAPF\Includes\Classes {
 
         }
 
-        public static function format_pricing_hint($type, $amount) {
-
-            if(empty($amount))
-                $amount = 0;
+        public static function format_pricing_hint($type, $amount, $product, $for_page = 'shop') {
 
             $price_display_options = Woocommerce_Service::get_price_display_options();
 
             $price_output = sprintf(
                 $price_display_options['format'],
                 $price_display_options['symbol'],
-                number_format($amount,$price_display_options['decimals'], $price_display_options['decimal'],$price_display_options['thousand'])
+                number_format(
+	                self::adjust_addon_price($product,empty($amount) ? 0 : $amount,$type,$for_page),
+	                $price_display_options['decimals'],
+	                $price_display_options['decimal'],
+	                $price_display_options['thousand']
+                )
             );
 
             $sign = '+';
@@ -66,6 +68,50 @@ namespace SW_WAPF\Includes\Classes {
         {
             return preg_replace('/\.(?=.*\.)/', '', (str_replace(',', '.', $number)));
         }
+
+	    public static function adjust_addon_price($product, $amount,$type,$for = 'shop') {
+
+		    if($amount === 0)
+			    return 0;
+
+		    if($type === 'percent' || $type === 'p')
+			    return $amount;
+
+		    $amount = self::maybe_add_tax($product,$amount,$for);
+
+		    return $amount;
+
+	    }
+
+	    public static function maybe_add_tax($product, $price, $for_page = 'shop') {
+
+		    if(empty($price) || $price < 0 || !wc_tax_enabled())
+			    return $price;
+
+		    if(is_int($product))
+			    $product = wc_get_product($product);
+
+		    $args = array('qty' => 1, 'price' => $price);
+
+		    if($for_page === 'cart') {
+			    if(get_option('woocommerce_tax_display_cart') === 'incl')
+				    return wc_get_price_including_tax($product, $args);
+			    else
+				    return wc_get_price_excluding_tax($product, $args);
+		    }
+		    else
+			    return wc_get_price_to_display($product, $args);
+
+	    }
+
+	    public static function get_product_base_price($product) {
+
+		    if(wc_prices_include_tax())
+			    $price = wc_get_price_including_tax($product);
+		    else $price = wc_get_price_excluding_tax($product);
+
+		    return $price;
+	    }
 
     }
 }

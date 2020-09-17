@@ -95,6 +95,7 @@ input[type="number"]:focus {
 .tinymce-control textarea {
 	width: 100%;
 	padding: 10px;
+	height: 95px;
 }
 
 /* ==========================================================================

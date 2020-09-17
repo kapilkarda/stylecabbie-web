@@ -21,6 +21,7 @@
  * @var $show_ask_estimate_button      bool Whether to show Ask an Estimate form
  * @var $ask_estimate_url              string Ask an estimate destination url
  * @var $ask_an_estimate_icon          string Ask an estimate button icon
+ * @var $ask_an_estimate_text          string Ask an estimate button text
  * @var $ask_an_estimate_classes       string Classes to use for Ask for an estimate button
  * @var $additional_info               bool Whether to show Additional info textarea in Ask an estimate form
  * @var $enable_add_all_to_cart        bool Whether to show "Add all to Cart" button
@@ -82,9 +83,9 @@ if ( ! defined( 'YITH_WCWL' ) ) {
 			<div class="yith_wcwl_footer_additional_action">
 				<?php if ( $count && $show_ask_estimate_button ) : ?>
 					<!-- Ask an estimate button -->
-					<a href="<?php echo ( $additional_info || ! is_user_logged_in() ) ? '#ask_an_estimate_popup' : esc_url( $ask_estimate_url ); ?>" class="<?php echo esc_attr( $ask_an_estimate_classes ); ?> ask-an-estimate-button" <?php echo ( $additional_info ) ? 'data-rel="prettyPhoto[ask_an_estimate]"' : ''; ?> >
+					<a href="<?php echo ( $additional_info || ! is_user_logged_in() ) ? '#ask_an_estimate_popup' : esc_url( $ask_estimate_url ); ?>" class="<?php echo esc_attr( $ask_an_estimate_classes ); ?> ask-an-estimate-button" <?php echo ( $additional_info || ! is_user_logged_in() ) ? 'data-rel="prettyPhoto[ask_an_estimate]"' : ''; ?> >
 						<?php echo apply_filters( 'yith_wcwl_ask_an_estimate_icon', $ask_an_estimate_icon ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-						<?php echo esc_html( apply_filters( 'yith_wcwl_ask_an_estimate_text', __( 'Ask for an estimate', 'yith-woocommerce-wishlist' ) ) ); ?>
+						<?php echo esc_html( apply_filters( 'yith_wcwl_ask_an_estimate_text', $ask_an_estimate_text ) ); ?>
 					</a>
 				<?php endif; ?>
 
@@ -108,13 +109,13 @@ if ( ! defined( 'YITH_WCWL' ) ) {
 <?php do_action( 'yith_wcwl_after_wishlist_form', $wishlist ); ?>
 
 <?php
-if ( apply_filters( 'yith_wcwl_ask_an_estimate_conditions', $show_ask_estimate_button && ( ! is_user_logged_in() || $additional_info ) ) ) {
+if ( apply_filters( 'yith_wcwl_ask_an_estimate_conditions', $wishlist && $show_ask_estimate_button && ( ! is_user_logged_in() || $additional_info ) ) ) {
 	yith_wcwl_get_template( 'wishlist-popup-ask-an-estimate.php', $var );
 }
 ?>
 
 <?php
-if ( apply_filters( 'yith_wcwl_move_to_another_wishlist_popup_conditions', $move_to_another_wishlist && 'popup' === $move_to_another_wishlist_type && $available_multi_wishlist && count( $users_wishlists ) > 1, $wishlist ) ) {
+if ( apply_filters( 'yith_wcwl_move_to_another_wishlist_popup_conditions', $wishlist && $move_to_another_wishlist && 'popup' === $move_to_another_wishlist_type && $available_multi_wishlist && count( $users_wishlists ) > 1, $wishlist ) ) {
 	yith_wcwl_get_template( 'wishlist-popup-move.php', $var );
 }
 ?>

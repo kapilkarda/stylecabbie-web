@@ -1,5 +1,11 @@
 <?php
 
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+
 class ES_Handle_Post_Notification {
 
 	public $is_wp_5 = false;
@@ -51,7 +57,7 @@ class ES_Handle_Post_Notification {
 
 	public function es_post_publish_callback( $post_status, $original_post_status, $post ) {
 
-		if ( ( $post_status == 'publish' ) && ( $original_post_status != 'publish' ) ) {
+		if ( ( 'publish' == $post_status ) && ( 'publish' != $original_post_status ) ) {
 
 			if ( is_object( $post ) ) {
 
@@ -82,9 +88,10 @@ class ES_Handle_Post_Notification {
 					$template    = get_post( $template_id );    // to confirm if template exists in ES->Templates
 					if ( is_object( $template ) ) {
 						$list_id     = $notification['list_ids'];
+						$list_id     = explode( ',', $list_id );
 						$subscribers = ES()->contacts_db->get_active_contacts_by_list_id( $list_id );
 
-						//schedule
+						// schedule
 						if ( count( $subscribers ) > 0 ) {
 							/*
 							 * Prepare Subject
@@ -100,7 +107,8 @@ class ES_Handle_Post_Notification {
 									$existing_contacts[] = $subscriber['id'];
 								}
 							}
-							/*check again for unique subscribers count
+							/*
+							check again for unique subscribers count
 							 if unique count it 0 then skip this report
 							*/
 							if ( count( $subscribers ) <= 0 ) {
@@ -130,7 +138,12 @@ class ES_Handle_Post_Notification {
 									'finish_at'   => '',
 									'created_at'  => ig_get_current_date_time(),
 									'updated_at'  => ig_get_current_date_time(),
-									'meta'        => maybe_serialize( array( 'post_id' => $post_id, 'type' => 'post_notification' ) )
+									'meta'        => maybe_serialize(
+										array(
+											'post_id' => $post_id,
+											'type'    => 'post_notification',
+										)
+									),
 								);
 
 								// Add entry into mailing queue table
@@ -153,7 +166,7 @@ class ES_Handle_Post_Notification {
 	}
 
 	public static function prepare_subject( $post, $template ) {
-		//convert post subject here
+		// convert post subject here
 
 		$post_title     = $post->post_title;
 		$template_title = $template->post_title;
@@ -171,17 +184,21 @@ class ES_Handle_Post_Notification {
 	}
 
 	public static function prepare_body( $es_templ_body, $post_id, $email_template_id ) {
-		$post          = get_post( $post_id );
-		$post_date     = $post->post_modified;
-		$es_templ_body = str_replace( '{{DATE}}', $post_date, $es_templ_body );
+		$post                 = get_post( $post_id );
+		$post_key             = 'post';
+		// Making $post as global using $GLOBALS['post'] key. Can't use 'post' key directly into $GLOBALS since PHPCS throws global variable assignment warning for 'post'.
+		$GLOBALS[ $post_key ] = $post;
+
+		$post_date            = ES_Common::convert_date_to_wp_date( $post->post_modified );
+		$es_templ_body        = str_replace( '{{DATE}}', $post_date, $es_templ_body );
 
 		$post_title    = get_the_title( $post );
 		$es_templ_body = str_replace( '{{POSTTITLE}}', $post_title, $es_templ_body );
 		$post_link     = get_permalink( $post_id );
 
 		// Size of {{POSTIMAGE}}
-		$post_thumbnail      = "";
-		$post_thumbnail_link = "";
+		$post_thumbnail      = '';
+		$post_thumbnail_link = '';
 		if ( ( function_exists( 'has_post_thumbnail' ) ) && ( has_post_thumbnail( $post_id ) ) ) {
 			$es_post_image_size = get_option( 'ig_es_post_image_size', 'full' );
 			switch ( $es_post_image_size ) {
@@ -198,8 +215,8 @@ class ES_Handle_Post_Notification {
 			}
 		}
 
-		if ( $post_thumbnail != "" ) {
-			$post_thumbnail_link = "<a href='" . $post_link . "' target='_blank'>" . $post_thumbnail . "</a>";
+		if ( '' != $post_thumbnail ) {
+			$post_thumbnail_link = "<a href='" . $post_link . "' target='_blank'>" . $post_thumbnail . '</a>';
 		}
 
 		$es_templ_body = str_replace( '{{POSTIMAGE}}', $post_thumbnail_link, $es_templ_body );
@@ -226,10 +243,34 @@ class ES_Handle_Post_Notification {
 		$es_templ_body  = str_replace( '{{POSTAUTHOR}}', $post_author, $es_templ_body );
 		$es_templ_body  = str_replace( '{{POSTLINK-ONLY}}', $post_link, $es_templ_body );
 
-		if ( $post_link != "" ) {
-			$post_link_with_title = "<a href='" . $post_link . "' target='_blank'>" . $post_title . "</a>";
+		// Check if template has {{POSTCATS}} placeholder.
+		if ( strpos( $es_templ_body, '{{POSTCATS}}' ) >= 0 ) {
+			$taxonomies = get_object_taxonomies( $post );
+			$post_cats  = array();
+			
+			if ( ! empty( $taxonomies ) ) {
+				foreach ( $taxonomies as $taxonomy ) {
+					$taxonomy_object = get_taxonomy( $taxonomy );
+					// Check if taxonomy is hierarchical e.g. have parent-child relationship like categories
+					if ( $taxonomy_object->hierarchical ) {
+						$post_terms = get_the_terms( $post, $taxonomy );
+						if ( ! empty( $post_terms ) ) {
+							foreach ( $post_terms as $term ) {
+								$term_name   = $term->name;
+								$post_cats[] = $term_name;
+							}
+						}
+					}
+				}
+			}
+
+			$es_templ_body = str_replace( '{{POSTCATS}}', implode( ', ', $post_cats ), $es_templ_body );
+		}
+
+		if ( '' != $post_link ) {
+			$post_link_with_title = "<a href='" . $post_link . "' target='_blank'>" . $post_title . '</a>';
 			$es_templ_body        = str_replace( '{{POSTLINK-WITHTITLE}}', $post_link_with_title, $es_templ_body );
-			$post_link            = "<a href='" . $post_link . "' target='_blank'>" . $post_link . "</a>";
+			$post_link            = "<a href='" . $post_link . "' target='_blank'>" . $post_link . '</a>';
 		}
 		$es_templ_body = str_replace( '{{POSTLINK}}', $post_link, $es_templ_body );
 

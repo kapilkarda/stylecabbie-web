@@ -3,8 +3,13 @@
 if( !defined( 'ABSPATH' ) ) exit;  // Exit if accessed directly
 
 // Add Voucher Shortcode
-function wpgv_giftitems_shortcode () 
+function wpgv_giftitems_shortcode ($atts = '') 
 {
+    $shortcode_attr = shortcode_atts( array(
+        'item_id' => 0,
+        'item_cat_id' => 0
+    ), $atts );
+    
 	global $wp, $wpdb;
     $html = '';
 	$find = array( 'http://', 'https://' );
@@ -25,7 +30,7 @@ function wpgv_giftitems_shortcode ()
     $wpgv_stripe_alternative_text = get_option('wpgv_stripe_alternative_text') ? get_option('wpgv_stripe_alternative_text') : 'Stripe';
     
     $wpgv_buying_for = get_option('wpgv_buying_for') ? get_option('wpgv_buying_for') : 'both';
-    $wpgv_add_extra_charges = get_option('wpgv_add_extra_charges') ? get_option('wpgv_add_extra_charges') : 0;
+    $wpgv_add_extra_charges = get_option('wpgv_add_extra_charges_item') ? get_option('wpgv_add_extra_charges_item') : 0;
 
     if($wpgv_buying_for == 'both') {
         $buying_for_html = '<div class="buying-for flex-field">
@@ -75,7 +80,8 @@ function wpgv_giftitems_shortcode ()
         }
     }
 
-    $wpgv_hide_price = get_option('wpgv_hide_price') ? get_option('wpgv_hide_price') : 0;
+    $wpgv_hide_price = get_option('wpgv_item_hide_price') ? get_option('wpgv_item_hide_price') : 0;
+    $wpgv_leftside_notice = (get_option('wpgv_leftside_notice') != '') ? get_option('wpgv_leftside_notice') : __('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' );
 
     $voucher_value_html = (!$wpgv_hide_price) ? '<div class="voucherValueForm">
                         <label>'.__('Voucher Value', 'gift-voucher' ).'</label>
@@ -91,8 +97,10 @@ function wpgv_giftitems_shortcode ()
     $shipping_methods = explode(',', $setting_options->shipping_method);
     $shipping_methods_string = '';
     foreach ($shipping_methods as $method) {
-        $shipping_method = explode(':', $method);
-        $shipping_methods_string .= '<label data-value="'.trim(stripslashes($shipping_method[0])).'"><input type="radio" name="shipping_method" value="'.trim(stripslashes($shipping_method[1])).'" class="radio-field"> '.trim(stripslashes($shipping_method[1])).'</label>';
+        if($method != ''){
+            $shipping_method = explode(':', $method);
+            $shipping_methods_string .= '<label data-value="'.trim(stripslashes($shipping_method[0])).'"><input type="radio" name="shipping_method" value="'.trim(stripslashes($shipping_method[1])).'" class="radio-field"> '.trim(stripslashes($shipping_method[1])).'</label>';
+        }
     }
 
     $wpgv_hide_expiry = get_option('wpgv_hide_expiry') ? get_option('wpgv_hide_expiry') : 'yes';
@@ -155,6 +163,7 @@ function wpgv_giftitems_shortcode ()
         <input type="hidden" name="wpgv_category_id" id="category_id">
         <input type="hidden" name="wpgv_item_id" id="item_id">
         <input type="hidden" name="wpgv_total_price" id="total_price">
+        <input type="hidden" name="item_pdf_price" id="item_pdf_price">
         <input type="hidden" name="wpgv_website_commission_price" id="website_commission_price" data-price="'.$wpgv_add_extra_charges.'">
         ';
 
@@ -162,16 +171,88 @@ function wpgv_giftitems_shortcode ()
     if($wpgv_voucher_categories) {
         $image_id = get_term_meta( $wpgv_voucher_categories[0]->term_id, 'wpgv-voucher-category-image-id', true );
         $image_attributes = wp_get_attachment_image_src( $image_id, 'full' );
-        $itemimage = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl');
+        $itemimage = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl_item');
     } else {
-        $itemimage = get_option('wpgv_demoimageurl');
+        $itemimage = get_option('wpgv_demoimageurl_item');
     }
     $html .='<div class="wpgv-giftitemimage"><img src="'.$itemimage.'"></div>';
 
     //Step 1
     $html .='<div id="wpgv-giftitems-step1" class="wpgv-items-wrap">
                 <div class="wpgv-according-categories">';
-    foreach ($wpgv_voucher_categories as $category) {
+
+    if($shortcode_attr['item_id'] == 0 && $shortcode_attr['item_cat_id'] == 0)
+    {
+        foreach ($wpgv_voucher_categories as $category) {
+            $html .= '<div class="wpgv-according-category" id="itemcat'.$category->term_id.'">
+                        <div class="wpgv-according-title" data-cat-id="'.$category->term_id.'"><h2>'.$category->name.'<span>'.strip_tags(term_description($category->term_id, 'wpgv_voucher_category')).'</span></h2></div>';
+                $items = get_posts(
+                        array(
+                            'posts_per_page' => -1,
+                            'post_type' => 'wpgv_voucher_product',
+                            'tax_query' => array(
+                                array(
+                                    'taxonomy' => 'wpgv_voucher_category',
+                                    'field' => 'term_id',
+                                    'terms' => $category->term_id,
+                                )
+                            )
+                        )
+                    );
+                $html .= '<div class="wpgv-items">';
+                foreach ($items as $item) {
+                    $item_id = $item->ID;
+                    $description = get_post_meta( $item_id, 'description', true );
+                    $price = get_post_meta( $item_id, 'price', true );
+                    $special_price = get_post_meta( $item_id, 'special_price', true );
+                    $subprice = ($special_price) ? $special_price : $price;
+                    $pricestring = ($special_price) ? '<del>'.wpgv_price_format($price).'</del> <span>'.wpgv_price_format($special_price).'</span>' : '<span>'.wpgv_price_format($price).'</span>';
+                    $html .= '<div class="wpgv-item">
+                            <div class="wpgv-content"><h4>'.get_the_title($item_id).'</h4><p>'.$description.'</p></div>
+                            <div class="wpgv-price">'.$pricestring.'</div>
+                            <div class="wpgv-buy"><button type="button" data-item-id="'.$item_id.'" data-cat-id="'.$category->term_id.'" data-item-price="'.$price.'" data-item-price-pdf="'.$price.'">'.__('Buy', 'gift-voucher').'</button></div>
+                        </div>';
+                }
+                $html .= '</div>';
+
+            $html .= '</div>';
+        }
+    }
+    else if($shortcode_attr['item_id'] != 0)
+    {
+        $single_item_args = array( 
+           'post_type' => 'wpgv_voucher_product', 
+           'post__in' => array($shortcode_attr['item_id']) 
+        );
+        $items = get_posts($single_item_args);
+
+        $html .= '<div class="wpgv-items">';
+
+        foreach ($items as $item) {
+
+            $item_id = $item->ID;
+            $description = get_post_meta( $item_id, 'description', true );
+            $price = get_post_meta( $item_id, 'price', true );
+            $special_price = get_post_meta( $item_id, 'special_price', true );
+            $subprice = ($special_price) ? $special_price : $price;
+            $pricestring = ($special_price) ? '<del>'.wpgv_price_format($price).'</del> <span>'.wpgv_price_format($special_price).'</span>' : '<span>'.wpgv_price_format($price).'</span>';
+
+            $html .= '<div class="wpgv-item">
+
+                    <div class="wpgv-content"><h4>'.get_the_title($item_id).'</h4><p>'.$description.'</p></div>
+
+                    <div class="wpgv-price">'.$pricestring.'</div>
+
+                    <div class="wpgv-buy"><button type="button" data-item-id="'.$item_id.'" data-cat-id="'.$category->term_id.'" data-item-price="'.$subprice.'">'.__('Buy', 'gift-voucher').'</button></div>
+                </div>';
+        }
+        $html .= '</div>';
+            
+    }
+    else if($shortcode_attr['item_cat_id'] != 0)
+    {
+        $category = get_term($shortcode_attr['item_cat_id']);
+        
         $html .= '<div class="wpgv-according-category" id="itemcat'.$category->term_id.'">
                     <div class="wpgv-according-title" data-cat-id="'.$category->term_id.'"><h2>'.$category->name.'<span>'.strip_tags(term_description($category->term_id, 'wpgv_voucher_category')).'</span></h2></div>';
             $items = get_posts(
@@ -187,7 +268,9 @@ function wpgv_giftitems_shortcode ()
                         )
                     )
                 );
+
             $html .= '<div class="wpgv-items">';
+
             foreach ($items as $item) {
                 $item_id = $item->ID;
                 $description = get_post_meta( $item_id, 'description', true );
@@ -195,16 +278,18 @@ function wpgv_giftitems_shortcode ()
                 $special_price = get_post_meta( $item_id, 'special_price', true );
                 $subprice = ($special_price) ? $special_price : $price;
                 $pricestring = ($special_price) ? '<del>'.wpgv_price_format($price).'</del> <span>'.wpgv_price_format($special_price).'</span>' : '<span>'.wpgv_price_format($price).'</span>';
+
                 $html .= '<div class="wpgv-item">
                         <div class="wpgv-content"><h4>'.get_the_title($item_id).'</h4><p>'.$description.'</p></div>
                         <div class="wpgv-price">'.$pricestring.'</div>
                         <div class="wpgv-buy"><button type="button" data-item-id="'.$item_id.'" data-cat-id="'.$category->term_id.'" data-item-price="'.$subprice.'">'.__('Buy', 'gift-voucher').'</button></div>
                     </div>';
             }
-            $html .= '</div>';
 
+            $html .= '</div>';
         $html .= '</div>';
     }
+
     $html .= '</div></div>';
 
     // Step 2
@@ -383,7 +468,7 @@ function wpgv_giftitems_shortcode ()
                             </div>
                             <div class="clearfix"></div>
                             <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                            <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                            <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                         </div>
                     </div>
                     <h3>'.__('Voucher Preview', 'gift-voucher').'</h3>
@@ -424,7 +509,7 @@ function wpgv_giftitems_shortcode ()
                             </div>
                             <div class="clearfix"></div>
                             <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                            <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                            <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                         </div>
                     </div>
                     <h3>'.__('Voucher Preview', 'gift-voucher').'</h3>
@@ -465,7 +550,7 @@ function wpgv_giftitems_shortcode ()
                             </div>
                             <div class="clearfix"></div>
                             <div class="voucherSiteInfo"><a href="'.$setting_options->pdf_footer_url .'">'.$setting_options->pdf_footer_url.'</a> | <a href="mailto:'.$setting_options->pdf_footer_email.'">'.$setting_options->pdf_footer_email.'</a></div>
-                            <div class="termsCard">* '.__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' ).'</div>
+                            <div class="termsCard">* '.$wpgv_leftside_notice.'</div>
                         </div>
                     </div>
                     <h3>'.__('Voucher Preview', 'gift-voucher').'</h3>
@@ -505,7 +590,7 @@ function wpgv__doajax_get_itemcat_image() {
     $catid = $_REQUEST['catid'];
     $image_id = get_term_meta( $catid, 'wpgv-voucher-category-image-id', true );
     $image_attributes = wp_get_attachment_image_src( $image_id, 'full' );
-    $itemimage = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl');
+    $itemimage = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl_item');
     echo wp_send_json(array('image' => $itemimage));
     wp_die();
 }
@@ -516,7 +601,7 @@ function wpgv__doajax_get_item_data() {
     for ($i = 0; $i < 3; $i++) {
         $style_image = get_post_meta($item_id, 'style'.($i+1).'_image', true);
         $image_attributes = wp_get_attachment_image_src( $style_image, 'voucher-medium' );
-        $image_styles[] = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl');
+        $image_styles[] = ($image_attributes) ? $image_attributes[0] : get_option('wpgv_demoimageurl_item');
     }
     echo wp_send_json(array('title' => strip_tags(get_the_title($item_id)), 'images' => $image_styles, 'description' => html_entity_decode(strip_tags(get_post_meta( $item_id, 'description', true ))), 'price' => get_post_meta( $item_id, 'price', true ), 'special_price' => get_post_meta( $item_id, 'special_price', true )));
     wp_die();

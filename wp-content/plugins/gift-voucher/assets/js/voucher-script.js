@@ -50,6 +50,7 @@ form.steps({
         }
         if(currentIndex === 3) {
             $('.wizard>.actions a[href="#finish"]').hide();
+
             var link = $('.voucherPreviewButton button').data('src'),
                 nonce = $('input[name=voucher_form_verify]').val(),
                 templates_id = wpgv_b64EncodeUnicode($('input[name=template_id]:checked').val()),

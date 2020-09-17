@@ -2,11 +2,11 @@
 Contributors: studiowombat,maartenbelmans
 Tags: woocommerce, custom fields, product, addon, options
 Requires at least: 4.5
-Tested up to: 5.3.2
+Tested up to: 5.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.1.5
+Stable tag: 1.3.2
 
 Customize WooCommerce product pages with powerful and intuitive options ( = product add-ons).
 
@@ -36,9 +36,10 @@ The backend looks & works similar to ACF, so you are familiar with setting up th
   * **True/false** - A "yes/no" checkbox
 * Conditional logic (show/hide fields based on other fields)
 * Dynamic product price: Change the price depending on field value(s)
+* Works with your WooCommerce tax settings
 * Optimized for speed and faster than other plugins in this genre
 * Visibility options: decide on which product(s) to show your fields
-* Word with both simple & variable products and also supports variable products over ajax.
+* Works with both simple & variable products and also supports variable products over ajax.
 * Frontend already translated in English, French, German, Spannish, Dutch.
 * Translation-ready for other languages.
 
@@ -52,18 +53,29 @@ The backend looks & works similar to ACF, so you are familiar with setting up th
 
 Everything from the free version, plus:
 
-* Quantity-based fields: repeat fields if your visitors change product quantity.
 * More field types:
+  * **File upload** - allowing your customers to upload (multiple) files.
   * **Image swatches** - multi and single choice options with images.
   * **Color swatches** - multi and single color options.
   * **Text swatches** - text options.
+  * **Paragraph** - so you can add content and shortcodes to your product page.
+  * **Image** - to add images.
+  * **Section** - to group fields in a section.
 * The product image on the frontend can be changed when different options are selected.
 * More pricing options: formula-based pricing, quantity-based pricing, percentage-based pricing, value-based pricing, and character length pricing.
+* You can also give discounts (negative pricing) on options.
+* Quantity-based fields: repeat fields if your visitors change product quantity.
+* Works with page/product builders like Elementor, Oxygen, and Divi.
+* Variable builder for more complex pricing possibilities.
+* More options to attach one field group to multiple products at once (via product name, variation or category).
 * Support for multilingual stores through WPML or Polylang.
 * Works with your WooCommerce tax settings.
 * Support for multi-currency stores via the WOOCS plugin.
+* More integrations with other plugins & popular themes.
+* More options for text fields: min. and max. length, or HTML regex pattern.
 * Actions & filters so you can extend the plugin with additional features.
-* More options to style the fields.
+* HTML output allowing you to more easily style certain aspects with CSS.
+* And more..!
 
 Find out more about the [pro version here](https://studiowombat.com/plugin/advanced-product-fields-for-woocommerce/)
 
@@ -82,11 +94,44 @@ Find out more about the [pro version here](https://studiowombat.com/plugin/advan
 
 == Frequently Asked Questions ==
 
-Coming soon…
+= What are the system or server requirements? =
+
+ You'll need WooCommerce 3.2.0 or higher, WordPress 4.7 or higher, and PHP 5.6 or higher to make this plugin work.
 
 == Changelog ==
 
-= 1.1.5=
+= 1.3.2 =
+ * Fix: minor styling issues in WP 5.5+.
+ * Fix: fixed "advanced" tab of Yoast SEO plugin not showing.
+
+= 1.3.1 =
+ * Added: support for Polylang.
+ * Fix: fixeded cart showing options with "(+$ 0.00)" when no pricing method was selected for this option.
+
+= 1.3.0 =
+ * Fix: changed translations text-domain to match the plugin slug so transating via translate.wordpress.org is possible.
+
+= 1.2.1 =
+ * Fix: fixed a PHP warning with stripslashes().
+
+= 1.2.0 =
+* Update: enhanced how field data is stored in the database: as array instead of objects. This ads more compatibility with migration/export plugins.
+* Update: disable stripe "pay now" buttons on the product page as they can't pick up custom pricing.
+* Fix: fixed an issue when a user entered text with a quote symbol, a slash would appear before it in cart/checkout.
+
+= 1.1.7 =
+ * Added: the plugin now fully supports your WooCommerce tax settings.
+ * Update: added CSS to make the admin backend play nicer with the new WP styling.
+ * Fix: fixed a bug where empty fields were still shown in cart.
+ * Fix: fixed a bug where some fields would be wrapped in a new row unintentionally.
+ * Fix: fixed a bug with duplicating field groups under "WooCommerce > Product Fields". field ID's weren't unique when duplicating.
+
+= 1.1.6 =
+ * Update: changed frontend JS a bit to support more themes.
+ * Update: verify Woo 4.0 & 4.0.1 compatibility.
+ * Fix: fixed an issue with cart validation of radio buttons, select lists or checkboxes.
+
+= 1.1.5 =
  * Update: UX improvement: admin won't save if choice field labels are not set and display the error.
  * Update: UX improvement: show error message when duplicating field groups doesn't work.
  * Update: allow 5 field groups in free version instead of just 4.
@@ -96,32 +141,32 @@ Coming soon…
  * Fix: fixed a bug when creating a 4th field group. Adding fields to it wasn't possible.
  * Fix: removed a PHP warning.
 
-= 1.1.3=
+= 1.1.3 =
  * Fix: fixed typo in "checkbox" template.
 
-= 1.1.2=
+= 1.1.2 =
  * Update: added WPML support.
 
-= 1.1.1=
+= 1.1.1 =
  * Update: support for "ajax add to cart" themes and "required" fields.
  * Fix: "select options" was sometimes incorrectly showing.
 
-=1.1.0=
+= 1.1.0 =
  * Update: the dropdown label "choose an option" now only appears when necessary.
  * Update: added frontend translations for Dutch, French, German, and Spannish.
  * Fix: fixed an issue with column widths.
 
-=1.0.9=
+= 1.0.9 =
  * Update: better dependency checking on the frontend.
  * Fix: fixed an issue with select lists and pricing.
  * Fix: fixed an issue with true-false field price labeling.
 
-=1.0.8=
+= 1.0.8 =
  * Fix: fixed an issue with duplicating some fields in the backend.
  * Fix: fixed an issue with hidden fields validating on the frontend.
  * Fix: fixed an issue with decimal pricing on the frontend.
 
-=1.0.7=
+= 1.0.7 =
  * Update: When searching for products in the backend, you can now also find products in draft.
  * Update: added extra info dialogs to the pricing options, so you better understand all options available.
  * Update: support variations via ajax.
@@ -129,10 +174,10 @@ Coming soon…
  * Fix: fixed an issue with hidden fields wrongly validating in cart.
  * Fix: fixed an issue with product price not updating when the user select a variation.
 
-=1.0.6=
+= 1.0.6 =
  * Fix: fixed an issue with decimal price formatting on the single product page.
 
-=1.0.5=
+= 1.0.5 =
  * Update: added .pot file for translators.
  * Update: added filter for devs to change the "product totals" HTML.
  * Update: allow some HTML in field descriptions & labels.
@@ -153,4 +198,7 @@ Coming soon…
 
 Initial release
 
- == Upgrade Notice ==
+== Upgrade Notice ==
+
+= 1.3.0 =
+If you've generated your own .po/.mo files, you'll need to rename those to match the new slug "advanced-product-fields-for-woocommerce".

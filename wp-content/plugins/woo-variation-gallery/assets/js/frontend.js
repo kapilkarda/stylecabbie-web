@@ -1,8 +1,8 @@
 /*!
- * Additional Variation Images Gallery for WooCommerce v1.1.38 
+ * Additional Variation Images Gallery for WooCommerce v1.1.42 
  * 
  * Author: Emran Ahmed ( emran.bd.08@gmail.com ) 
- * Date: 3/16/2020, 3:35:33 PM
+ * Date: 9/14/2020, 5:55:14 PM
  * Released under the GPLv3 license.
  */
 /******/ (function(modules) { // webpackBootstrap
@@ -564,6 +564,7 @@ var WooVariationGallery = function ($) {
                 this.$variations_form.off('reset_image.wvg');
                 this.$variations_form.off('click.wvg');
                 this.$variations_form.off('show_variation.wvg');
+                // this.$variations_form.off('found_variation.wvg');
 
                 if (woo_variation_gallery_options.gallery_reset_on_variation_change) {
                     this.$variations_form.on('reset_image.wvg', function (event) {
@@ -578,8 +579,11 @@ var WooVariationGallery = function ($) {
                 }
 
                 this.$variations_form.on('show_variation.wvg', function (event, variation) {
-                    _this7.addLoadingClass();
-                    _this7.galleryInit(variation.variation_gallery_images);
+
+                    if (variation) {
+                        _this7.addLoadingClass();
+                        _this7.galleryInit(variation.variation_gallery_images);
+                    }
                 });
             }
         }, {

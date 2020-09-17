@@ -141,7 +141,7 @@ class wcast_updated_tracking_customizer_email {
 		$wp_customize->add_control( new WP_Customize_Heading_Control( $wp_customize, 'updated_tracking_order_email_heading',
 			array(
 				'label' => __( 'Updated Tracking status email', 'woo-advanced-shipment-tracking' ),
-				'description' => __( 'This section lets you customize the Email Content.', 'woo-advanced-shipment-tracking' ),
+				'description' => '',
 				'section' => 'customer_updated_tracking_email'
 			)
 		) );		
@@ -276,8 +276,7 @@ class wcast_updated_tracking_customizer_email {
 	 * @access public
 	 * @return void
 	 */
-	public function set_up_preview() {
-		
+	public function set_up_preview() {		
 		// Make sure this is own preview request.
 		if ( ! wcast_updated_tracking_customizer_email::is_own_preview_request() ) {
 			return;

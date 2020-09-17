@@ -35,6 +35,13 @@
 	
 	$has_post_thumbnail = has_post_thumbnail();
 	
+	// No main image but gallery
+	if ( ! $has_post_thumbnail && count( $attachment_ids ) > 0 ) {
+		$post_thumbnail_id  = $attachment_ids[ 0 ];
+		array_shift( $attachment_ids );
+		$has_post_thumbnail = true;
+	}
+	
 	if ( 'variable' === $product_type && $default_variation_id > 0 ) {
 		
 		$product_variation = wvg_get_product_variation( $product_id, $default_variation_id );
@@ -54,9 +61,10 @@
 	
 	$only_has_post_thumbnail = ( $has_post_thumbnail && ( count( $attachment_ids ) === 0 ) );
 	
-	$default_sizes  = wp_get_attachment_image_src( $post_thumbnail_id, 'woocommerce_single' );
-	$default_height = $default_sizes[ 2 ];
-	$default_width  = $default_sizes[ 1 ];
+	//$default_sizes  = wp_get_attachment_image_src( $post_thumbnail_id, 'woocommerce_single' );
+	
+	//$default_height = $default_sizes[ 2 ];
+	//$default_width  = $default_sizes[ 1 ];
 	
 	
 	$gallery_slider_js_options = apply_filters( 'woo_variation_gallery_slider_js_options', array(

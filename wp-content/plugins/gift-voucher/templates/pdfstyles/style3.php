@@ -2,7 +2,14 @@
 
 // PDF Style 3
 
-$wpgv_hide_price = get_option('wpgv_hide_price') ? get_option('wpgv_hide_price') : 0;
+if($formtype == 'item') {
+	$wpgv_hide_price = get_option('wpgv_hide_price_item') ? get_option('wpgv_hide_price_item') : 0;
+}
+else{
+	$wpgv_hide_price = get_option('wpgv_hide_price_voucher') ? get_option('wpgv_hide_price_voucher') : 0;
+}
+
+$wpgv_leftside_notice = (get_option('wpgv_leftside_notice') != '') ? get_option('wpgv_leftside_notice') : __('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher' );
 
 $pdf = new WPGV_PDF('P','pt',array(595,700));
 $pdf->SetAutoPageBreak(0);
@@ -130,7 +137,7 @@ $pdf->Cell(0,0,$setting_options->pdf_footer_url.' | '.wpgv_em($setting_options->
 $pdf->SetXY(30, 680);
 $pdf->SetTextColor($voucher_color[0],$voucher_color[1],$voucher_color[2]);
 $pdf->SetFontSize(10);
-$pdf->Cell(0,0,'* '.wpgv_em(__('Cash payment is not possible. The terms and conditions apply.', 'gift-voucher')),0,1,'C',0);
+$pdf->Cell(0,0,'* '.wpgv_em($wpgv_leftside_notice),0,1,'C',0);
 
 if($preview) {
 	//Put the watermark

@@ -1,8 +1,8 @@
 === Newsletter ===
 Tags: email, email marketing, newsletter, newsletter subscribers, welcome email, signup forms, contact, lead generation, popup, marketing automation
 Requires at least: 3.4.0
-Tested up to: 5.4.1
-Stable tag: 6.7.2
+Tested up to: 5.5.1
+Stable tag: 6.8.8
 Requires PHP: 5.6
 Contributors: satollo,webagile,michael-travan
 
@@ -32,12 +32,12 @@ We redesigned our drag and drop composer to make your campaign creation even eas
 * **Single** And **Double Opt-In** plus privacy checkbox for EU laws compliance
 * **Subscribers lists** to fine-target your campaigns
 * PHP API and REST API for coders and integrations
-* SMTP-Ready 
+* SMTP-Ready
 * Customizable Themes
 * **Status panel** to check your blog mailing capability and configuration
 * **Compatible with every SMTP plugin**: Post SMTP (aka Postman), WP Mail SMTP, Easy WP SMTP, Easy SMTP Mail, WP Mail Bank, ...
 * **Subscribers import** from file
-* Newsletter with Html and Text message versions 
+* Newsletter with Html and Text message versions
 
 = Find Us =
 
@@ -88,7 +88,7 @@ Anyway if you configure the plugin to use external services (usually an external
 
 We provide support for our plugin on [Wordpress.org forums](https://wordpress.org/support/plugin/newsletter) and through our [official forum](https://www.thenewsletterplugin.com/forums).
 
-Premium Users with an active license have access to one-to-one support via our [ticketing system](https://www.thenewsletterplugin.com/support-ticket). 
+Premium Users with an active license have access to one-to-one support via our [ticketing system](https://www.thenewsletterplugin.com/support-ticket).
 
 = Follow Us =
 
@@ -113,211 +113,60 @@ Thank you, The Newsletter Team
 
 == Changelog ==
 
-= 6.7.2 =
+= 6.8.8 =
 
-* Fix post permalink with WPML on language specific setting for Newsletter themes and blocks
-* Added action newsletter_user_reactivated
+* Fixed cancellation notification for admins
 
-= 6.7.1 =
+= 6.8.7 =
 
-* Changed the lists configuration to be more clear
+* Fix of confirmation_url attribute on minimal subscription form
 
-= 6.7.0 =
+= 6.8.6 =
 
-* Fixed the text part not sent when using the standard mailing function of WP
-* Added warning on statistic panel for email without the tracking active
-* Fixed the hero block align when specified manually with text-align on text part
+* Disabled the default WordPress emoji to image replacer on admin pages of Newsletter
 
-= 6.6.9 =
+= 6.8.5 =
 
-* Fixed the admin email preview not showing the correct email after visiting the online view of a newsletter
-* Fixed possible not "100%" display percentage for sent newsletters (was only a display problem)
+* Updated Controls class to support the new Reports Addon
 
-= 6.6.8 =
+= 6.8.4 =
 
-* Fixed newsletter view returning "not found"
+* Code update for WordPress 5.5 compatibility (PHPMailer)
+* Added dummy user-related-links on newsletter preview
+* Fixed optin form option for the minimal subsbscription form
 
-= 6.6.7 =
+= 6.8.3 =
 
-* Fixed a debug notice on image resize
+* Changed the administrative notification of subscription removing the lists and linking the user profile
+* Fixed missing user token on data from some external sources
+* Extra profiles fix and optmization
+* Improved notificatons for usage of private fields on custom forms
+* Better management of opt-in override on forms and notices for administration when used in wrong ways
+* Fixed the posts block with odd numbers of posts on Automated context
+* Added administrative notices on custom form for invalid list usage
+* Added multilanguage support on lists on custom forms
+* Added multilanguage support on extra profiles on custom forms
+* Fixed CSS for extra profile fields
+* Improved antibot/antispam performances
+* Multilanguage on validation JS (but will be removed in favor of pure HTML validation)
+* Fixed label "for" attribute for extra fields on custom forms
+* Better test message from status panel
+* Fixed vulnerability reported by WordFence
 
-= 6.6.6 =
+= 6.8.2 =
 
-* Added check on submission for private lists (error shown only to administrator as debug information)
-* Improved right layout on hero block
-* Improved internal actions management (better performances)
-* Added lists, media selector, charmap on text block
-* Absolute path fix form media file with non relative path on database
-* Internal admin pages review for code coherence with our standard
-* Changed the action name from `newsletter_unsubscribed` to `newsletter_user_unsubscribed`. [See our developer documentation](https://www.thenewsletterplugin.com/documentation/developers/).
-* Removed deprecated function `save_profile()` on NewsletterSubscription
+* Added HTML filtering on block rendering
 
-= 6.6.5 =
+= 6.8.1 =
 
-* Fixed email reference lost on double step cancellation
-* Update to support Instasend
-* Added "optin" support on shortcodes (see the documentation)
+* Fixed welcome message not being displayed (on 6.8.0)
 
-= 6.6.4 =
+= 6.8.0 =
 
-* Added filter on profile fields on targeting
-* Administrator notice on custom forms using provate lists
-* Added translation code on some words
-* Compatibility check with WP 5.4.1
-* Tip changed on SMTP panel about GMail
+* Improved license checking (only for who set a license code - it is not required)
+* Imporved extra field configuration with multilanguage blogs
+* Improved subscription form with extra fields for multilanguage blogs
+* Minor code improvements
+* Improved HTTP responses for invalid profile links (good for users and acceptance tests)
+* Fixed newsletter page url generation with Polylang
 
-= 6.6.3 =
-
-* Changed the administration script enqueuing 
-* Improved the status page
-* Added notice on page list to highlight the Newsletter dedicated page
-
-= 6.6.2 =
-
-* Fixed incomplete blocks package on previous release
-
-= 6.6.1 =
-
-* Improved WMPL permalink filter (not working with custom slugs and old WPML releases)
-* Fixed the hero block not rendering correctly with "left" layout
-* Added the one-click list unsubscribe header
-
-= 6.6.0 =
-
-* Fixed a jQuery bug on drag and drop composer
-* Fix for report number animations
-
-= 6.5.9 =
-
-* Revisited the posts block
-* Support for the new Reports addon styles
-* Improved the excerpt extraction
-* Cancellation administrative notifications on/off switch 
-
-= 6.5.8 =
-
-* Improvements on controls
-* Delivery test mode fix for Autoresponder
-* Fixed link to documentation on status panel
-* Added link to documentation on SMTP page
-* Reorganized status page with more links to the documentation
-* Improved image block dimensions management for Outlook
-* Fixed the mobile preview in the composer
-* Added "image to the right" in the hero block
-* Fixed dark color schema in hero block
-
-= 6.5.7 =
-
-* Fixed posts block to stop automated by default when there are no new contents
-
-= 6.5.6 =
-
-* Improved post image extraction
-
-= 6.5.5 =
-
-* Revised the posts block for the new Automated features
-* Added action_link to controls
-* Revised the newsletter regeneration and added blocks behaviors
-
-= 6.5.4 =
-
-* Font awesome now included
-* Spacing fix on hero block
-* Support methods for the WooCommerce addon
-* Security fix on CSV export (reported by Vishnupriya Ilango of Fortinet's FortiGuard Labs)
-* Removed obsolete fonts
-* PHP 5.6 check
-
-= 6.5.3 =
-
-* Removed a background wrapper for outlook otherwise outlook cut down long emails
-* Added background gradient (experimental, no supported by all mail clients)
-* Added dark color schema to cta and hero blocks
-* Fixed a debug notice
-
-= 6.5.2 =
-
-* Fixed image block 
-* Newsletter editing page with TinyMCE now saves before sending a test
-
-= 6.5.1 =
-
-* Solved hero block media problem not showing
-
-= 6.5.0 =
-
-* Hero block fix
-
-= 6.4.9 =
-
-* Added background selection to the composer
-* Reactivated the Pint theme
-* Improved blocks layout
-* Inline editing for title and excerpt on Posts block
-* Changed the image cropping method on newsletter included images
-* Posts block can now specify an offset to skip the first *n* posts
-* Fixed the display of multiline title on some blocks (was overlapping)
-* Added the excerpt length on Posts block
-* Removed the shortcodes from generated excerpt for blog post composer block
-* New media resize to better fit the email layout standards
-* Updated image block
-
-= 6.4.8 =
-
-* Antispam on PHP API
-* Improved hero block layout
-* Added color schema to some blocks
-* Added background gradient (experimental)
-* Added image width control on image block
-
-= 6.4.7 =
-
-* Default theme thumbnail fix
-* Profile saving antispam check
-* Fixed hero block (button)
-* Added logging on spam checking (enable info lov level to see the spam check results in the logs)
-
-= 6.4.6 =
-
-* Added hook to [register custom theme folders](https://www.thenewsletterplugin.com/developers/newsletter-themes)
-* Removed old themes
-* Removed packages theme folder scan (so locally added themes are not loaded, see site documentation if you need to create a custom theme)
-* Polylang support on default theme
-* Better error check on addon list retrieval
-* Added language on targeting options
-* Fixed user list pagination
-* Subject replacement for online preview
-
-= 6.4.5 =
-
-* Restored a missing method used by addons
-* Added the changelog.txt file
-
-= 6.4.4 =
-
-* Automatic language detection on subscription when available
-* New statistics panel
-
-= 6.4.3 =
-
-* Fixed error reported in log on wrong subscription calls
-
-= 6.4.2 =
-
-* Improved the antispam check on subscription
-
-= 6.4.1 =
-
-* Added statistics shortcut for sent newsletters
-* Fixed unsubscription from email tracking
-* Password field in smtp configuration
-* Small fixes to header block
-* Fixed the subject on online newsletter view
-* Fixed the subject ideas popup X button
-
-= 6.4.0 =
-
-* Fixed extra profile fields management in REST and PHP API
-* Removed the "read more" added by themes on posts excerpt
-* Core improvements

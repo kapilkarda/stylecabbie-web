@@ -62,7 +62,7 @@ if (Mix.inProduction()) {
 }
 
 mix.banner({
-    banner : "Additional Variation Images Gallery for WooCommerce v1.1.38 \n\nAuthor: Emran Ahmed ( emran.bd.08@gmail.com ) \nDate: " + new Date().toLocaleString() + "\nReleased under the GPLv3 license."
+    banner : "Additional Variation Images Gallery for WooCommerce v1.1.42 \n\nAuthor: Emran Ahmed ( emran.bd.08@gmail.com ) \nDate: " + new Date().toLocaleString() + "\nReleased under the GPLv3 license."
 });
 
 mix.notification({
@@ -87,7 +87,7 @@ mix.sass(`src/scss/theme-support.scss`, `assets/css/theme-support${min}.css`);
 
 mix.js(`src/js/backend.js`, `assets/js/admin${min}.js`);
 mix.babel(`src/js/gwp-backbone-modal.js`, `assets/js/gwp-backbone-modal${min}.js`);
-mix.babel(`src/js/meta-boxes-product-variation.js`, `assets/js/meta-boxes-product-variation${min}.js`);
+// mix.babel(`src/js/meta-boxes-product-variation.js`, `assets/js/meta-boxes-product-variation${min}.js`);
 mix.js(`src/js/gwp-admin.js`, `assets/js/gwp-admin${min}.js`);
 mix.sass(`src/scss/backend.scss`, `assets/css/admin${min}.css`);
 mix.sass(`src/scss/gwp-admin.scss`, `assets/css/gwp-admin${min}.css`);

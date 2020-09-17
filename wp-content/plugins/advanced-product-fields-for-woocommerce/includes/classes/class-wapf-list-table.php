@@ -12,10 +12,10 @@ namespace SW_WAPF\Includes\Classes {
 
             $table_columns = array(
                 'cb'                => '<input type="checkbox" />', 
-                'post_title'        => __( 'Title', 'sw-wapf' ),
-                'type'              => __('Type', 'sw-wapf'),
-                'fields'            => __('Fields', 'sw-wapf'),
-                'post_date'	        => __( 'Date', 'sw-wapf' ),
+                'post_title'        => __( 'Title', 'advanced-product-fields-for-woocommerce' ),
+                'type'              => __('Type', 'advanced-product-fields-for-woocommerce'),
+                'fields'            => __('Fields', 'advanced-product-fields-for-woocommerce'),
+                'post_date'	        => __( 'Date', 'advanced-product-fields-for-woocommerce' ),
             );
 
             return $table_columns;
@@ -83,7 +83,7 @@ namespace SW_WAPF\Includes\Classes {
             if(empty($post->post_content))
                 return 0;
 
-            $field_group = maybe_unserialize($post->post_content);
+            $field_group = Field_Groups::process_data($post->post_content);
 
             return count($field_group->fields);
         }
@@ -105,8 +105,8 @@ namespace SW_WAPF\Includes\Classes {
                     $actions['duplicate'] = sprintf(
                         '<a href="%s" aria-label="%s">%s</a>',
                         admin_url('admin.php?page=wapf-field-groups&wapf_duplicate='.$post->ID),
-                        esc_attr( sprintf( __( 'Duplicate &#8220;%s&#8221;','sw-wapf' ), $title ) ),
-                        __( 'Duplicate', 'sw-wapf' )
+                        esc_attr( sprintf( __( 'Duplicate &#8220;%s&#8221;','advanced-product-fields-for-woocommerce' ), $title ) ),
+                        __( 'Duplicate' )
                     );
                 }
             }
@@ -172,7 +172,7 @@ namespace SW_WAPF\Includes\Classes {
 
         public function no_items() {
 
-            _e( 'No Product Field Groups found.', 'sw-wapf');
+            _e( 'No Product Field Groups found.', 'advanced-product-fields-for-woocommerce');
 
         }
 
