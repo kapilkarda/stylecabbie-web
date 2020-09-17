@@ -40,9 +40,7 @@
 		    //alert(this.name); // or alert($(this).attr('id'));Reset password
 		    if(this.name=='register' || this.name=='login' || this.value=='Reset password'){
 		    	$('<div class=loadingDiv></div>').prependTo(document.body);
-		    	setTimeout(function(){
-		    		$('<div class=loadingDiv></div>').remove(document.body);
-		    	},2000)
+		    	
 		    }
 		});
     $('a').click(function(){
