@@ -21,6 +21,18 @@
 <?php do_action('flatsome_after_footer'); ?>
 
 <?php get_template_part('template-parts/footer/footer-absolute'); ?>
+<style type="text/css">
+    .loadingDiv {
+   position: fixed;   
+   background-color: #eeeeee !important;
+   z-index:1000000;
+   opacity: 0.9;
+   width:100%; 
+   height:100%; 
+   background:url("https://stylecabbie.com/wp-content/uploads/loading1.gif") center center no-repeat;
+   top: 0px;
+}
+</style>
 
 <script type="text/javascript">
     jQuery(document).ready(function ($) {
