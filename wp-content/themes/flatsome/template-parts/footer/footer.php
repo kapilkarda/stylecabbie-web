@@ -58,8 +58,8 @@
 	};
 
 
-	//if( isMobile.any() )
-	if( true )
+	//if( true )
+	if( isMobile.any() )
 	{ 
 		jQuery(document).ready(function ($) {
 
