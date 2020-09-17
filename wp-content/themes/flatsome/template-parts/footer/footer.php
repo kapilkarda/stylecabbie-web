@@ -60,32 +60,32 @@
 
 	if( isMobile.any() )
 	{ 
-		console.log('Mobile');
+		jQuery(document).ready(function ($) {
+
+	    	$("button").click(function() {
+			    //alert(this.name); // or alert($(this).attr('id'));Reset password
+			    if(this.name=='register' || this.name=='login' || this.value=='Reset password'){
+			    	$('<div class=loadingDiv></div>').prependTo(document.body);
+			    	
+			    }
+			});
+		    $('a').click(function(){
+		        // alert($(this).attr('href'));
+		        console.log($(this).attr('href'));
+				var str = $(this).attr('href');
+		        var spl = str.split("/");
+		        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' ){
+		            
+		           
+		        }else{
+		        	$('<div class=loadingDiv></div>').prependTo(document.body);
+		        }
+		    });
+		});
 	}else{
 		console.log('desktop');
 	}
 
 	console.log('hello');
-    jQuery(document).ready(function ($) {
-
-    	$("button").click(function() {
-		    //alert(this.name); // or alert($(this).attr('id'));Reset password
-		    if(this.name=='register' || this.name=='login' || this.value=='Reset password'){
-		    	$('<div class=loadingDiv></div>').prependTo(document.body);
-		    	
-		    }
-		});
-    $('a').click(function(){
-        // alert($(this).attr('href'));
-        console.log($(this).attr('href'));
-		var str = $(this).attr('href');
-        var spl = str.split("/");
-        if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' ){
-            
-           
-        }else{
-        	$('<div class=loadingDiv></div>').prependTo(document.body);
-        }
-    });
-});
+    
 </script>
