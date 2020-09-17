@@ -35,6 +35,7 @@
 </style>
 
 <script type="text/javascript">
+	console.log('hello');
     jQuery(document).ready(function ($) {
     	$("button").click(function() {
 		    //alert(this.name); // or alert($(this).attr('id'));Reset password
