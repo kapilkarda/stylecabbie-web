@@ -51,8 +51,10 @@
 		var str = $(this).attr('href');
         var spl = str.split("/");
         if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' ){
-            $('<div class=loadingDiv></div>').prependTo(document.body);
+            
            
+        }else{
+        	$('<div class=loadingDiv></div>').prependTo(document.body);
         }
     });
 });
