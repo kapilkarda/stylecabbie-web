@@ -42,11 +42,6 @@
         if($(this).attr('href')=='#nav-home' || $(this).attr('href')=='#nav-profile' || spl[3]== "cart" || $(this).attr('href')=='#' || $(this).attr('href')=='#0' ){
             
            
-        }else{
-             $('<div class=loadingDiv></div>').prependTo(document.body); 
-             setTimeout(function(){
-		    		$('<div class=loadingDiv></div>').remove(document.body);
-		    	},2000)
         }
     });
 });
