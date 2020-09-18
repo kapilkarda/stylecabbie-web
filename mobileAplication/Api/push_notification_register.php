@@ -10,8 +10,8 @@ echo "Database not connected !";
 
 // $id = $_POST['id'];
 $user_id = '0';
-$device_token = $_POST['device_token'];
-$device_type = $_POST['device_type'];
+$device_token = $_REQUEST['device_token'];
+$device_type = $_REQUEST['device_type'];
 if(isset($device_token) && isset($device_type)){
 
 
